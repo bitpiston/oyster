@@ -1,0 +1,161 @@
+<document title="Miscellaneous Functions">
+    <synopsis>
+        Various functions that don't (yet) warrant their own categories
+    </synopsis>
+    <todo>
+        Document the functions without docs
+    </todo>
+    <function name="get_first_words">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+    <function name="dump">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+    </function>
+    <function name="proper_caps">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+    <function name="compress_metadata">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+    <function name="">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+        <todo>
+            
+        </todo>
+    </function>
+    <function name="trace">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+    <function name="pad">
+        <synopsis>
+            If the string is too long, chops the beginning off and prepends with ...
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+    <function name="confirmation">
+        <synopsis>
+            Prints a confirmation message.
+        </synopsis>
+        <prototype>
+            confirmation(string confirmation_message[, forward_options])
+        </prototype>
+        <example>
+            confirmation('Something happened.', $BASE_URL => 'Return to the home page.');
+        </example>
+    </function>
+    <function name="shell_escape">
+        <synopsis>
+            Escapes characters to avoid injection when executing shell commands.
+        </synopsis>
+        <note>
+            Currently only escapes double quotes.  The data passed to this function
+            assumes that it will be placed inside double quotes when it is passed to
+            the shell.
+        </note>
+        <prototype>
+            string escaped_string = misc::shell_escape(string)
+        </prototype>
+        <todo>
+            Make this better, should have different mechanics for different shells.
+        </todo>
+    </function>
+    <function name="urlify_string">
+        <synopsis>
+             Takes a string and turns it into something url-friendly
+        </synopsis>
+        <prototype>
+            string url_friendly_string = urlify_string(string)
+        </prototype>
+        <todo>
+            Deprecate in favor or something in the url package
+        </todo>
+    </function>
+    <function name="random_string">
+        <synopsis>
+            Generate a random alphanumeric string
+        </synopsis>
+        <note>
+            The default length is 32 characters
+        </note>
+        <prototype>
+            string random_string = random_string([int length])
+        </prototype>
+        <example>
+            print random_string(100);
+        </example>
+        <todo>
+            Possible to do this via chr and just using a random int < 62
+        </todo>
+    </function>
+</document>

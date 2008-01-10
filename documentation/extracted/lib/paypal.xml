@@ -1,0 +1,80 @@
+<document title="Paypal API">
+    <synopsis>
+        This library provides access to Paypal's NVP api.
+    </synopsis>
+    <todo>
+        Paypal account details should be in a config
+    </todo>
+    <todo>
+        Needs more documentation
+    </todo>
+    <section title="Public Functions">
+        <note>
+            All functions take either a single argument or a hash of arguments (NOT
+            a hashref).
+        </note>
+        <note>
+            All functions return hashrefs containing the nvp response.
+        </note>
+        <function name="new">
+            <todo>
+                validate the arguments, possibly even perform a no-op connection to ensure the credentials are valid
+                performing an actual request is a good idea because it can also ensure you support https
+            </todo>
+        </function>
+        <function name="pdt">
+            <synopsis>
+                Sends a Payment Data Transfer request to Paypal
+            </synopsis>
+            <note>
+                For an explanation of the variables returned by this, see
+                <link url="https://www.paypal.com/IntegrationCenter/ic_ipn-pdt-variable-reference.html">PayPal's variable reference</link>.
+            </note>
+            <note>
+                This uses a different authentication scheme than the NVP-based API
+                functions.
+            </note>
+            <note>
+                PDT also returns data in a different format than NVP, so it must use a
+                custom parser.
+            </note>
+            <prototype>
+                hashref = obj->pdt(string transaction_id)
+            </prototype>
+        </function>
+        <function name="get_transaction_details">
+            
+        </function>
+        <function name="transaction_search">
+        
+        </function>
+        <function name="parsed_transaction_search">
+            <synopsis>
+                A wrapper for transaction_search() that parses the results and puts them
+                into a more meaningful data structure.
+            </synopsis>
+        </function>
+        <function name="validate_ipn">
+            <todo>
+                Should this return true/false or throw an exception?
+            </todo>
+        </function>
+    </section>
+    
+    <section title="Private Functions">
+
+        <function name="_send_msg">
+            <synopsis>
+                This is the main work horse of this library, this sends an NVP message and
+                returns the response.
+            </synopsis>
+            <prototype>
+                 $obj->_send_msg(string method, hashref params)
+            </prototype>
+            <todo>
+                This should have an optional third argument, arrayref params for
+                functions that require duplicate parameters with the same name.
+            </todo>
+        </function>
+    </section>
+</document>

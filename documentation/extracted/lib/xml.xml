@@ -1,0 +1,154 @@
+<document title="XML Functions">
+    <synopsis>
+        Functions related to xml validation, transformation, and parsing.
+    </synopsis>
+    <todo>
+        Possibly make include/call syntax more strict so the regex parsing is
+        faster.
+    </todo>
+    <todo>
+        I think there may be a bug with proper_english in the xhtml and bbcode
+        parsers -- since they pass entify text in small chunks entities that have
+        a start end (quotations) will not work properly if there is a tag/element
+        between them.
+    </todo>
+    <function name="strip_elements">
+        <synopsis>
+            Takes an xml-safe string and strips xml elements (aka tags/nodes)
+        </synopsis>
+        <note>
+            The 'xml-safe' part is important! If the string contains '<' or '>',
+            they will be interpretted as parts of xml elements.
+        </note>
+        <note>
+            The optional second argument can be used to replace elements with
+            something instead of merely stripping them.
+        </note>
+        <prototype>
+            string = xml::strip_elements(string[, string replace_with])
+        </prototype>
+    </function>
+    <function name="replace_entities">
+        <synopsis>
+            Takes an XML-safe string and replaces XML entities with their plain ASCII equivalents
+        </synopsis>
+        <prototype>
+            string = xml::replace_entities(string)
+        </prototype>
+    </function>
+    <function name="entities">
+        <synopsis>
+            Takes a string and makes it XML-safe.
+        </synopsis>
+        <note>
+            The 'safe' flag, if set, will not re-entify things that already look
+            like entities; this is useful if you are not sure if a string already
+            contains XML entities.  For example, xml::entities('&amp;', safe => 1)
+            would result in '&amp;', not '&amp;amp;'.
+        </note>
+        <note>
+            The 'proper_english' flag replaces various entities with their "proper"
+            equivalents, including: ellipses, dashes, subtraction, hyphenation,
+            single/double quotes, and apostrophes.
+        </note>
+        <prototype>
+            string = xml::entities(string[, 'safe'][, 'proper_english'])
+        </prototype>
+        <example>
+            print xml::entities($INPUT{'title'});
+        </example>
+        <todo>
+            This should accept multiple strings like attr_entities
+        </todo>
+        <todo>
+            This should NOT protect against double-entitying something (add entities_safe or something for that)
+        </todo>
+        <todo>
+            check if these (?:)'s are necessary
+        </todo>
+        
+    </function>
+    <function name="bbcode">
+        <synopsis>
+            Transforms BBcode into XHTML
+        </synopsis>
+        <note>
+            This function raises a validation_error if a problem is encountered.
+        </note>
+        <prototype>
+            string xhtml = xml::bbcode(string bbcode[, disabled_tags => hashref, allow_calls => bool, allow_includes => bool])
+        </prototype>
+        <example>
+            my $post = xml::bbcode($INPUT{'post'});
+        </example>
+        <todo>
+            automatic linking for URLs
+        </todo>
+    </function>
+    <function name="_bbcode_parse_code">
+        <synopsis>
+            Parses BBcode until a [/code] tag is found
+        </synopsis>
+        <note>
+            This function properly keeps track of embedded [code] tags and only
+            returns when the right ending tag is found.
+        </note>
+        <note>
+            This is used internally by bbcode(), modules should never need to
+            call this; it is not exported by default.
+        </note>
+        <prototype>
+            my ($bbcode, $xhtml) = _bbcode_parse_code($bbcode, $xhtml)
+        </prototype>
+    </function>
+    <function name="_bbcode_inspect_stack">
+        <warning>
+            Unimplemented
+        </warning>
+        <synopsis>
+            Allows you to inspect the bbcode tag stack
+        </synopsis>
+        <note>
+            This function returns undef if the tag is not found, this means
+            that if you are checking to see if a tag is in the stack (and don't
+            care about its position) you must check if the result is defined,
+            not just that it is true.
+        </note>
+        <note>
+            Offset defaults to zero.
+        </note>
+        <prototype>
+            int position = _bbcode_inspect_stack(string tag_name[, int offset])
+        </prototype>
+    </function>
+    <function name="validate_xhtml">
+        <synopsis>
+            Validates xhtml and returns the xml-compatible equivalent
+        </synopsis>
+        <note>
+            This may potentially change the xhtml, transforming some entities to be
+            xml-friendly.
+        </note>
+        <note>
+            If a parse-error is encountered, a validation_error will be raised.
+        </note>
+        <note>
+            Calls allow you to dynamically (each page view) include data from other
+            modules.
+        </note>
+        <note>
+            Includes allow you to include data from other modules when the page is
+            saved.
+        </note>
+        <note>
+            The permission level option allows you to only enable certain xhtml
+            tags.
+        </note>
+        <prototype>
+            string xml = xml::validate_xhtml(string xhtml[, permission_level => int level, allow_calls => bool, allow_includes => bool])
+        </prototype>
+        <todo>
+            uh.. should this be a static search and replace BEFORE this loop starts?
+        </todo>
+    </function>
+</document>

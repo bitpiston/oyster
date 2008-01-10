@@ -1,0 +1,13 @@
+<document title="Console Utility Functions">
+    <synopsis>
+        Functions used by various Oyster console applications
+    </synopsis>
+    <function name="end_all_clean">
+        <synopsis>
+            Processes command line arguments
+        </synopsis>
+        <todo>
+            Documentation
+        </todo>
+    </function>
+</document>

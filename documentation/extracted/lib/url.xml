@@ -1,0 +1,280 @@
+<document title="URL Functions">
+    <synopsis>
+        Functions dealing with Oyster's url handling as well as external url
+        utilities.
+    </synopsis>
+    <todo>
+        Tons of optimization could be done here as well as how oyster.pm handles
+        urls.
+    </todo>
+    <todo>
+        The regex url system needs to be analyzed, there is little point to
+        storing those in the database and significant usability could be gained by
+        allowing code to just create those at runtime.
+    </todo>
+    <section title="General URL Functions">
+
+        <function name="is_valid">
+            <synopsis>
+                Returns true if a given string is a valid url.
+            </synopsis>
+            <prototype>
+                bool = url::is_valid(string url)
+            </prototype>
+        </function>
+    </section>
+
+    <section title="Oyster URL Registration/Dispatching Functions">
+    
+        <function name="unique">
+            <synopsis>
+                Finds a unique url
+            </synopsis>
+            <note>
+                If the url passed to url::unique is taken, unique_url will generate an
+                alternative.
+            </note>
+            <prototype>
+                url::unique(string url)
+            </prototype>
+            <todo>
+                Implement with url::is_registered()? slight memory vs cpu optimization
+            </todo>
+            <todo>
+                rename to uniqify or make_unique?
+            </todo>
+        </function>
+        <function name="register">
+            <synopsis>
+                Associates a URL with an action in the database
+            </synopsis>
+            <note>
+                This function performs no error checking to make sure your arguments
+                are valid.
+            </note>
+            <note>
+                The optional 'params' argument is polymorphic and will properly save
+                your parameters based on what type of variable you pass.
+            </note>
+            <note>
+                The optional 'parent_id' argument allows you to skip a query if you
+                already know the parent id of the URL.
+            </note>
+            <note>
+                The second return value is necessary because the URL you requested may
+                not have been available and may have been changed.
+            </note>
+            <prototype>
+                int url_id, string url = url::register(
+                   'url'            => string url,
+                   'module'         => string module_id,
+                   'function'       => string function_name,
+                   'title'          => string url_title,
+                   ['show_nav_link' => bool show_nav_link,]
+                   ['nav_priority'  => int navigation_priority,]
+                   ['params'        => arrayref parameters or hashref parameters or string parameter,]
+                   ['parent_id'     => int parent_id,]
+                   ['regex'         => bool is_regex,]
+                )
+            </prototype>
+            <todo>
+                Should it perform error checking? (possibly create an alternative
+                register_safe for that)
+            </todo>
+            <todo>
+                this is sims-specific! it really shouldnt be here!
+            </todo>
+        </function>
+        <function name="update">
+            <synopsis>
+                Updates a registered URL
+            </synopsis>
+            <note>
+                This function performs no error checking to make sure your arguments
+                are valid.
+            </note>
+            <note>
+                The optional 'params' argument is polymorphic and will properly save
+                your parameters based on what type of variable you pass.
+            </note>
+            <note>
+                The second return value is necessary because the URL you requested may
+                not have been available and may have been changed.
+            </note>
+            <note>
+                If you change the URL you should NOT change anything but the last part.
+                This may be changed later, but it would require significant remapping of
+                many URLs.
+            </note>
+            <prototype>
+                int url_id, string url = url::update(
+                   'url' or 'id'    => string url_to_update or int url_id_to_update,
+                   ['url'           => string new_url,]
+                   ['module'        => string new_module_id,]
+                   ['function'      => string new_function_name,]
+                   ['title'         => string new_url_title,]
+                   ['show_nav_link' => bool new_show_nav_link,]
+                   ['nav_priority'  => int new_navigation_priority,]
+                   ['params'        => arrayref parameters or hashref parameters or string parameter]
+                )
+            </prototype>
+            <todo>
+                Should it perform error checking? (possibly create an alternative
+                update_safe for that)
+            </todo>
+            <todo>
+                this doesn't handle regex urls
+            </todo>
+            <todo>
+                this is sims-specific! it really shouldnt be here!
+            </todo>
+        </function>
+        <function name="_parse_params_arg">
+            <synopsis>
+                This is what allows the optional 'params' argument on register and update
+                to be polymorphic.
+            </synopsis>
+            <prototype>
+                hashref = _parse_params_arg(hashref or arrayref or string params)
+            </prototype>
+        </function>
+        <function name="delete">
+            <synopsis>
+                Deletes a URL
+            </synopsis>
+            <note>
+                This doesn't care if the url has any children!
+            </note>
+            <prototype>
+                bool = url::delete(string url)
+            </prototype>
+            <todo>
+                his should return success/failure -- does Pg allow ->rows() on a delete query?
+            </todo>
+        </function>
+        <function name="delete_by_id">
+            <synopsis>
+                Deletes a URL, by id
+            </synopsis>
+            <note>
+                This doesn't care if the url has any children!
+            </note>
+            <prototype>
+                bool = url::delete_by_id(int url_id)
+            </prototype>
+            <todo>
+                This should return success/failure -- does Pg allow ->rows() on a delete query?
+            </todo>
+        </function>
+        <function name="is_registered">
+            <synopsis>
+                Checks if a URL is registered
+            </synopsis>
+            <prototype>
+                bool is_taken = url::is_registered(string url)
+            </prototype>
+        </function>
+        <function name="is_registered_by_id">
+            <synopsis>
+                Checks if a URL is taken, by id
+            </synopsis>
+            <prototype>
+                bool is_taken = url::is_registered_by_id(int url_id)
+            </prototype>
+        </function>
+        <function name="get">
+            <synopsis>
+                Retreives data associated with a url from the database
+            </synopsis>
+            <note>
+                Returns undef if no urls matched
+            </note>
+            <prototype>
+                hashref url_data = url::get(string url)
+            </prototype>
+        </function>
+        <function name="get_by_id">
+            <synopsis>
+                Retreives all data associated with a URL from the database, by id
+            </synopsis>
+            <note>
+                Returns undef if no urls matched
+            </note>
+            <prototype>
+                hashref url_data = url::get_by_id(int url_id)
+            </prototype>
+        </function>
+        <function name="get_url_by_id">
+            <synopsis>
+                Retreives only the URL from the database, by id
+            </synopsis>
+            <note>
+                Returns undef if no urls matched
+            </note>
+            <prototype>
+                string url = url::get_url_by_id(int url_id)
+            </prototype>
+        </function>
+        <function name="get_parent">
+            <warning>
+                Incomplete
+            </warning>
+            <todo>
+                Everything
+            </todo>
+        </function>
+        <function name="get_parent_by_id">
+            <synopsis>
+                Incomplete
+            </synopsis>
+            <todo>
+                Everything
+            </todo>
+        </function>
+        <function name="has_children">
+            <warning>
+                Unimplemented
+            </warning>
+            <synopsis>
+                Checks if a url has any children
+            </synopsis>
+            <prototype>
+                bool = url::has_children(string url)
+            </prototype>
+            <todo>
+                bugged, this checks if a url exists! not if it has childeren, have it fetch the url then use has_children_by_id
+                #sub has_children {
+            </todo>
+        </function>
+        <function name="has_children_by_id">
+            <synopsis>
+                Checks if a url has any children, by id
+            </synopsis>
+            <prototype>
+                bool = url::has_children_by_id(int url_id)
+            </prototype>
+        </function>
+        <function name="print_subpage_xml">
+            <synopsis>
+                Prints subpage xml for a given url id.
+            </synopsis>
+            <prototype>
+                url::print_subpage_xml(int url_id)
+            </prototype>
+            <todo>
+                Assume current url if none is specified?
+            </todo>
+            <todo>
+                Add depth argument
+            </todo>
+        </function>
+    </section>
+
+    <section title="Navigation Functions">
+        <synopsis>
+            Functions related to the navigation menu, modules should rarely need
+            to call these.  Oyster does it automatically.
+        </synopsis>
+
+    </section>
+</document>

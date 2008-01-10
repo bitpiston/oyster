@@ -1,0 +1,141 @@
+<document title="Module Management Functions">
+    <synopsis>
+        Functions associated with module management
+    </synopsis>
+    <function name="enable">
+        <synopsis>
+            Enables and loads a module
+        </synopsis>
+        <note>
+            This does nothing if the module is already enabled and loaded.
+        </note>
+        <prototype>
+            module::enable(string module_id)
+        </prototype>
+        <todo>
+            Validate that module exists before attempting this!
+        </todo>
+    </function>
+    <function name="disable">
+        <synopsis>
+            Disables and unloads a module
+        </synopsis>
+        <note>
+            This does nothing if the module is not enabled.
+        </note>
+        <prototype>
+            module::disable(string module_id)
+        </prototype>
+        <todo>
+            Validate that module exists before attempting this!
+        </todo>
+    </function>
+    <function name="set_revision">
+        <synopsis>
+            Sets a module's current revision
+        </synopsis>
+        <prototype>
+            module::set_revision(string module_id, int revision)
+        </prototype>
+        <todo>
+            Validate that module exists before attempting this!
+        </todo>
+    </function>
+    <function name="get_revision">
+        <synopsis>
+            Gets a module's revision number
+        </synopsis>
+        <prototype>
+            int revision = module::get_revision(string module_name)
+        </prototype>
+        <todo>
+            Validate that module exists before attempting this!
+        </todo>
+    </function>
+    <function name="register">
+        <synopsis>
+            Adds an entry to the modules table
+        </synopsis>
+        <prototype>
+            module::register(string module_id[, revision])
+        </prototype>
+        <todo>
+            error if module is already installed? (or just update revision?)
+        </todo>
+    </function>
+    <function name="unregister">
+        <synopsis>
+            Removes a module's entry in the modules table
+        </synopsis>
+        <prototype>
+            module::unregister(string module_id)
+        </prototype>
+        <todo>
+            rename?
+        </todo>
+    </function>
+    <function name="get_meta">
+        <synopsis>
+            Fetches meta information about a module
+        </synopsis>
+        <note>
+            Returns undef if no meta information is available, although that should
+            never happen.
+        </note>
+        <prototype>
+            hashref = module::get_meta(string module_name)
+        </prototype>
+        <todo>
+           try {} ?
+        </todo>
+    </function>
+    <function name="get_permissions">
+        <synopsis>
+            Fetches permissions information about a module
+        </synopsis>
+        <note>
+            Returns undef if no permission information is available
+        </note>
+        <prototype>
+            hashref = module::get_permissions(string module_id)
+        </prototype>
+    </function>
+    <function name="load">
+        <synopsis>
+            Loads a module
+        </synopsis>
+        <note>
+            If the module is already loaded, it is unloaded first.
+        </note>
+        <prototype>
+            module::load(string module_id);
+        </prototype>
+    </function>
+    <function name="reload_config">
+        <todo>
+            Documentate this function
+        </todo>
+    </function>
+    <function name="unload">
+        <synopsis>
+            Unloads a module
+        </synopsis>
+        <note>
+            This is not gauranteed to work -- and when it does, it may break other things.
+        </note>
+        <prototype>
+            module::unload(string module_id);
+        </prototype>
+    </function>
+    <function name="print_modules_xml">
+        <synopsis>
+            Print modules in an xml-friendly manner.
+        </synopsis>
+        <prototype>
+            print_module_xml()
+        </prototype>
+        <todo>
+            Should this be in SIMS?
+        </todo>
+    </function>
+</document>

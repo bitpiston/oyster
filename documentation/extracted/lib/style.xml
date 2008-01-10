@@ -1,0 +1,140 @@
+<document title="Style &amp; Templates Functions">
+    <synopsis>
+        Functions related to styles and templates
+    </synopsis>
+    <todo>
+        # TODO: update admin.pm's style management stuff and user.pm's style selection
+    </todo>
+    <section tile="Public API">
+
+        <function name="include_template">
+            <synopsis>
+                Defines a specific xsl template to use for the current request.
+            </synopsis>
+            <prototype>
+                style::include_template(string template_name)
+            </prototype>
+        </function>
+        <function name="print_header">
+            <synopsis>
+                Print the page header.
+            </synopsis>
+            <note>
+                Modules should rarely need to call this function explicitely.  Each page
+                request is wrapped in the template automatically.
+            </note>
+            <prototype>
+                style::print_header()
+            </prototype>
+            <todo>
+                Some of $attrs is cachable and not necessary to assemble every request
+            </todo>
+            <todo>
+                Investigate if all $attrs are even used somewhere, and if some are
+                rarely used, don't always print them
+            </todo>
+        </function>
+        <function name="print_footer">
+            <synopsis>
+                Print the page footer.
+            </synopsis>
+            <note>
+                Modules should rarely need to call this function explicitely.  Each page
+                request is wrapped in the template automatically.
+            </note>
+            <prototype>
+                style::print_footer()
+            </prototype>
+        </function>
+        <function name="print_styles">
+            <synopsis>
+                Prints styles in an xml-friendly manner.
+            </synopsis>
+            <prototype>
+                style::print_styles()
+            </prototype>
+        </function>
+        <function name="print_enabled_styles">
+            <synopsis>
+                Print enabled styles in an xml-friendly manner.
+            </synopsis>
+            <prototype>
+                style::print_enabled_styles()
+            </prototype>
+        </function>
+        <function name="is_valid_style">
+            <synopsis>
+                Returns true if a valid style is found.
+            </synopsis>
+            <prototype>
+                bool = style::is_valid_style(string style_id[, string ignore_style_id])
+            </prototype>
+        </function>
+        <function name="is_enabled_style">
+            <synopsis>
+                Returns true if a style is enabled
+            </synopsis>
+            <note>
+            
+            </note>
+            <prototype>
+                bool = style::is_enabled_style(string style_id)
+            </prototype>
+            <todo>
+            
+            </todo>
+            <example>
+            
+            </example>
+        </function>
+        <function name="is_reserved_id">
+            <synopsis>
+                Returns true if a style id is reserved.
+            </synopsis>
+            <prototype>
+                bool = style::is_reserved_id(string style_id)
+            </prototype>
+        </function>
+        <function name="">
+            <synopsis>
+                Calls xslcompiler.pl on all of the current site's styles, returns the url
+                #   path to the style for the given stylesheets.
+            </synopsis>
+            <prototype>
+                string stylesheet_url, string stylesheet_path = style::compile(string style[, string stylesheet][, string stylesheet])
+            </prototype>
+        </function>
+    </section>
+    
+    <section title="Private Functions">
+        <function name="_get_module_stylesheets">
+            <todo>
+                Documentate this function
+            </todo>
+        </function>
+        <function name="_needs_compilation">
+            <todo>
+                Documentate this function
+            </todo>
+        </function>
+        <function name="_load">
+            <synopsis>
+                Loads (or reloads) enabled styles
+            </synopsis>
+            <prototype>
+                _load()
+            </prototype>
+        </function>
+        <function name="_compile_style">
+            <todo>
+                should hooks/global includes be compiled?
+            </todo>
+            <todo>
+                deprecate the special global include tag in favor of just a hook
+            </todo>
+            <todo>
+                Documentate this function
+            </todo>
+        </function>
+    </section>
+</document>

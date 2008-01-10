@@ -1,0 +1,68 @@
+<document title="HTTP Functions">
+    <synopsis>
+        Various functions that don't (yet) warrant their own categories
+    </synopsis>
+    <function name="get">
+        <synopsis>
+            Fetches a remote file and saves it locally.
+        </synopsis>
+        <note>
+            Throws a 'validation_error' if the file could not be fetched.
+        </note>
+        <note>
+            Throws a 'perl_error' if the destination file could not be created or
+            opened.
+        </note>
+        <note>
+            'data_handler' can be used to parse a remote file in pieces, never
+            writing the entire file to memory or disk.  If this argument is defined,
+            the file is not saved, and the contents are not returned, but as the
+            file is retreived, pieces are sent as arguments to the handler sub
+            routine.
+            
+            If the data handler routine returns -1, the connection will be
+            immediately closed and the rest of the file will be ignored.
+        </note>
+        <note>
+            The return value of this function varies depending on its arguments.  If
+            'file' or 'data_handler' are defined, http::get() returns 1 for
+            success.  Otherwise, the contents of the fetched file are returned.
+        </note>
+        <prototype>
+            http::get(string url, ['file' => string local_file][, 'max_size' => int max_size_in_kb][, 'data_handler' => subref])
+        </prototype>
+        <todo>
+            BUG: http headers must be under 8 kb!
+        </todo>
+        <todo>
+            more efficient to get a lexical subref if we are calling this a lot? (removes one de-reference op per pass)
+        </todo>
+    </function>
+    <function name="header">
+        <synopsis>
+            Prints an http header.
+        </synopsis>
+        <prototype>
+            http::header(string header)
+        </prototype>
+        <example>
+            http::header("Content-Type: text/plain");
+        </example>
+        <todo>
+            
+        </todo>
+    </function>
+    <function name="clear_headers">
+        <todo>
+            Documentation
+        </todo>
+    </function>
+    <function name="print_headers">
+        <todo>
+            do with a join?
+        </todo>
+        <todo>
+            Documentation
+        </todo>
+    </function>
+</document>
