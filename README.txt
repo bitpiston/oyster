@@ -35,7 +35,9 @@ Setting Up an Oyster Development Environment
   - Perl Modules
 
     Oyster requires the following perl modules: DBI, DBD::mysql, Digest::JHash,
-    Time::HiRes, and Digest::SHA.
+    Time::HiRes, and Digest::SHA.  XML::LibXML and XML::LibXSLT are also
+    also recommended (they are used for server-side XSLT), but the ssxslt module
+    will automatically disable itself if they are not found.
 
     To check if you have these modules installed, type:
     `perl -Mmodulenamehere -e "print qq{success\n}"`

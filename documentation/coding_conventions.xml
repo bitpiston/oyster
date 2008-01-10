@@ -1,0 +1,38 @@
+<document title="Coding Conventions">
+	<synopsis>
+		This document outlines the coding practices we follow when developing Oyster.  You do not have to follow these guidelines, these are merely the guidelines for official Oyster code.
+	</synopsis>
+	<section title="General">
+		<ul>
+			<li><link isbn="978-0-596-00173-5">Perl Best Practices</link> is mostly adhered to.</li>
+			<li>{ should not occur on its own line.</li>
+			<li>()'s should only be ommitted on builtins (or some library functions that can be considered 'builtins', like exception stuff, which mimics language constructs) which take a single argument.</li>
+			<li>Entire-line comments (aka, not on the same line as code) should have one line of whitespace above them, unless the previous line was also a comment.</li>
+			<li>1/0 should be used to indicate true/false, everywhere, including xml. undef (or an empty list where applicable) is also acceptable as false in perl code.</li>
+		</ul>
+	</section>
+	<section title="Pakage/Variable/Function Naming">
+		<ul>
+			<li>lowercase_and_underscores for everything</li>
+			<li>nouns should be last, not first (aka, delete_file instead of file_delete); if you have a set of functions that you feel should share a common prefix, consider putting them in their own package (like is done with file::delete)</li>
+		</ul>
+	</section>
+	<section title="Indentation">
+		Use four spaces for perl, tabs for xml/css.  For embedded documentation, which is xml, use four spaces.  Literal tabs should never appear in perl source code files.
+
+	</section>
+	<section title="Indicating Success or Failure">
+		Use exceptions where it makes sense, true/false (as documented earlier) otherwise.
+	</section>
+	<section title="Abbreviations">
+		In general, don't use them unless they are common outside of the scope of the code you are writing (for example: url, orm, misc).
+		<note>'description' should always be 'description', not 'desc'.</note>
+	</section>
+	<section title="Object Orientation">
+		OO should only be used when necessary, when you would actually need multiple objects of a given type or when it provides a superior api -- no OO for OO's sake, it's slower.
+		<note>$obj (or a more context-sensitive variable, such as $parser for a parser class) should be used instead of $self or $this</note>
+	</section>
+	<section title="Inline Documentation">
+		<todo>Write this.</todo>
+	</section>
+</document>
