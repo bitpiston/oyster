@@ -1,0 +1,5 @@
+{
+    'name'        => 'Advanced Exceptions',
+    'description' => 'Testing all features of exceptions and throws all kinds of weird cases in.',
+    'output'      => '1ac',
+}

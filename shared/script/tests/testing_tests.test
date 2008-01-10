@@ -1,0 +1,5 @@
+{
+    'name'        => 'Testing Tests',
+    'description' => 'Just to test that tests work.',
+    'output'      => '1',
+}

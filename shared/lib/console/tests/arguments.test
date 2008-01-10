@@ -1,0 +1,6 @@
+{
+    'name'        => 'Command Line Argument Processing',
+    'args'        => ' -foo "bar"',
+    'description' => '',
+    'output'      => 'bar',
+}

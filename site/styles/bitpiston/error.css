@@ -1,0 +1,100 @@
+@charset "UTF-8";
+
+/*
+	BitPiston.v1
+	http://www.bitpiston.com/
+	
+	Error Stylesheet - Screen/Projection
+*/
+
+/* Defaults */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+/* Basic Elements */
+html { background-color: #E8ECD4; }
+body {
+	font: normal 12px/1.5 Verdana, Arial, Helvetica, sans-serif;
+	color: #56524A;
+}
+
+/* Links */
+a, :link, :visited { text-decoration: underline; }
+a, :link { color: #3366BB; }
+:visited { color: #476493; }
+a:hover, :visited:hover { color: #577B48; }
+a.more {
+	background: url("./images/icon.more3.png") right -116px no-repeat;
+	padding: 0 17px 0 0;
+}
+a:hover.more { background-position: right -1px; }
+
+/* Images */
+img {
+	border: 0;
+	vertical-align: top;
+}
+
+/* Commom Elements */
+hr { display: none; }
+p { margin: 0 0 .2143em; }
+h1, h2, h3, h4, h5, h6 { 
+	font-family: Georgia, "Times New Roman", serif;
+	font-weight: normal;
+	letter-spacing: 0.05em;
+	color: #577B48;
+}
+h1 { 
+	font-size: 1.75em;
+	font-weight: normal;
+	line-height: 1.7143; 
+	margin: 0;
+}
+h2 { 
+	font-size: 1.6667em;
+	line-height: 1.8;
+	margin: 0.9em 0 0;
+}
+ul, ol {
+	margin: 1.5em 0 0 1.5em;
+	text-align: right;
+	position: absolute;
+	bottom: 1.2143em;
+	right: 1.5em;
+}
+ul { list-style: none; }
+ol { list-style-type: decimal; }
+dl { margin: 1.5em 0; }
+
+/* Layout */
+body {
+	position: relative;
+	width: 65em;
+	margin: 1.5em auto;
+} 
+#content {
+	position: relative;
+	background: #CED8B9 url("./images/wrapper.bg.png") top right no-repeat;
+	margin-right: 1em;
+}
+div.message {
+	position: relative;
+	background: #FCFCFC url("./images/content.bg.png") top repeat-x;
+	margin-right: 2px;
+	padding: 1em 1.5em;
+}
+div.wrapper {
+	background: transparent url("./images/footer.bg.png") bottom left no-repeat;
+	padding-bottom: 2px;
+}
+
+/* Header - Title */
+#header img { margin: 1.2em 0; }

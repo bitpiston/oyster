@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project kpf_version="4" id="1d0200c5-294c-4477-ae3b-127c8d7ff5d9" name="oyster.kpf">
+<preference-set idref="1d0200c5-294c-4477-ae3b-127c8d7ff5d9">
+  <boolean id="import_live">1</boolean>
+</preference-set>
+</project>

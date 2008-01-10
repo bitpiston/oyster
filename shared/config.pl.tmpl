@@ -1,0 +1,114 @@
+##############################################################################
+# Oyster Configuration
+# ----------------------------------------------------------------------------
+# Oyster supports multiple configuration environments and multiple, linked web
+# sites.  The "Shared Configuration" portion of this file is configuration
+# options common to all sites.  Each site then has a specific section later on
+# in the configuration file with more options.
+#
+# Notes:
+#   * All directory paths and urls must have a trailing slash.
+#   * An empty sendmail path will result in emails being printed in a <pre>
+#     instead of sent (useful for local development/debugging)
+#   * ImageMagick is mandatory.  However, the Perl-Magick library is not
+#     required, only the ImageMagick executables.  The imagemagick setting
+#     should be the path to those executables.
+#   * If any setting is present in both the site and shared environments, the
+#     site option will take precedence.
+# ----------------------------------------------------------------------------
+package oyster::config;
+our (%config, $shared_path, $sites_path, %args);
+require "./lib/oyster/config/heavy.pm";
+
+# Specify a default site id and environment
+my $default_site_id     = 'site';
+my $default_environment = 'development';
+
+oyster::config::heavy::init($default_site_id, $default_environment);
+# ----------------------------------------------------------------------------
+# Shared Configuration
+# ----------------------------------------------------------------------------
+
+#
+# Development Environment
+#
+
+$config{'shared'}{'development'} = {
+
+    # This should be a unique id for this computer/server; use only lowercase
+    # letters -- change this! Each machine needs a unique identifier when
+    # using tools that communicate with other servers.
+    'server_id' => 'myoysterdevpc',
+
+    # Database
+    'database'  => {
+        'driver' => 'mysql', # Pg/mysql (case-sensitive) (Pg is currently unsupported)
+        'host'   => 'localhost',
+        'user'   => 'oyster',
+        'pass'   => '',
+        'db'     => 'oyster_trunk',
+        'port'   => 3306,
+    },
+
+    # Sendmail
+    #  Note: If left blank, instead of sending emails, SIMS will print emails
+    #  inside a <pre> node.  This feature should only be used for testing.
+    'sendmail'         => '',
+
+    # The default address to send mail from
+    'sendmail_from'    => 'test@test.com',
+
+    # Image Magick Executables Path
+    #  Note: SIMS will run without imagemagick present, just don't try to do
+    #  anything that requires inspecting or manipulating images.  This
+    #  feature should be used for development environments only.
+    'imagemagick'      => '/usr/bin/',
+
+    # Enable Detailed Error Messages
+    #  Note: Recommended only for testing, these can expose vulnerabilities.
+    'debug'            => 1,
+
+    # Enable automatic style compilation
+    #  Note: This should be disabled for production environments.  Use:
+    #  `perl script/xslcompiler.pl` instead.
+    'compile_styles'   => 1,
+
+    # Files
+    #  The url and path below should link to a web-accessible directory.
+    #  Note: The default settings are usually fine.
+    'shared_file_url'  => '/files/',
+    'shared_file_path' => "${sites_path}site/files/",
+};
+
+# ----------------------------------------------------------------------------
+# Site: site
+# ----------------------------------------------------------------------------
+
+#
+# Development Environment
+#
+
+$config{'site'}{'development'} = {
+
+    # Absolute URL of the Site
+    # The default is usually fine.
+    'url'               => '/',
+
+    # Full Site URL
+    'full_url'          => 'http://127.0.0.1/',
+
+    # Styles URL
+    # The default is usually fine
+    'styles_url'        => '/styles/',
+
+    # Files
+    #  The url and path below should link to a web-accessible directory.
+    #  Note: The default settings are usually fine.
+    'site_file_url'     => '/files/',
+    'site_file_path'    => "${sites_path}site/files/",
+};
+
+# ----------------------------------------------------------------------------
+# Copyright
+##############################################################################
+return oyster::config::heavy::end();

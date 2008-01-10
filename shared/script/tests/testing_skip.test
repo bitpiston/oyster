@@ -1,0 +1,5 @@
+{
+    'name'        => 'Skipping Tests',
+    'description' => 'Testing the Ability to Skip Tests',
+    'skip'        => 1,
+}
