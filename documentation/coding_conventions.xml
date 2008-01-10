@@ -11,7 +11,7 @@
 			<li>1/0 should be used to indicate true/false, everywhere, including xml. undef (or an empty list where applicable) is also acceptable as false in perl code.</li>
 		</ul>
 	</section>
-	<section title="Pakage/Variable/Function Naming">
+	<section title="Package/Variable/Function Naming">
 		<ul>
 			<li>lowercase_and_underscores for everything</li>
 			<li>nouns should be last, not first (aka, delete_file instead of file_delete); if you have a set of functions that you feel should share a common prefix, consider putting them in their own package (like is done with file::delete)</li>
