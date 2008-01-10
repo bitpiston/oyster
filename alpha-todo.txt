@@ -1,0 +1,80 @@
+
+\ = canned
+* = done
++ = moved or likely moved to beta (or maybe canned altogether)
+
+ANKLE
+
+* update svn on the server (current one is pretty ancient I think)
+* create a new repo for oyster; leave it empty, i'll populate it (svn://bitpiston.com/oyster)
+* create an oyster sub domain, just a static one for now
+
+CANNED
+
+\ add some way for modules and libraries to mark themselves as automatically imported to modules
+
+DELAYED
+
++ Remove http.pm's reliance on IO::Socket -- it pulls in too much shit; just use Socket;
++ Possibly divide /scripts/ directory up to split up different categories of scripts
++ change exceptions to be OO
++ many existing scripts could simply be moved to the console, possibly create scripts/console_cmds/ so that more commands can easily be added
++ ajax.pm
+
+COMPLETED
+
+* Refactor config.pl to remove all of that ugly perl code that isn't just config data (create config.heavy.pl to do that stuff)
+* Refactor oyster.pm and move url stuff to url.pm
+* Clean up xml.pm and document more methods
+	* remove attr_entities, just have entities() entify quotes by default
+	* do something about proper english entities, probably remove it and make it an optional argument to entities()
+	* add entities_safe() that will not double-entify strings (for if you have a string that you aren't sure if it already contains entified stuff)
+* Clean up server.pl
+* Clean up console.pl
+* Comment/document various other utilities
+* Clean up user module
+* make %USER and %PERMISSIONS imports
+* make oyster::request()'s try catch blocks cached instead of re-creating them every request
+* ensure navigation api is up to par
+* possibly refactor admin navigation api (spec complete, needs implementation)
+* give oyster.pm some exported functions: (changed -- these functions both exist but will not be made exports)
+	execute_script
+	perl_require (aka, require a file without oyster's lib paths)
+* possibly revert to having libraries not 'use oyster' -- it can create circular dependency issues if you attempt to just use a library without first using oyster.
+* move navigation stuff to oyster.pm -- should be part of the core
+* remove general _admin permissions -- all they do is control whether you can access menus or not -- and just check the individual permissions
+    > this will be a performance hit but the current way is just too ugly
+* rename user_admin_find permission (and possibly the associated function and url)
+* remove the 'library' oyster import set
+* menu lib should print nothing if the menu contains nothing, should return true/false for if anything was printed or not
+* make exception throwing more consistent
+	* remove any remaining 'error' exceptions
+	* always use quotes for the error name
+
+TODO
+
+- docs:
+	* coding conventions (just needs to be converted to xml)
+	- xml/xslt conventions
+	+ xslt browser gotchas
+	+ how to use strict in your module
+	- testing framework
+	- ajax
+* load modules based on their dependencies (steal algorithm from update.pl)
+	- skip modules that are not up to date
+- menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
+- add function to module.pm, get latest revision
+- Clean up testing framework
+- Spec out the new admin module and begin writing it
+- remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
+- make sure STDERR is being used when it should be
+- create a script to clean tmp directories
+- dont use image; by default
+- Benchmark prepare_cached versus how queries are cached now, because the current method is confusing and ugly
+- Remove any remaining 'deprecated' stuff and fix anything that depends on it
+- Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
+	- possibly use the new module::order_by_dependencies()
+- email.pm has a few functions that need their argument lists updated
+- look over libraries (again) to ensure consistent naming conventions
+- browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
+- update sims.js to oyster
