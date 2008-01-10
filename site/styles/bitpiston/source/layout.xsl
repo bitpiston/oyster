@@ -12,8 +12,8 @@
 				<!-- mootools library -->
 				<script src="{@styles}mootools.js" type="text/javascript"></script>
 
-				<!-- sims library -->
-				<script src="{@styles}sims.js" type="text/javascript"></script>
+				<!-- oyster library -->
+				<script src="{@styles}oyster.js" type="text/javascript"></script>
 			</head>
 
 			<!-- admin menu -->
@@ -57,7 +57,7 @@
 
 				<!-- send admin to parent page -->
 				<script type="text/javascript">
-					parent.sims.ajax.send(document.getElementById('admin').innerHTML, 'admin')
+					parent.oyster.ajax.send(document.getElementById('admin').innerHTML, 'admin')
 				</script>
 			</xsl:if>
 
@@ -81,7 +81,7 @@
 
 			<!-- send content to parent page -->
 			<script type="text/javascript">
-				parent.sims.ajax.send(document.getElementById('content').innerHTML, '<xsl:value-of select="/swaf/@ajax_target" />')
+				parent.oyster.ajax.send(document.getElementById('content').innerHTML, '<xsl:value-of select="/swaf/@ajax_target" />')
 			</script>
 		</html>
 	</xsl:template>
@@ -104,8 +104,8 @@
 				<!-- mootools library -->
 				<script src="{@styles}mootools.js" type="text/javascript"></script>
 
-				<!-- sims library -->
-				<script src="{@styles}sims.js" type="text/javascript"></script>
+				<!-- oyster library -->
+				<script src="{@styles}oyster.js" type="text/javascript"></script>
 
 				<!-- allow modules to hook into the head tag -->
 				<xsl:apply-templates mode="html_head" />
@@ -232,19 +232,19 @@
 				</div>
 
 				<!-- ajax popup -->
-				<div id="sims_ajax_popup_loading" style="display: none">
+				<div id="oyster_ajax_popup_loading" style="display: none">
 					Loading...
 				</div>
 				<div style="width: 650px;" id="sims_ajax_popup">
-					<input type="button" value="Close" onclick="sims.ajax.close_popup()" />
-					<div id="sims_ajax_popup_content"></div>
+					<input type="button" value="Close" onclick="oyster.ajax.close_popup()" />
+					<div id="oyster_ajax_popup_content"></div>
 				</div>
-				<div id="sims_ajax_popup_overlay" />
+				<div id="oyster_ajax_popup_overlay" />
 
 				<!-- ajax communication frame -->
-				<form id="sims_ajax_form" method="post" action="" style="display: none">
+				<form id="oyster_ajax_form" method="post" action="" style="display: none">
 				</form>
-				<iframe id="sims_ajax_iframe" style="height: 1px; width: 1px; border: 0px; margin: 0px; padding: 0px"></iframe>
+				<iframe id="oyster_ajax_iframe" style="height: 1px; width: 1px; border: 0px; margin: 0px; padding: 0px"></iframe>
 			</body>
 		</html>
 	</xsl:template>
