@@ -79,3 +79,6 @@ TODO
 - email.pm has a few functions that need their argument lists updated
 - look over libraries (again) to ensure consistent naming conventions
 - browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
+- possibly add a warn() to all libraries if they are loaded outside of an oyster environment
+- possibly add a new menu item attribute that allows to insert arbitrary xml -- big maybe on this.
+- menu lib doesnt xml::entities anything... it probably should

@@ -77,7 +77,7 @@ sub menu {
 =xml
         <function name="config">
             <synopsis>
-                The main configuration menu
+                General site/global configuration options
             </synopsis>
         </function>
 =cut
