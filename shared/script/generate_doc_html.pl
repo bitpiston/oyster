@@ -31,10 +31,10 @@ use log;
 use XML::LibXSLT;
 use XML::LibXML;
 
-my $xml_parser  = XML::LibXML->new();
-my $xslt_parser = XML::LibXSLT->new();
+our $xml_parser  = XML::LibXML->new();
+our $xslt_parser = XML::LibXSLT->new();
 
-my $style = $xslt_parser->parse_stylesheet('./script/doc_style.xsl');
+our $style = $xslt_parser->parse_stylesheet('./script/doc_style.xsl');
 
 compile_dir($source_path);
 
@@ -48,7 +48,10 @@ sub compile_dir {
             my $name = $1;
             print "$name\n";
             my $xml = eval { $xml_parser->parse_string(file::read($file)) };
-            CORE::die("Error parsing xml on '$name': $@") if $@;
+            CORE::die("Error parsing XML on '$name': $@") if $@;
+            my $output = eval { $style->transform($xml) };
+            CORE::die("Error applying XSLT on '$name': $@") if $@;
+            print $style->output_string($output);
         }
         #print "$file\n";
     }
