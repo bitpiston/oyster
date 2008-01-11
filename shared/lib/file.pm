@@ -166,16 +166,23 @@ sub slurp {
             Quick and dirty file writing
         </synopsis>
         <note>
+            The third optional argument, if true, will attempt to create any directories necessary to create to the file.
+        </note>
+        <note>
             Throws a perl_error exception on failure
         </note>
         <prototype>
-            file::write(string filename, string file_contents)
+            file::write(string filename, string file_contents[, bool autocreate_directories])
         </prototype>
     </function>
 =cut
 
 sub write {
-    my ($file, $file_contents) = @_;
+    my ($file, $file_contents, $autocreate_dirs) = @_;
+    if ($autocreate_dirs) {
+        my ($path) = ($file =~ m!^(.+)/.+?$!o);
+        file::mkdir($path);
+    }
     open(my $fh, '>', $file) or throw 'perl_error' => "Error writing file '$file':\n$!";
     print $fh $file_contents;
 }
@@ -229,6 +236,7 @@ sub mkdir {
     my $create_path;
     for my $dir (@dirs) {
         $create_path .= "$dir/";
+        next if $dir eq '.' or $dir eq '..';
         unless (-d $create_path) {
             mkdir($create_path) or throw 'perl_error' => "Error creating directory '$create_path':\n$!";
         }

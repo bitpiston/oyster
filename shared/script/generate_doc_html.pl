@@ -52,9 +52,12 @@ sub compile_dir {
             CORE::die("Error parsing XML on '$name': $@") if $@;
             my $output = eval { $style->transform($xml) };
             CORE::die("Error applying XSLT on '$name': $@") if $@;
-            #print $style->output_string($output);
+            my $html = $style->output_string($output);
+            my $dest_file = $dest_path . $name . '.html';
+            #my ($dest_dir) = ($dest_file =~ /^(.+?)\.html$/o);
+            #print "Dest Dir: $dest_dir\n";
+            file::write($dest_file, $html, 1);
         }
-        #print "$file\n";
     }
 }
 
