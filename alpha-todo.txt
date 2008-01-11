@@ -20,6 +20,7 @@ DELAYED
 + change exceptions to be OO
 + many existing scripts could simply be moved to the console, possibly create scripts/console_cmds/ so that more commands can easily be added
 + ajax.pm
++ create a script to clean tmp directories
 
 COMPLETED
 
@@ -50,9 +51,11 @@ COMPLETED
 * make exception throwing more consistent
 	* remove any remaining 'error' exceptions
 	* always use quotes for the error name
+* update sims.js to oyster
 
 TODO
 
+- convert /swaf/ to /oyster/ in all xml/xslt
 - docs:
 	* coding conventions (just needs to be converted to xml)
 	- xml/xslt conventions
@@ -68,7 +71,6 @@ TODO
 - Spec out the new admin module and begin writing it
 - remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 - make sure STDERR is being used when it should be
-- create a script to clean tmp directories
 - dont use image; by default
 - Benchmark prepare_cached versus how queries are cached now, because the current method is confusing and ugly
 - Remove any remaining 'deprecated' stuff and fix anything that depends on it
@@ -77,4 +79,3 @@ TODO
 - email.pm has a few functions that need their argument lists updated
 - look over libraries (again) to ensure consistent naming conventions
 - browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
-- update sims.js to oyster
