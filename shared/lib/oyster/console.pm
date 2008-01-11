@@ -164,10 +164,6 @@ sub module_urls {
     }
 }
 
-=xml
-</document>
-=cut
-
 1;
 
 # Copyright BitPiston 2008

@@ -41,7 +41,7 @@ our @stack; # stores a handlers for try blocks
             documented!
         </note>
         <note>
-            "=>" is just syntactic sugar, you can use "," too.
+            "=&gt;" is just syntactic sugar, you can use "," too.
         </note>
         <note>
             Handlers are executed in the scope of where the exception was thrown
@@ -53,13 +53,13 @@ our @stack; # stores a handlers for try blocks
             was thrown from the same scope that the original exception came from.
         </note>
         <prototype>
-            throw(string exception_type[ => arguments to be passed to exception handler])
+            throw(string exception_type[ =&gt; arguments to be passed to exception handler])
         </prototype>
         <example>
-            throw('validation_error', 'Title is too short') if length($INPUT{'title'}) < 5;
+            throw('validation_error', 'Title is too short') if length($INPUT{'title'}) &lt; 5;
         </example>
         <example>
-            throw 'validation_error' => 'Title is too short' if length $INPUT{'title'} < 5;
+            throw 'validation_error' =&gt; 'Title is too short' if length $INPUT{'title'} &lt; 5;
         </example>
     </function>
 =cut
@@ -148,7 +148,7 @@ sub throw {
         <example>
         try {
             print "Hello";
-                throw 'error' => 'something went terribly wrong' if $armageddon;
+                throw 'error' =&gt; 'something went terribly wrong' if $armageddon;
                 print " World\n";
             }
         </example>
@@ -263,7 +263,7 @@ sub abort {
                 #   calls abort().  If confirmation has been gotten, does nothing.
             </synopsis>
             <note>
-                This uses the <confirm> xml node, styled in shared/styles/source.xsl
+                This uses the &lt;confirm&gt; xml node, styled in shared/styles/source.xsl
             </note>
             <prototype>
                 confirm(string message)

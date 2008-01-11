@@ -322,7 +322,7 @@ sub urlify_string {
             print random_string(100);
         </example>
         <todo>
-            Possible to do this via chr and just using a random int < 62
+            Possible to do this via chr and just using a random int &lt; 62
         </todo>
     </function>
 =cut

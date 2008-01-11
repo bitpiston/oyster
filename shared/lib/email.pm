@@ -43,7 +43,7 @@ sub is_valid_email {
         </synopsis>
         <note>
             If no path to sendmail is configured, the email will be printed in a
-            <literal> xml node
+            &lt;litera&gt; xml node
         </note>
         <prototype>
             email::send(string to, string subject, string content[, string header_name => string header_value ...])

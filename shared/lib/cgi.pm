@@ -39,7 +39,7 @@ sub uri_decode {
     <function name="start">
         <synopsis>
            Begins a CGI request, processes POST, GET, and COOKIES 
-        </synposis>
+        </synopsis>
         <note>
             Modules should never need to call this function directly, it is called automatically each request.
         </note>
