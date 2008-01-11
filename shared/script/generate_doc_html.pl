@@ -31,27 +31,28 @@ use log;
 use XML::LibXSLT;
 use XML::LibXML;
 
-our $xml_parser  = XML::LibXML->new();
-our $xslt_parser = XML::LibXSLT->new();
+my $parser  = XML::LibXML->new();
+my $xslt    = XML::LibXSLT->new();
 
-our $style = $xslt_parser->parse_stylesheet('./script/doc_style.xsl');
+my $style_doc = $parser->parse_file('./script/doc_style.xsl');
+my $style     = $xslt->parse_stylesheet($style_doc);
 
 compile_dir($source_path);
 
 sub compile_dir {
     my $path = shift;
-    print ">> 'Compiling' $path...\n";
+    print "Compiling '$path'\n";
     for my $file (<${path}*>) {
         if (-d $file) {
             compile_dir($file . '/');
         } elsif ($file =~ /^$source_path(.+)\.xml$/) {
             my $name = $1;
-            print "$name\n";
-            my $xml = eval { $xml_parser->parse_string(file::read($file)) };
+            print "  $name\n";
+            my $xml = eval { $parser->parse_string(file::read($file)) };
             CORE::die("Error parsing XML on '$name': $@") if $@;
             my $output = eval { $style->transform($xml) };
             CORE::die("Error applying XSLT on '$name': $@") if $@;
-            print $style->output_string($output);
+            #print $style->output_string($output);
         }
         #print "$file\n";
     }

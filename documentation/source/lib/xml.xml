@@ -17,7 +17,7 @@
             Takes an xml-safe string and strips xml elements (aka tags/nodes)
         </synopsis>
         <note>
-            The 'xml-safe' part is important! If the string contains '<' or '>',
+            The 'xml-safe' part is important! If the string contains '&lt;' or '&gt;',
             they will be interpretted as parts of xml elements.
         </note>
         <note>
@@ -43,8 +43,8 @@
         <note>
             The 'safe' flag, if set, will not re-entify things that already look
             like entities; this is useful if you are not sure if a string already
-            contains XML entities.  For example, xml::entities('&amp;', safe => 1)
-            would result in '&amp;', not '&amp;amp;'.
+            contains XML entities.  For example, xml::entities('&amp;amp;', safe => 1)
+            would result in '&amp;amp;', not '&amp;amp;amp;'.
         </note>
         <note>
             The 'proper_english' flag replaces various entities with their "proper"
