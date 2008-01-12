@@ -98,6 +98,41 @@ sub config {
 sub modules {
     user::require_permission('admin_modules');
 
+    my %modules;
+
+    # assemble module data
+    for my $module (<./modules/*/>) {
+        my ($module_id) = ($module =~ m!^\./modules/(.+?)/$!);
+        $modules{$module_id}->{'latest_rev'} = module::get_latest_revision($module_id);
+        $modules{$module_id}->{'rev'}        = module::get_revision($module_id);
+        $modules{$module_id}->{'meta'}       = module::get_meta($module_id);
+    }
+
+    print qq~\t<admin action="modules">\n~;
+    for my $module_id (keys %modules) {
+        my $module   = $modules{$module_id};
+        my $meta     = $module->{'meta'};
+        my $requires = $meta->{'requires'};
+
+        my $attrs = qq~ id="$module_id"~;
+        $attrs .= qq~ rev="$module->{rev}"~;
+        $attrs .= qq~ latest_rev="$module->{latest_rev}"~;
+        $attrs .= qq~ version="$meta->{version}"~;
+        $attrs .= ' name="' . xml::entities($meta->{'name'}) . '"';
+        $attrs .= ' description="' . xml::entities($meta->{'description'}) . '"';
+        $attrs .= ' required="1"' if $meta->{'required'};
+        $attrs .= ' loaded="1"'   if exists $module::loaded{$module_id};
+        if ($meta->{'requires'}) {
+            print "\t\t<module$attrs>\n";
+            for my $dep (@{ $meta->{'requires'} }) {
+                print qq~\t\t\t<requires module="$dep" />\n~;
+            }
+            print "\t\t</module>\n";
+        } else {
+            print "\t\t<module$attrs />\n";
+        }
+    }
+    print "\t</admin>\n";
 }
 
 =xml

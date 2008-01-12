@@ -220,6 +220,9 @@ sub _load_modules {
     }
     die('No modules were loaded.  Your modules table may have been corrupted.') unless @modules;
 
+    # TODO: remove modules that are not up to date
+    # if certain modules are removed that are dependencies... bad things will happen....
+
     # order modules by dependencies
     @modules = module::order_by_dependencies(@modules);
 

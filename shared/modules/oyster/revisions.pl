@@ -1,8 +1,10 @@
 
 package oyster::revisions;
 
-$oyster::DB = $DB;
-oyster::_delayed_imports();
+unless ($just_getting_revs) {
+    $oyster::DB = $DB;
+    oyster::_delayed_imports();
+}
 
 # ----------------------------------------------------------------------------
 # Revision 1

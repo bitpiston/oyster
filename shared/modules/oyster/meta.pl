@@ -1,6 +1,6 @@
 {
     'name'        => 'Oyster',
-    'description' => '',
-    'version'     => '1.0',
+    'description' => 'The Oyster web application framework.',
+    'version'     => '0.1',
     'required'    => 1,
 }

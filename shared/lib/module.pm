@@ -7,6 +7,8 @@
 
 package module;
 
+use exceptions;
+
 our %loaded; # currently loaded modules
 
 # note: this is susceptible to infinte looping if modules have circular dependencies
@@ -36,6 +38,17 @@ sub order_by_dependencies {
     }
 
     return @ordered_modules;
+}
+
+sub get_latest_revision {
+    my $module_id = shift;
+    my $rev_file  = "./modules/$module_id/revisions.pl";
+    throw 'perl_error' => "File does not exist '$rev_file'" unless -e $rev_file;
+    ${ $module_id . '::revisions::just_getting_revs' } = 1;
+    require $rev_file;
+    my $latest_rev = $#{ $module_id . '::revisions::revision' };
+    undef @{ $module_id . '::revisions::revision' };
+    return $latest_rev;
 }
 
 =xml
@@ -121,7 +134,8 @@ sub set_revision {
 
 sub get_revision {
     my $module_id = shift;
-    return $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id)->fetchrow_arrayref()->[0];
+    my $query = $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id);
+    return $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
 }
 
 =xml
