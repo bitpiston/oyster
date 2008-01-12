@@ -62,7 +62,7 @@ TODO
 	+ xslt browser gotchas
 	+ how to use strict in your module
 	- testing framework
-	- ajax
+	+ ajax
 * load modules based on their dependencies (steal algorithm from update.pl)
 	- skip modules that are not up to date
 - menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
