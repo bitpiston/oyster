@@ -11,6 +11,14 @@ use exceptions;
 
 our %loaded; # currently loaded modules
 
+sub is_enabled {
+    my $module_id = shift;
+    #my $query = $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $module_id);
+    #return $query->rows() == 0 ? '1' : '0' ;
+    return $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ?", $module_id)->fetchrow_arrayref()->[0];
+
+}
+
 # note: this is susceptible to infinte looping if modules have circular dependencies
 sub order_by_dependencies {
     my @modules = @_;

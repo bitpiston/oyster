@@ -36,7 +36,13 @@ sub connect {
     my $DB = DBI->connect(
            "dbi:$args{driver}:dbname=$args{database};host=$args{host};port=$args{port}", $args{'user'}, $args{'password'}, {            'AutoCommit'  => 1,
             'RaiseError'  => 0,
-            'HandleError' => sub { throw 'db_error' => $DBI::errstr }
+            'HandleError' =>
+                sub {
+                    my $error = $DBI::errstr;
+                    $error .= "\nQuery [$database::current_query]\n" if defined $database::current_query;
+                    #throw 'db_error' => $DBI::errstr;
+                    throw 'db_error' => $error;
+                }
         }
     ) or throw 'db_error' => "Could not establish database connection: $DBI::errstr";
     return $DB;

@@ -97,6 +97,7 @@ sub config {
 
 sub modules {
     user::require_permission('admin_modules');
+    style::include_template('modules');
 
     my %modules;
 
@@ -108,8 +109,10 @@ sub modules {
         $modules{$module_id}->{'meta'}       = module::get_meta($module_id);
     }
 
+    my @ordered_modules = module::order_by_dependencies(keys %modules);
+
     print qq~\t<admin action="modules">\n~;
-    for my $module_id (keys %modules) {
+    for my $module_id (@ordered_modules) {
         my $module   = $modules{$module_id};
         my $meta     = $module->{'meta'};
         my $requires = $meta->{'requires'};
@@ -119,13 +122,14 @@ sub modules {
         $attrs .= qq~ latest_rev="$module->{latest_rev}"~;
         $attrs .= qq~ version="$meta->{version}"~;
         $attrs .= ' name="' . xml::entities($meta->{'name'}) . '"';
-        $attrs .= ' description="' . xml::entities($meta->{'description'}) . '"';
+        $attrs .= ' description="' . xml::entities($meta->{'description'}) . '"' if length $meta->{'description'};
         $attrs .= ' required="1"' if $meta->{'required'};
         $attrs .= ' loaded="1"'   if exists $module::loaded{$module_id};
+        $attrs .= ' enabled="1"'  if module::is_enabled($module_id);
         if ($meta->{'requires'}) {
             print "\t\t<module$attrs>\n";
             for my $dep (@{ $meta->{'requires'} }) {
-                print qq~\t\t\t<requires module="$dep" />\n~;
+                print qq~\t\t\t<requires id="$dep" />\n~;
             }
             print "\t\t</module>\n";
         } else {
