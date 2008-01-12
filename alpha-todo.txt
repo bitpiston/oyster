@@ -12,6 +12,7 @@ ANKLE
 CANNED
 
 \ add some way for modules and libraries to mark themselves as automatically imported to modules
+\ menu lib doesnt xml::entities anything... it probably should | entity it yourself before sending if necessary.
 
 DELAYED
 
@@ -52,6 +53,7 @@ COMPLETED
 	* remove any remaining 'error' exceptions
 	* always use quotes for the error name
 * update sims.js to oyster
+* add function to module.pm, get latest revision
 
 TODO
 
@@ -66,7 +68,6 @@ TODO
 * load modules based on their dependencies (steal algorithm from update.pl)
 	- skip modules that are not up to date
 - menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
-- add function to module.pm, get latest revision
 - Clean up testing framework
 - Spec out the new admin module and begin writing it
 - remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
@@ -81,4 +82,4 @@ TODO
 - browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
 - possibly add a new menu item attribute that allows to insert arbitrary xml -- big maybe on this.
-- menu lib doesnt xml::entities anything... it probably should
+
