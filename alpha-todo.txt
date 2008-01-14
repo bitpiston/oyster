@@ -82,4 +82,6 @@ TODO
 - browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
 - possibly add a new menu item attribute that allows to insert arbitrary xml -- big maybe on this.
-
+- move misc::trace to exceptions.pm
+- consider dividing misc.pm up into many packages, like string::random(), etc
+- consider removing image.pm (and all imagemagick) stuff for alpha

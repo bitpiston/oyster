@@ -65,7 +65,6 @@ our @stack; # stores a handlers for try blocks
     </function>
 =cut
 
-#push(@EXPORT, 'throw');
 sub throw {
     my $exception = shift;   # the name of the exception thrown
     my $i         = $#stack; # iterator for stack
@@ -163,7 +162,6 @@ sub throw {
     </function>
 =cut
   
-#push(@EXPORT, 'catch', 'with', 'try');
 sub catch     { @_ } # catch and with simply return whatever they were given, and that becomes %handlers in try
 sub with(&;@) { @_ }
 sub try(&;@)  {
@@ -245,7 +243,6 @@ sub try(&;@)  {
     </function>
 =cut
 
-#push(@EXPORT, 'abort');
 sub abort {
     return unless @stack; # do nothing if no try blocks are active
     my $exception = {'oyster' => 1, 'from' => $#stack}; # construct oyster abort hash
@@ -253,54 +250,15 @@ sub abort {
     CORE::die($exception);
 }
 
-=xml
-    <section title="Shortcuts">
-=cut
-
-=xml
-        <function name="confirm">
-            <synopsis>
-                Prompts a user for confirmation.  If confirmation has not been gotten,
-                #   calls abort().  If confirmation has been gotten, does nothing.
-            </synopsis>
-            <note>
-                This uses the &lt;confirm&gt; xml node, styled in shared/styles/source.xsl
-            </note>
-            <prototype>
-                confirm(string message)
-            </prototype>
-            <todo>
-                This should preserve POST data.
-            </todo>
-            <example>
-                confirm("Are you sure you want to delete everything on your hard drive?");
-                `rm -f /*.*`;
-            </example>
-        </function>
-=cut
-
-#push(@EXPORT, 'confirm');
-sub confirm {
-    return if ($ENV{'REQUEST_METHOD'} eq 'POST' and $oyster::INPUT{'confirm'});
-    my $text = shift;
-    print "\t<confirm>$text</confirm>\n";
-    abort();
-}
-
-=xml
-    </section>
-=cut
-
+# exception.pm's import function
 sub import {
     my $pkg = $_[0] ne 'exceptions' ? $_[0] : caller();
 
-	*{ $pkg . '::try' }     = \&try;
-	*{ $pkg . '::catch' }   = \&catch;
-	*{ $pkg . '::with' }    = \&with;
-	*{ $pkg . '::throw' }   = \&throw;
-	*{ $pkg . '::abort' }   = \&abort;
-	*{ $pkg . '::confirm' } = \&confirm;
-
+    *{ $pkg . '::try' }     = \&try;
+    *{ $pkg . '::catch' }   = \&catch;
+    *{ $pkg . '::with' }    = \&with;
+    *{ $pkg . '::throw' }   = \&throw;
+    *{ $pkg . '::abort' }   = \&abort;
 }
 
 # Copyright BitPiston 2008

@@ -1,19 +1,9 @@
-##############################################################################
-# Oyster
-# ----------------------------------------------------------------------------
-# This is a lightweight web application framework, focusing on: speed,
-# flexibility, scalability, and ease of development.
-#
-# This file is divided into two primary parts:
-# - Internals
-#   These are functions used to run oyster, rarely called by external code
-#   (except for launchers).
-# - API
-#   The oyster API is a set of functions available to all oyster code and
-#   oyster modules.
-#
-# For additional information and documentation visit www.bitpiston.com
-# ----------------------------------------------------------------------------
+=xml
+<document title="Oyster">
+    <synopsis>
+        This is a lightweight web application framework, focusing on: speed, flexibility, scalability, and ease of development.  For more information, visit <link uri="http://oyster.bitpiston.com">the official Oyster website</link>.
+    </synopsis>
+=cut
 package oyster;
 
 # import libraries (can't implement these myself, sadly ;-P)
@@ -58,9 +48,12 @@ my @request_exception_handlers;       # inner exception handlers for requests
 my @request_fatal_exception_handlers; # outer exception handlers for requests
 my %delayed_imports;                  # if packages 'use oyster' before oyster is loaded, delay their import until it is
 
-# ----------------------------------------------------------------------------
-# Internals
-# ----------------------------------------------------------------------------
+=xml
+    <section title="Internals">
+        <synopsis>
+            These are functions used to run oyster, rarely called by external code (except for launchers).
+        </synopsis>
+=cut
 
 # Description:
 #   called to load oyster and prepare the oyster environment
@@ -471,7 +464,7 @@ sub _load_exception_handlers {
         http::print_headers();
         print "An internal error has occured.\n";
         if ($CONFIG{'debug'}) {
-            print "\Perl Error:\n$error\n";
+            print "Perl Error:\n$error\n";
             print "\n" . misc::trace() . "\n";
         }
         log::error($error);
@@ -479,39 +472,69 @@ sub _load_exception_handlers {
     };
 }
 
-# ----------------------------------------------------------------------------
-# API
-# ----------------------------------------------------------------------------
+=xml
+    </section>
 
-#
-# Misc
-#
+    <section title="API">
+        <synopsis>
+            The oyster API is a set of functions available to all oyster code and oyster modules.
+        </synopsis>
+=cut
 
-# Description:
-#   Executes a script in the shared_path/script/ directory, under the current
-#   site ID.
-# Notes:
-#   * The first argument is the filename without the .pl extension.
-# Prototype:
-#   string output = oyster::execute_script(string script_name[, array args])
-# Example(s):
-#   print execute_script('xslcompiler');
+=xml
+    <function name="execute_script">
+        <synopsis>
+            Executes a script in the shared_path/script/ directory, under the current site ID.
+        </synopsis>
+        <note>
+            The first argument is the filename without the .pl extension.
+        </note>
+        <prototype>
+            string output = oyster::execute_script(string script_name[, array args])
+        </prototype>
+        <example>
+            print execute_script('xslcompiler');
+        </example>
+    </function>
+=cut
+
 sub execute_script {
-    my ($script, @args) = @_;
+    my $script = shift;
     throw 'perl_error' => "Script '$script' does not exist." unless -e "./script/$script.pl";
     my $args;
-    $args .= ' "' . misc::shell_escape($_) . '"' for @_;
+    $args .= ' "' . shell_escape($_) . '"' for @_;
     return scalar(`perl script/$script.pl -site "$CONFIG{site_id}"$args`);
 }
 
-# Description:
-#   Restarts the current script.
-# Prototype:
-#   oyster::restart()
+=xml
+    <function name="restart">
+        <synopsis>
+            Restarts the current script.
+        </synopsis>
+        <prototype>
+            oyster::restart()
+        </prototype>
+    </function>
+=cut
+
 sub restart {
     exec($0, @ARGV);
     exit;
 }
+
+=xml
+    <function name="perl_require">
+        <synopsis>
+            Performs a 'require' without Oyster's library search paths.
+        </synopsis>
+        <note>
+            This cannot be used like 'require IO::Socket', you must use 'IO/Socket.pm' instead.
+        </note>
+        <prototype>
+            oyster::perl_require(string filename)
+        </prototype>
+    </function>
+=cut
 
 sub perl_require {
     my $file = shift; # the file to include
@@ -529,15 +552,110 @@ sub perl_require {
     @INC = @OYSTER_INC;
 }
 
+=xml
+    <function name="shell_escape">
+        <synopsis>
+            Escapes characters to avoid injection when executing shell commands.
+        </synopsis>
+        <note>
+            Currently only escapes double quotes.  The data passed to this function
+            assumes that it will be placed inside double quotes when it is passed to
+            the shell.
+        </note>
+        <prototype>
+            string escaped_string = oyster::shell_escape(string)
+        </prototype>
+        <todo>
+            Make this better, should have different mechanics for different shells.
+        </todo>
+    </function>
+=cut
+
+sub shell_escape {
+    my $string = shift;
+    $string =~ s/"/\"/g;
+    return $string;
+}
+
+=xml
+    </section>
+
+    <section title="Exported Functions">
+        <synopsis>
+            Similar in purpose to the Oyster API, but these are automatically exported to modules.
+        </synopsis>
+=cut
+
+=xml
+        <function name="confirm">
+            <synopsis>
+                Prompts a user for confirmation.  If confirmation has not been gotten,
+                calls abort().  If confirmation has been gotten, does nothing.
+            </synopsis>
+            <note>
+                This uses the &lt;confirm&gt; xml node, styled in shared/styles/source.xsl
+            </note>
+            <prototype>
+                confirm(string message)
+            </prototype>
+            <todo>
+                This should preserve POST data.
+            </todo>
+            <example>
+                confirm("Are you sure you want to delete everything on your hard drive?");
+                `rm -f /*.*`;
+            </example>
+        </function>
+=cut
+
+sub confirm {
+    return if ($ENV{'REQUEST_METHOD'} eq 'POST' and $oyster::INPUT{'confirm'});
+    my $text = shift;
+    print "\t<confirm>$text</confirm>\n";
+    abort();
+}
+
+=xml
+    <function name="confirmation">
+        <synopsis>
+            Prints a confirmation message.
+        </synopsis>
+        <prototype>
+            confirmation(string confirmation_message[, forward_options])
+        </prototype>
+        <example>
+            confirmation('Something happened.', $BASE_URL => 'Return to the home page.');
+        </example>
+    </function>
+=cut
+
+sub confirmation {
+    my ($message, %options) = @_;
+    if (%options) {
+        print "\t<confirmation>\n";
+        print "\t\t$message\n";
+        print "\t\t<options>\n";
+        foreach (keys %options) {
+            print "\t\t\t<option url=\"$options{$_}\">$_</option>\n";
+        }
+        print "\t\t</options>\n";
+        print "\t</confirmation>\n";
+    } else {
+        print "\t<confirmation>$message</confirmation>\n";
+    }
+}
+
+
+=xml
+    </section>
+=cut
+
 # Description:
 #   Exports Oyster variables
 # Notes::
-#   * Libraries have to use the former prototype in a hook_load (after the
-#     imported variables have been declared in oyster.pm).
 #   * Can optionally be passed an argument to be imported into a specific
 #     package instead of the caller.
 #   * Import sets: module, launcher
-#   * This has to come first so that the 'use' calls below can access it.
 # Prototype:
 #   oyster::import(string package_name[, string import_set])
 #   or
@@ -561,10 +679,14 @@ sub import {
         return;
     }
 
-	# module
+    # module
     if ($import_set eq 'module') {
 
-        # globals
+        # functions
+        *{ $pkg . '::confirm'      } = \&confirm;
+        *{ $pkg . '::confirmation' } = \&confirmation;
+
+        # global variables
         *{ $pkg . '::BASE_URL'       } = \$CONFIG{'url'};
         *{ $pkg . '::DB_PREFIX'      } = \$CONFIG{'db_prefix'};
         *{ $pkg . '::TMP_PATH'       } = \$CONFIG{'tmp_path'};
@@ -575,7 +697,7 @@ sub import {
         *{ $pkg . '::CONFIG'         } = \%CONFIG;
         ${ $pkg . '::ADMIN_BASE_URL' } = "$CONFIG{url}admin/";
 
-        # module-specific
+        # module-specific variables
         my ($module) = ( $pkg =~ /::/ ? ($pkg =~ /^(.+?)::/) : $pkg );
         ${ $pkg . '::module_path'           } = "$CONFIG{shared_path}modules/$module/"; # no need to reference, these don't change
         ${ $pkg . '::module_admin_base_url' } = "$CONFIG{url}admin/${module}/";
@@ -594,7 +716,11 @@ sub import {
     }
 }
 
-# ----------------------------------------------------------------------------
-# Copyright Synthetic Designs 2006
-##############################################################################
+=xml
+</document>
+=cut
+
 1;
+
+# Copyright BitPiston 2008
+

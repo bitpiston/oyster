@@ -12,6 +12,9 @@ use exceptions;
 
 our $current_query;
 
+push(@DBI::db::ISA, 'oyster::database::dbi::db');
+push(@DBI::st::ISA, 'oyster::database::dbi::st');
+
 =xml
     <function name="connect">
         <synopsis>
@@ -48,15 +51,72 @@ sub connect {
     return $DB;
 }
 
-#use event;
+=xml
+    <function name="compress_metadata">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+=cut
 
-# import stuff into the right places in DBI
-# REMOVED: otherwise scripts that do not 'load_libs' do not get these methods!
-#event::register_hook('load_lib', '_load', 200);
-#sub _load {
-    push(@DBI::db::ISA, 'oyster::database::dbi::db');
-    push(@DBI::st::ISA, 'oyster::database::dbi::st');
-#}
+sub compress_metadata {
+    return '' unless @_; # sql will expect an empty string
+
+    if (ref $_[0] eq 'HASH') {
+        my @pairs;
+        for my $name (keys %{@_}) {
+            push @pairs, "$name\0$_[0]->{$name}";
+        }
+        return join "\0\0", @pairs;
+    }
+
+    my %meta = @_;
+    my @pairs;
+    for my $name (keys %meta) {
+        push @pairs, "$name\0$meta{$name}";
+    }
+    return join "\0\0", @pairs;
+}
+
+=xml
+    <function name="expand_metadata">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+        <todo>
+            
+        </todo>
+    </function>
+=cut
+
+sub expand_metadata {
+    return () unless length $_[0]; # a hash will expect an empty list (TODO: would return; be sufficient?)
+    my %meta;
+    my @pairs = split /\0\0/, shift;
+    for my $pair (@pairs) {
+        my ($name, $value) = split /\0/, $pair;
+        $meta{$name} = $value;
+    }
+    return %meta;
+}
 
 =xml
     <section title="Extensions to Database Handle">

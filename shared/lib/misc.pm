@@ -90,71 +90,6 @@ sub proper_caps {
 }
 
 =xml
-    <function name="compress_metadata">
-        <synopsis>
-            
-        </synopsis>
-        <note>
-            
-        </note>
-        <prototype>
-            
-        </prototype>
-        <example>
-            
-        </example>
-    </function>
-=cut
-sub compress_metadata {
-    return '' unless @_; # sql will expect an empty string
-
-    if (ref $_[0] eq 'HASH') {
-        my @pairs;
-        for my $name (keys %{@_}) {
-            push @pairs, "$name\0$_[0]->{$name}";
-        }
-        return join "\0\0", @pairs;
-    }
-
-    my %meta = @_;
-    my @pairs;
-    for my $name (keys %meta) {
-        push @pairs, "$name\0$meta{$name}";
-    }
-    return join "\0\0", @pairs;
-}
-
-=xml
-    <function name="">
-        <synopsis>
-            
-        </synopsis>
-        <note>
-            
-        </note>
-        <prototype>
-            
-        </prototype>
-        <example>
-            
-        </example>
-        <todo>
-            
-        </todo>
-    </function>
-=cut
-sub expand_metadata {
-    return () unless length $_[0]; # a hash will expect an empty list (TODO: would return; be sufficient?)
-    my %meta;
-    my @pairs = split /\0\0/, shift;
-    for my $pair (@pairs) {
-        my ($name, $value) = split /\0/, $pair;
-        $meta{$name} = $value;
-    }
-    return %meta;
-}
-
-=xml
     <function name="trace">
         <synopsis>
             
@@ -214,62 +149,6 @@ sub pad {
     my $pad_to = shift;
     $string = '...' . substr($string, -1 * $pad_to + 3) if length $string > $pad_to;
     return $string . (' ' x ($pad_to - length $string));
-}
-
-=xml
-    <function name="confirmation">
-        <synopsis>
-            Prints a confirmation message.
-        </synopsis>
-        <prototype>
-            confirmation(string confirmation_message[, forward_options])
-        </prototype>
-        <example>
-            confirmation('Something happened.', $BASE_URL => 'Return to the home page.');
-        </example>
-    </function>
-=cut
-
-push(@EXPORT, 'confirmation');
-sub confirmation {
-    my ($message, %options) = @_;
-    if (%options) {
-        print "\t<confirmation>\n";
-        print "\t\t$message\n";
-        print "\t\t<options>\n";
-        foreach (keys %options) {
-            print "\t\t\t<option url=\"$options{$_}\">$_</option>\n";
-        }
-        print "\t\t</options>\n";
-        print "\t</confirmation>\n";
-    } else {
-        print "\t<confirmation>$message</confirmation>\n";
-    }
-}
-
-=xml
-    <function name="shell_escape">
-        <synopsis>
-            Escapes characters to avoid injection when executing shell commands.
-        </synopsis>
-        <note>
-            Currently only escapes double quotes.  The data passed to this function
-            assumes that it will be placed inside double quotes when it is passed to
-            the shell.
-        </note>
-        <prototype>
-            string escaped_string = misc::shell_escape(string)
-        </prototype>
-        <todo>
-            Make this better, should have different mechanics for different shells.
-        </todo>
-    </function>
-=cut
-
-sub shell_escape {
-    my $string = shift;
-    $string =~ s/"/\"/g;
-    return $string;
 }
 
 =xml
