@@ -16,7 +16,7 @@ package exceptions;
 # override perl's die() with something that logs the error
 *CORE::GLOBAL::die = sub {
     my $error = @_ ? shift : $@ ; # for some reason certain deaths don't pass their error string (base::import... aka a problem during use module;)
-    $error .= "\nTRACE:" . trace();
+    $error .= "\nTRACE:\n" . trace();
     if (%REQUEST) {
         require Data::Dumper;
         $error .= "\nREQUEST:\n" . Data::Dumper::Dumper(%REQUEST);

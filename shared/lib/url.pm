@@ -26,11 +26,11 @@ event::register_hook('load_lib', '_load');
 sub _load {
 
     # prepare queries
-    $fetch_by_hash               = $oyster::DB->server_prepare("SELECT * FROM ${oyster::DB_PREFIX}urls WHERE url_hash = ? and regex = 0 LIMIT 1");
-    $fetch_nav_urls_by_parent_id = $oyster::DB->server_prepare("SELECT id, url, title FROM ${oyster::DB_PREFIX}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority DESC");
+    $fetch_by_hash               = $oyster::DB->server_prepare("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? and regex = 0 LIMIT 1");
+    $fetch_nav_urls_by_parent_id = $oyster::DB->server_prepare("SELECT id, url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority DESC");
 
     # load regex urls
-    my $query = $oyster::DB->query("SELECT id, parent_id, url, title, module, function, regex FROM ${oyster::DB_PREFIX}urls WHERE regex = 1");
+    my $query = $oyster::DB->query("SELECT id, parent_id, url, title, module, function, regex FROM $oyster::CONFIG{db_prefix}urls WHERE regex = 1");
     while (my $url = $query->fetchrow_hashref()) {
         $regex_urls{ $url->{'url'} } = $url;
     }
@@ -85,7 +85,7 @@ sub unique {
     my $url       = shift;
     my $orig_url  = $url;
     my $x         = 0;
-    my $query     = $oyster::DB->prepare("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}urls WHERE url_hash = ? LIMIT 1");
+    my $query     = $oyster::DB->prepare("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1");
 
     FIND_UNIQUE_URL: while (1) {
         $query->execute(hash::fast($url));
@@ -143,7 +143,7 @@ sub unique {
 sub register {
     my %args = @_;
 
-    my $url_table = $oyster::DB_PREFIX . 'urls';
+    my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
 
     # prepare columns to update, and only update them if necessary
     my %update;
@@ -262,7 +262,7 @@ sub update {
     }
     my %args = @_;
 
-    my $url_table = $oyster::DB_PREFIX . 'urls';
+    my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
 
     # fetch the current url's data
     my $query = $oyster::DB->query("SELECT * FROM $url_table WHERE $update_by_field = ? LIMIT 1", $update_by_value);
@@ -364,7 +364,7 @@ sub _parse_params_arg {
 
 sub delete {
     my $url = shift;
-    $oyster::DB->query("DELETE FROM ${oyster::DB_PREFIX}urls WHERE url_hash = ?", hash::fast($url));
+    $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ?", hash::fast($url));
 }
 
 =xml
@@ -386,7 +386,7 @@ sub delete {
 
 sub delete_by_id {
     my $id = shift;
-    $oyster::DB->query("DELETE FROM ${oyster::DB_PREFIX}urls WHERE id = ?", $id);
+    $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE id = ?", $id);
 }
 
 =xml
@@ -402,7 +402,7 @@ sub delete_by_id {
 
 sub is_registered {
     my $url = shift;
-    return $oyster::DB->query("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->fetchrow_arrayref()->[0];
+    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->fetchrow_arrayref()->[0];
 }
 
 =xml
@@ -418,7 +418,7 @@ sub is_registered {
 
 sub is_registered_by_id {
     my $id = shift;
-    return $oyster::DB->query("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}urls WHERE id = ? LIMIT 1", $id)->fetchrow_arrayref()->[0];
+    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $id)->fetchrow_arrayref()->[0];
 }
 
 =xml
@@ -457,7 +457,7 @@ sub get {
 
 sub get_by_id {
     my $url_id = shift;
-    my $query = $oyster::DB->query("SELECT * FROM ${oyster::DB_PREFIX}urls WHERE id = ? LIMIT 1", $url_id);
+    my $query = $oyster::DB->query("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $url_id);
     return $query->rows() ? $query->fetchrow_hashref() : undef ;
 }
 
@@ -476,7 +476,7 @@ sub get_by_id {
 =cut
 sub get_url_by_id {
     my $url_id = shift;
-    my $query = $oyster::DB->query("SELECT url FROM ${oyster::DB_PREFIX}urls WHERE id = ? LIMIT 1", $url_id);
+    my $query = $oyster::DB->query("SELECT url FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $url_id);
     return $query->rows() ? $query->fetchrow_arrayref()->[0] : undef ;
 }
 
@@ -530,7 +530,7 @@ sub get_parent_by_id {
 
 #sub has_children {
 #    my $url = shift;
-#    return $oyster::DB->query("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->fetchrow_arrayref()->[0];
+#    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->fetchrow_arrayref()->[0];
 #}
 
 =xml
@@ -546,7 +546,7 @@ sub get_parent_by_id {
 
 sub has_children_by_id {
     my $id = shift;
-    return $oyster::DB->query("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}urls WHERE parent_id = ? LIMIT 1", $id)->fetchrow_arrayref()->[0];
+    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? LIMIT 1", $id)->fetchrow_arrayref()->[0];
 }
 
 =xml
@@ -569,7 +569,7 @@ sub has_children_by_id {
 sub print_subpage_xml {
     my $url_id = shift;
 
-    my $query = $oyster::DB->query("SELECT url, title FROM ${oyster::DB_PREFIX}urls WHERE parent_id = ?", $url_id);
+    my $query = $oyster::DB->query("SELECT url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ?", $url_id);
     return unless $query->rows();
     print qq~\t<menu id="subpages">\n~;
     while (my $url = $query->fetchrow_arrayref()) {

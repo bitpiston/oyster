@@ -185,11 +185,11 @@ sub print_enabled_styles {
 sub is_valid_style {
     if (scalar(@_) == 2) {
         my ($new_id, $current_id) = @_;
-        my $query = $oyster::DB->query("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}styles WHERE id = ? and id != ? LIMIT 1", $new_id, $current_id);
+        my $query = $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? and id != ? LIMIT 1", $new_id, $current_id);
         return $query->fetchrow_arrayref()->[0];
     } else {
         my $id = shift;
-        my $query = $oyster::DB->query("SELECT COUNT(*) FROM ${oyster::DB_PREFIX}styles WHERE id = ? LIMIT 1", $id);
+        my $query = $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $id);
         return $query->fetchrow_arrayref()->[0];
     }
 }
@@ -372,7 +372,7 @@ sub _load {
     %styles = ();
 
     # populate style data
-    my $query = $oyster::DB->query("SELECT id, name, status FROM ${oyster::DB_PREFIX}styles");
+    my $query = $oyster::DB->query("SELECT id, name, status FROM $oyster::CONFIG{db_prefix}styles");
     while (my $style = $query->fetchrow_hashref()) {
         $styles{$style->{'id'}} = $style;
     }
@@ -382,9 +382,6 @@ sub _load {
         <function name="_compile_style">
             <todo>
                 should hooks/global includes be compiled?
-            </todo>
-            <todo>
-                deprecate the special global include tag in favor of just a hook
             </todo>
             <todo>
                 Documentate this function

@@ -253,7 +253,7 @@ sub load {
     module::unload($module_id) if exists $loaded{$module_id};
 
     # load module configuration
-    config::load('table' => "${oyster::DB_PREFIX}${module_id}_config", 'config_hash' => \%{"${module_id}::CONFIG"});
+    config::load('table' => "$oyster::CONFIG{db_prefix}${module_id}_config", 'config_hash' => \%{"${module_id}::CONFIG"});
 
     # load module's perl source
     eval { require "$oyster::CONFIG{shared_path}modules/${module_id}/${module_id}.pm" };
@@ -277,7 +277,7 @@ sub reload_config {
     %{"${module_id}::CONFIG"} = ();
 
     # load module configuration
-    config::load('table' => "${oyster::DB_PREFIX}${module_id}_config", 'config_hash' => \%{"${module_id}::config"});
+    config::load('table' => "$oyster::CONFIG{db_prefix}${module_id}_config", 'config_hash' => \%{"${module_id}::config"});
 }
 
 =xml

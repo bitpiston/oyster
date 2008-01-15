@@ -46,10 +46,10 @@ sub is_valid_email {
             &lt;litera&gt; xml node
         </note>
         <prototype>
-            email::send(string to, string subject, string content[, string header_name => string header_value ...])
+            email::send(to => string, subject => string[, string header_name => string header_value ...], string content)
         </prototype>
         <example>
-            email::send('ShaneCalimlim@gmail.com', 'Hello!', 'You suck!');
+            email::send(to => 'ShaneCalimlim@gmail.com', subject => 'Hello!', 'You suck!');
         </example>
         <todo>
             Add alternatives to sendmail
@@ -58,15 +58,20 @@ sub is_valid_email {
 =cut
 
 sub send {
-    my ($to, $subject, $content, %headers) = @_;
-    $headers{'to'}      = $to;
-    $headers{'subject'} = $subject;
-    $headers{'from'}    = $oyster::CONFIG{'sendmail_from'} unless grep /^from$/i, keys %headers;
+    my $content = @_ % 2 == 1 ? pop : '' ;
+    my %headers = @_;
+    $headers{'from'} = $oyster::CONFIG{'sendmail_from'} unless grep /^from$/i, keys %headers;
+
+    #my ($to, $subject, $content, %headers) = @_;
+    #$headers{'to'}      = $to;
+    #$headers{'subject'} = $subject;
+    #$headers{'from'}    = $oyster::CONFIG{'sendmail_from'} unless grep /^from$/i, keys %headers;
 
     my @headers;
-    for my $name (keys %headers) {
-        my $proper_name = string::proper_caps($name);
-        push @headers, "$proper_name: $headers{$name}";
+    for my $header (keys %headers) {
+        my $name = string::proper_caps($header);
+        my $value = $headers{$header};
+        push @headers, join(': ', $name, $value);
     }
     my $headers = join($http::crlf, @headers) . "$http::crlf$http::crlf";
 
@@ -105,10 +110,7 @@ sub send_template {
     my ($template, $to, $vars) = @_;
 
     # grab the template
-    my $query = $oyster::DB->query("SELECT subject, body FROM ${oyster::DB_PREFIX}email_templates WHERE name = ?", $template);
-    my $tmpl    = $query->fetchrow_arrayref();
-    my $subject = $tmpl->[0];
-    my $body    = $tmpl->[1];
+    my ($subject, $body) = $oyster::DB->query("SELECT subject, body FROM $oyster::CONFIG{db_prefix}email_templates WHERE name = ?", $template)->fetchrow_arrayref();
 
     # remove returns
     $body =~ s/\r//g;
@@ -118,7 +120,7 @@ sub send_template {
     $body    =~ s/{(\w+?)}/$vars->{$1}/g;
 
     # send email
-    email::send($to, $subject, $body);
+    email::send('to' => $to, 'subject' => $subject, $body);
 }
 
 =xml
@@ -130,7 +132,7 @@ sub send_template {
 =cut
 
 sub add_template {
-    $oyster::DB->query("INSERT INTO ${oyster::DB_PREFIX}email_templates (name, subject, body) VALUES (?, ?, ?)", @_);
+    $oyster::DB->query("INSERT INTO $oyster::CONFIG{db_prefix}email_templates (name, subject, body) VALUES (?, ?, ?)", @_);
 }
 
 # Copyright BitPiston 2008

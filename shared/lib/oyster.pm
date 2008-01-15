@@ -37,7 +37,6 @@ our %REQUEST; # data associated with the current request (such as the style, mod
 our %INPUT;   # GET/POST data for the current request
 our %COOKIES; # cookie data for the current request
 our $DB;      # the database object
-our $DB_PREFIX; # this needs to be deprecated in favor of its oyster::CONFIG equivalent
 
 # private variables (not exported by default)
 our %CONFIG;                        # oyster configuration, a combination of information from the database, config.pl, and created on the fly; capitalized for consistency with module %CONFIGs
@@ -172,9 +171,7 @@ sub _db_connect {
         $DB->{'pg_server_prepare'}    = 0; # disable server side prepared statements
     }
 
-    # save db prefix
     $CONFIG{'db_prefix'} = $CONFIG{'site_id'} . '_';
-    $DB_PREFIX           = $CONFIG{'db_prefix'}; # this sould either be aliased or deprecated
 }
 
 # Description:
@@ -213,14 +210,12 @@ sub _load_modules {
     }
     die('No modules were loaded.  Your modules table may have been corrupted.') unless @modules;
 
-    # TODO: remove modules that are not up to date
-    # if certain modules are removed that are dependencies... bad things will happen....
-
     # order modules by dependencies
     @modules = module::order_by_dependencies(@modules);
 
     # load modules
     for my $module (@modules) {
+        die "Module '$module' is out of date.  Please run the update utility." unless module::get_revision($module) == module::get_latest_revision($module);
         module::load($module);
     }
 

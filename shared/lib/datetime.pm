@@ -91,26 +91,20 @@ sub days_in_month {
 }
 
 =xml
-    <function name="utctime">
+    <function name="gmtime">
         <synopsis>
             Returns the unix epoch time in GMT
         </synopsis>
-        <note>
-            * gmtime is the ideal name for this but it is taken by perl
-        </note>
         <prototype>
-            int = datetime::utctime()
+            int = datetime::gmtime()
         </prototype>
         <example>
-            my $gmtime = datetime::utctime();
+            my $gmtime = datetime::gmtime();
         </example>
-        <todo>
-            deprecate in favor of gm_time() or even datetime::gmtime()
-        </todo>
     </function>
 =cut
 
-sub utctime {
+sub gmtime {
     return ( time() - ( $oyster::CONFIG{'time_offset'} * 3600) );
 }
 
@@ -141,8 +135,8 @@ sub is_valid_time_offset {
         </prototype>
         <todo>
             Possibly allow the passing of the time to perform the check at instead
-            #     of just using the return value of time().  This would be useful to test
-            #     cases where days or years may be different.
+            of just using the return value of time().  This would be useful to test
+            cases where days or years may be different.
         </todo>
     </function>
 =cut
@@ -150,7 +144,7 @@ sub is_valid_time_offset {
 sub get_gmt_offset {
     my $time = time(); # ensure that both localtime() and gmtime() are given the same time, in case the second switches between calls
     my ($local_hour, $local_year, $local_yday, $local_is_dst) = (localtime($time))[2, 5, 7, 8];
-    my ($gm_hour, $gm_year, $gm_yday)                         = (gmtime($time))[2, 5, 7];
+    my ($gm_hour, $gm_year, $gm_yday)                         = (CORE::gmtime($time))[2, 5, 7];
 
     # compensate for dst (gmt doesn't have it)
     $local_hour-- if $local_is_dst;

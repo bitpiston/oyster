@@ -13,6 +13,8 @@ CANNED
 
 \ add some way for modules and libraries to mark themselves as automatically imported to modules
 \ menu lib doesnt xml::entities anything... it probably should | entity it yourself before sending if necessary.
+\ possibly add a new menu item attribute that allows to insert arbitrary xml -- big maybe on this.
+\ Benchmark prepare_cached versus how queries are cached now, because the current method is confusing and ugly
 
 DELAYED
 
@@ -22,6 +24,7 @@ DELAYED
 + many existing scripts could simply be moved to the console, possibly create scripts/console_cmds/ so that more commands can easily be added
 + ajax.pm
 + create a script to clean tmp directories
++ remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 
 COMPLETED
 
@@ -56,6 +59,12 @@ COMPLETED
 * add function to module.pm, get latest revision
 * move misc::trace to exceptions.pm
 * consider dividing misc.pm up into many packages, like string::random(), etc
+* load modules based on their dependencies (steal algorithm from update.pl)
+	+ skip modules that are not up to date (this requires a investigation, it can have a lot of side effects)
+	* die if a module needs to be updated
+* email.pm has a few functions that need their argument lists updated
+* Remove any remaining 'deprecated' stuff and fix anything that depends on it
+	+ there are still a few things in xml::parser, but that is more of an auxiliary module
 
 TODO
 
@@ -67,21 +76,15 @@ TODO
 	+ how to use strict in your module
 	- testing framework
 	+ ajax
-* load modules based on their dependencies (steal algorithm from update.pl)
-	- skip modules that are not up to date
+	- module creation walkthrough
 - menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
 - Clean up testing framework
 - Spec out the new admin module and begin writing it
-- remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 - make sure STDERR is being used when it should be
 - dont use image; by default
-- Benchmark prepare_cached versus how queries are cached now, because the current method is confusing and ugly
-- Remove any remaining 'deprecated' stuff and fix anything that depends on it
 - Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
 	- possibly use the new module::order_by_dependencies()
-- email.pm has a few functions that need their argument lists updated
 - look over libraries (again) to ensure consistent naming conventions
 - browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
-- possibly add a new menu item attribute that allows to insert arbitrary xml -- big maybe on this.
 - consider removing image.pm (and all imagemagick) stuff for alpha

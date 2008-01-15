@@ -7,7 +7,10 @@
         Document how to create revision files.
     </todo>
     <todo>
-    	Document arguments
+        Document arguments
+    </todo>
+    <todo>
+        This whole utility really needs to be cleaned up and possibly rewritten or refactored.
     </todo>
 =cut
 package oyster::script::update;
@@ -170,7 +173,6 @@ sub update_module {
                         my $error = shift;
                         die "Database Error: $error\nQuery: $database::current_query\n";
                     };
-                    
                 }
             } else {
                 if (ref $rev->{'up'}->{'shared'} eq 'CODE') {

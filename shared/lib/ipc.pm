@@ -19,7 +19,7 @@ event::register_hook('load_lib', '_ipc_load');
 sub _ipc_load {
     $ipc_insert_query = $oyster::DB->server_prepare("INSERT INTO ipc (ctime, command, daemon_id, site_id) VALUES (UTC_TIMESTAMP(), ?, ?, ?)");
     $ipc_get_query    = $oyster::DB->server_prepare("SELECT command FROM ipc WHERE ctime > FROM_UNIXTIME(?) and (site_id = '$oyster::CONFIG{site_id}' or site_id = '') and daemon_id != '$oyster::daemon_id' ORDER BY ctime ASC");
-    $ipc_last_do      = datetime::utctime();
+    $ipc_last_do      = datetime::gmtime();
 }
 
 =xml
@@ -88,7 +88,7 @@ sub do {
 
     # fetch and execute any waiting ipc tasks
     $ipc_get_query->execute($ipc_last_do);
-    $ipc_last_do = datetime::utctime();
+    $ipc_last_do = datetime::gmtime();
     while ($task = $ipc_get_query->fetchrow_arrayref()) {
         my $cmd = $task->[0];
         eval "$cmd";
