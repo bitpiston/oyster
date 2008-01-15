@@ -13,7 +13,6 @@ use oyster 'module';
 
 # load oyster libraries
 use exceptions;
-use misc;
 
 our (%USER, %PERMISSIONS);
 
@@ -106,8 +105,8 @@ sub recover {
         throw 'validation_error' => 'An account recovery email has already been sent to this account within the last hour.  If you just attempted this, wait a few minutes for the email to arrive.  If you still have not received it in one hour, try again.' if $spam_query->fetchrow_arrayref()->[0];
 
         # generate a new password and confirmation hash
-        my $new_pass          = random_string(8);
-        my $confirmation_hash = random_string(32);
+        my $new_pass          = string::random(8);
+        my $confirmation_hash = string::random(32);
 
         # insert an entry into the user_recover table
         $DB->query('INSERT INTO user_recover (user_id, new_pass, confirmation_hash, ctime) VALUES (?, ?, ?, UTC_TIMESTAMP())', $found_user->{'id'}, $new_pass, $confirmation_hash);
@@ -212,7 +211,7 @@ sub edit_settings {
 
             # if they are trying to update their email, set up a confirmation thing
             if ($update{'email'} and !$permissions{'admin_find'}) {
-                my $confirmation_hash = random_string(32);
+                my $confirmation_hash = string::random(32);
 
                 # add the change to the pending-verification database
                 my $query = $DB->query('INSERT INTO user_email_changes SET (user_id, new_email, confirmation_hash, ctime) VALUES (?, ?, ?, UTC_TIMESTAMP())', $edit_user->{'id'}, $update{'email'}, $confirmation_hash);
@@ -398,7 +397,7 @@ sub register {
         # everything validated, add the user
 
         # generate a confirmation hash
-        my $confirmation_hash = random_string(32);
+        my $confirmation_hash = string::random(32);
 
         # add user to database
         my $query = $DB->query(
@@ -760,7 +759,7 @@ sub login {
 
     # executed at request_init if the login form is submitted
     sub _login_init {
-        my $new_session = random_string(32);
+        my $new_session = string::random(32);
         my $restrict_ip = $INPUT{'restrict_ip'} ? '1' : '0' ; # PostgreSQL must have string 1/0 to translate it to a bool true/false
 
         # update user's session

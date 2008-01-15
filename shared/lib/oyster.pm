@@ -26,8 +26,8 @@ use image;
 use ipc;
 use log;
 use menu;
-use misc;
 use module;
+use string;
 use style;
 use url;
 use xml;
@@ -41,7 +41,7 @@ our $DB_PREFIX; # this needs to be deprecated in favor of its oyster::CONFIG equ
 
 # private variables (not exported by default)
 our %CONFIG;                        # oyster configuration, a combination of information from the database, config.pl, and created on the fly; capitalized for consistency with module %CONFIGs
-our $daemon_id = random_string(32); # a unique id for this instance of oyster
+our $daemon_id = string::random();  # a unique id for this instance of oyster
 
 my %regex_urls;                       # regular expression urls -- these are loaded once and cached, using the database for regular expression matches is a bad idea
 my @request_exception_handlers;       # inner exception handlers for requests
@@ -391,7 +391,7 @@ sub _load_exception_handlers {
             print "\t<literal>";
             print "Executing Function:\n$REQUEST{module}::$REQUEST{action} (" . join(', ', @{$REQUEST{'params'}}) . ")\n";
             print "Database Error:\n" . xml::entities($log_msg) . "\n";
-            print "Trace:\n" . misc::trace();
+            print "Trace:\n" . exceptions::trace();
             print "</literal>\n";
         }
         log::error("Executing: $REQUEST{module}::$REQUEST{action} (" . join(', ', @{$REQUEST{'params'}}) . ")\n$log_msg\n") if $log_msg;
@@ -408,7 +408,7 @@ sub _load_exception_handlers {
             print "\t<literal>";
             print "Executing Function:\n$REQUEST{module}::$REQUEST{action} (" . join(', ', @{$REQUEST{'params'}}) . ")\n";
             print "Perl Error:\n" . xml::entities($error);
-            print "Trace:\n" . misc::trace();
+            print "Trace:\n" . exceptions::trace();
             print "</literal>\n";
         }
         log::error("Executing: $REQUEST{module}::$REQUEST{action} (" . join(', ', @{$REQUEST{'params'}}) . ")\n$error\n");
@@ -438,7 +438,7 @@ sub _load_exception_handlers {
         print "An internal error has occured.\n";
         if ($CONFIG{'debug'}) {
             print "\nDatabase Error:\n$error\n";
-            print "\n" . misc::trace() . "\n";
+            print "\n" . exceptions::trace() . "\n";
         }
         log::error($error);
         abort();
@@ -452,7 +452,7 @@ sub _load_exception_handlers {
         print "Fatal Error:\n$error\n";
         if ($CONFIG{'debug'}) {
             print "\n$error\n";
-            print "\n" . misc::trace() . "\n";
+            print "\n" . exceptions::trace() . "\n";
         }
         abort();
     }
@@ -465,7 +465,7 @@ sub _load_exception_handlers {
         print "An internal error has occured.\n";
         if ($CONFIG{'debug'}) {
             print "Perl Error:\n$error\n";
-            print "\n" . misc::trace() . "\n";
+            print "\n" . exceptions::trace() . "\n";
         }
         log::error($error);
         abort();
@@ -482,20 +482,20 @@ sub _load_exception_handlers {
 =cut
 
 =xml
-    <function name="execute_script">
-        <synopsis>
-            Executes a script in the shared_path/script/ directory, under the current site ID.
-        </synopsis>
-        <note>
-            The first argument is the filename without the .pl extension.
-        </note>
-        <prototype>
-            string output = oyster::execute_script(string script_name[, array args])
-        </prototype>
-        <example>
-            print execute_script('xslcompiler');
-        </example>
-    </function>
+        <function name="execute_script">
+            <synopsis>
+                Executes a script in the shared_path/script/ directory, under the current site ID.
+            </synopsis>
+            <note>
+                The first argument is the filename without the .pl extension.
+            </note>
+            <prototype>
+                string output = oyster::execute_script(string script_name[, array args])
+            </prototype>
+            <example>
+                print execute_script('xslcompiler');
+            </example>
+        </function>
 =cut
 
 sub execute_script {
@@ -507,14 +507,14 @@ sub execute_script {
 }
 
 =xml
-    <function name="restart">
-        <synopsis>
-            Restarts the current script.
-        </synopsis>
-        <prototype>
-            oyster::restart()
-        </prototype>
-    </function>
+        <function name="restart">
+            <synopsis>
+                Restarts the current script.
+            </synopsis>
+            <prototype>
+                oyster::restart()
+            </prototype>
+        </function>
 =cut
 
 sub restart {
@@ -523,17 +523,17 @@ sub restart {
 }
 
 =xml
-    <function name="perl_require">
-        <synopsis>
-            Performs a 'require' without Oyster's library search paths.
-        </synopsis>
-        <note>
-            This cannot be used like 'require IO::Socket', you must use 'IO/Socket.pm' instead.
-        </note>
-        <prototype>
-            oyster::perl_require(string filename)
-        </prototype>
-    </function>
+        <function name="perl_require">
+            <synopsis>
+                Performs a 'require' without Oyster's library search paths.
+            </synopsis>
+            <note>
+                This cannot be used like 'require IO::Socket', you must use 'IO/Socket.pm' instead.
+            </note>
+            <prototype>
+                oyster::perl_require(string filename)
+            </prototype>
+        </function>
 =cut
 
 sub perl_require {
@@ -553,22 +553,22 @@ sub perl_require {
 }
 
 =xml
-    <function name="shell_escape">
-        <synopsis>
-            Escapes characters to avoid injection when executing shell commands.
-        </synopsis>
-        <note>
-            Currently only escapes double quotes.  The data passed to this function
-            assumes that it will be placed inside double quotes when it is passed to
-            the shell.
-        </note>
-        <prototype>
-            string escaped_string = oyster::shell_escape(string)
-        </prototype>
-        <todo>
-            Make this better, should have different mechanics for different shells.
-        </todo>
-    </function>
+        <function name="shell_escape">
+            <synopsis>
+                Escapes characters to avoid injection when executing shell commands.
+            </synopsis>
+            <note>
+                Currently only escapes double quotes.  The data passed to this function
+                assumes that it will be placed inside double quotes when it is passed to
+                the shell.
+            </note>
+            <prototype>
+                string escaped_string = oyster::shell_escape(string)
+            </prototype>
+            <todo>
+                Make this better, should have different mechanics for different shells.
+            </todo>
+        </function>
 =cut
 
 sub shell_escape {
@@ -576,6 +576,27 @@ sub shell_escape {
     $string =~ s/"/\"/g;
     return $string;
 }
+
+
+=xml
+        <function name="dump">
+            <synopsis>
+                
+            </synopsis>
+            <note>
+                
+            </note>
+            <prototype>
+                
+            </prototype>
+        </function>
+=cut
+
+sub dump {
+    require Data::Dumper;
+    return Data::Dumper::Dumper(@_);
+}
+
 
 =xml
     </section>
@@ -644,7 +665,6 @@ sub confirmation {
         print "\t<confirmation>$message</confirmation>\n";
     }
 }
-
 
 =xml
     </section>

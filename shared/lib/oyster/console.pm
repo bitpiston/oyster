@@ -49,17 +49,17 @@ sub start {
         catch 'db_error', with {
             my $error = shift;
             chomp($error);
-            print "Database Error:\n$error\n" . misc::trace() . "\n";
+            print "Database Error:\n$error\n" . exceptions::trace() . "\n";
             abort();
         }
         catch 'permission_error', with {
-            print "Permission Error:\n" . misc::trace() . "\n";
+            print "Permission Error:\n" . exceptions::trace() . "\n";
             abort();
         }
         catch 'perl_error', with {
             my $error = shift;
             chomp($error);
-            print "Perl Error:\n$error\n" . misc::trace() . "\n";
+            print "Perl Error:\n$error\n" . exceptions::trace() . "\n";
             abort();
         };
     }
@@ -114,7 +114,7 @@ sub login {
 
     # if the user needs a session, create one
     unless ($session) {
-        $session = random_string(32);
+        $session = string::random(32);
         $DB->do("UPDATE users SET session = '$session' WHERE id = $id");
     }
 

@@ -16,7 +16,7 @@ package exceptions;
 # override perl's die() with something that logs the error
 *CORE::GLOBAL::die = sub {
     my $error = @_ ? shift : $@ ; # for some reason certain deaths don't pass their error string (base::import... aka a problem during use module;)
-    $error .= "\nTRACE:" . misc::trace();
+    $error .= "\nTRACE:" . trace();
     if (%REQUEST) {
         require Data::Dumper;
         $error .= "\nREQUEST:\n" . Data::Dumper::Dumper(%REQUEST);
@@ -250,7 +250,44 @@ sub abort {
     CORE::die($exception);
 }
 
-# exception.pm's import function
+
+=xml
+    <function name="trace">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+=cut
+
+sub trace {
+    my @stack;
+    my $i = 1;
+    my $trace = "File                          Line Subroutine\n";
+    while (my ($package, $filename, $line, $subroutine, $hasargs, $wantarray, $evaltext, $is_require, $hints, $bitmask) = caller($i)) {
+        $filename =~ s!//+!/!g;
+        if ($subroutine eq '(eval)' and @stack) {
+            my $last_call_frame = pop @stack;
+            $subroutine .= ' ' . $last_call_frame->[1];
+        }
+        push @stack, [$filename, $subroutine, $line];
+    } continue { $i++ }
+    for my $call_frame (@stack) {
+        $trace .= string::pad($call_frame->[0], 29) . ' ' . string::pad($call_frame->[2], 5) . $call_frame->[1]. "\n";
+    }
+
+    return $trace;
+}
+
+# export exception functions
 sub import {
     my $pkg = $_[0] ne 'exceptions' ? $_[0] : caller();
 

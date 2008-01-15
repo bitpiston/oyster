@@ -17,7 +17,6 @@ use oyster 'module';
 
 # load oyster libraries
 use exceptions;
-use misc;
 
 #
 # Initialization

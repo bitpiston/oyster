@@ -9,7 +9,6 @@ use oyster 'launcher';
 
 # use oyster libraries
 use exceptions;
-use misc;
 
 try {
     throw 'meow' => 'wtf'; # test aborting a single block

@@ -25,7 +25,6 @@ use lib './lib/';
 
 use file;
 use exceptions;
-use misc;
 use log;
 
 use XML::LibXSLT;

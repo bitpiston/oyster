@@ -29,7 +29,7 @@ use exceptions;
     </function>
 =cut
 
-sub tmp_name { $oyster::CONFIG{'tmp_path'} . misc::random_string(32) . '.tmp' }
+sub tmp_name { $oyster::CONFIG{'tmp_path'} . string::random() . '.tmp' }
 
 =xml
     <function name="tmp_web_name">
@@ -52,7 +52,7 @@ sub tmp_name { $oyster::CONFIG{'tmp_path'} . misc::random_string(32) . '.tmp' }
 
 #sub tmp_web_name {
 #    my $ext = shift || 'tmp';
-#    my $filename = misc::random_string(32) . '.' . $ext;
+#    my $filename = string::random() . '.' . $ext;
 #    return ("$oyster::CONFIG{site_file_path}tmp/" . $filename, "$oyster::CONFIG{site_file_url}tmp/" . $filename);
 #}
 

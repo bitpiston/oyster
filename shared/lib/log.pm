@@ -8,7 +8,6 @@
 package log;
 
 use exceptions;
-use misc;
 
 =xml
     <function name="status">
@@ -90,7 +89,7 @@ sub _message {
     # first, attempt to log it to the database
     my $success = try {
         abort() unless $oyster::DB;
-        $oyster::DB->do("INSERT INTO $oyster::CONFIG{site_id}_logs (type, time, message, trace) VALUES ('$type', UTC_TIMESTAMP(), " . $oyster::DB->quote($message) . ", " . $oyster::DB->quote(misc::trace()) . ")");
+        $oyster::DB->do("INSERT INTO $oyster::CONFIG{site_id}_logs (type, time, message, trace) VALUES ('$type', UTC_TIMESTAMP(), " . $oyster::DB->quote($message) . ", " . $oyster::DB->quote(exceptions::trace()) . ")");
         abort() if $DBI::errstr;
     }
     catch 'db_error', with {

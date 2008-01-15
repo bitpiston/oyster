@@ -65,7 +65,7 @@ sub send {
 
     my @headers;
     for my $name (keys %headers) {
-        my $proper_name = misc::proper_caps($name);
+        my $proper_name = string::proper_caps($name);
         push @headers, "$proper_name: $headers{$name}";
     }
     my $headers = join($http::crlf, @headers) . "$http::crlf$http::crlf";

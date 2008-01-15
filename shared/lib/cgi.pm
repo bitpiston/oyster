@@ -18,7 +18,6 @@ package cgi;
 
 use exceptions;
 use event; # necessary because this library is included before event.pm
-use misc;
 
 our @tmp_files; # tmp files created by file uploads
 our $max_post_size = 1048576 * 10; # 10 mb
