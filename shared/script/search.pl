@@ -7,10 +7,12 @@
         This utility requires one argument and can optionally take two.  The first is the regular expression to search for, the second is the directory to search.  If no directory is specified, the current directory is assumed.
     </section>
     <todo>
-    	Update this utility to use console::util to parse arguments so more options can be specified, such as extensions to search or ignore and whether to be case sensitive or not (maybe the option to do a non-regex search too)
+        Update this utility to use console::util to parse arguments so more options can be specified, such as extensions to search or ignore and whether to be case sensitive or not (maybe the option to do a non-regex search too)
     </todo>
 =cut
 package oyster::script::search;
+
+require "./lib/string.pm";
 
 our $search      = $ARGV[0];
 our $search_path = './';
@@ -44,11 +46,13 @@ sub search_dir {
             if (/$search/i) {
                 my $file = "$path$filename";
                 $file =~ s/^$search_path//;
-                print "$file\n" unless $matches;
+                print "\n$file\n\n" unless $matches;
                 my $string = $_;
                 $string =~ s/^\s+(.+)\s+$/$1/g;
                 chomp($string);
-                print "  $line:\t$string\n";
+                $string = string::pad($string, 70, 1);
+                $line   = string::pad($line, 4);
+                print "  $line: $string\n";
                 $results++;
                 $matches++;
             }
@@ -56,6 +60,7 @@ sub search_dir {
     }
 }
 
+print "Searching...\n";
 search_dir($search_path);
 print "\n$results total matches\n";
 

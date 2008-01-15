@@ -71,19 +71,25 @@ sub proper_caps {
         <note>
             If the string is too long, chops the beginning off and prepends with ...
         </note>
+        <note>
+            The optional third argument allows you to have it chop off the end of
+            strings instead of the beginning if the string is too long.
+        </note>
         <prototype>
-            string = string::pad(string, int length)
+            string = string::pad(string, int length[, bool chop_end])
         </prototype>
-        <todo>
-            This should have a flag/option to chop off the beginning OR end
-        </todo>
     </function>
 =cut
 
 sub pad {
-    my $string = shift;
-    my $pad_to = shift;
-    $string = '...' . substr($string, -1 * $pad_to + 3) if length $string > $pad_to;
+    my $string   = shift;
+    my $pad_to   = shift;
+    my $chop_end = shift || 0;
+    if ($chop_end) {
+        $string = substr($string, 0, $pad_to - 3) . '...' if length $string > $pad_to;
+    } else {
+        $string = '...' . substr($string, -1 * $pad_to + 3) if length $string > $pad_to;
+    }
     return $string . (' ' x ($pad_to - length $string));
 }
 
