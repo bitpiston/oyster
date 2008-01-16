@@ -240,8 +240,7 @@ sub is_reserved_id {
 =xml
         <function name="">
             <synopsis>
-                Calls xslcompiler.pl on all of the current site's styles, returns the url
-                #   path to the style for the given stylesheets.
+                Calls xslcompiler.pl on all of the current site's styles, returns the url path to the style for the given stylesheets.
             </synopsis>
             <prototype>
                 string stylesheet_url, string stylesheet_path = style::compile(string style[, string stylesheet][, string stylesheet])
@@ -250,8 +249,6 @@ sub is_reserved_id {
 =cut
 
 sub compile {
-    #return scalar(`perl script/xslcompiler.pl "$oyster::CONFIG{site_id}"`);
-
     my $style       = shift;
     my @stylesheets = @_;
     my $style_path  = "$oyster::CONFIG{site_path}styles/$style/";

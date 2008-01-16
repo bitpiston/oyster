@@ -13,27 +13,14 @@
 		<!-- name -->
 		<h3><xsl:value-of select="@name" /></h3>
 
-		<!-- required
 		<xsl:if test="@required">
 			<p><small>(required)</small></p>	
-		</xsl:if> -->
+		</xsl:if>
 
 		<!-- description -->
 		<xsl:if test="@description">
 			<p><xsl:value-of select="@description" /></p>
 		</xsl:if>
-
-		<!-- dependencies
-		<xsl:if test="count(requires)">
-			<label id="{@id}_deps">Dependencies</label>
-			<ul>
-				<xsl:for-each select="requires">
-					<li>
-						<xsl:value-of select="../../module[@id = current()/@id]/@name" />
-					</li>
-				</xsl:for-each>
-			</ul>
-		</xsl:if> -->
 
 		<!-- dependencies -->
 		<xsl:if test="count(requires)">
@@ -54,9 +41,11 @@
 			<xsl:if test="not(@loaded)">
 				[ <a href="{/swaf/@base}admin/modules/?a=enable&amp;id={@id}">Enable</a> ]
 			</xsl:if>
+			<!--
 			<xsl:if test="@rev &lt; @latest_rev">
 				[ <a href="{/swaf/@base}admin/modules/?a=update&amp;id={@id}">Update or Install</a> ]
 			</xsl:if>
+			-->
 		</small></p>
 	</xsl:for-each>
 </xsl:template>
