@@ -150,13 +150,17 @@ sub modules {
 sub logs {
     user::require_permission('admin_logs');
 
+    # contextual admin menu
+    my $item =
+    menu::add_item('menu'   => 'admin', 'label' => 'Logs',   'url' => "${ADMIN_BASE_URL}logs/");
+    menu::add_item('parent' => $item,   'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
+    menu::add_item('parent' => $item,   'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
+
     # clear a log
     if ($INPUT{'clear'} eq 'error' or $INPUT{'clear'} eq 'status') {
-        try {
-            confirm("Are you sure you want to clear the $INPUT{clear} log?");
-            $DB->do("DELETE FROM ${DB_PREFIX}logs WHERE type = '$INPUT{clear}'");
-            confirmation("The $INPUT{clear} log has been cleared.");
-        };
+        confirm("Are you sure you want to clear the $INPUT{clear} log?");
+        $DB->do("DELETE FROM ${DB_PREFIX}logs WHERE type = '$INPUT{clear}'");
+        confirmation("The $INPUT{clear} log has been cleared.");
     }
 
     # view a log
@@ -193,12 +197,6 @@ sub logs {
         menu::add_item('menu' => $menu, 'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
         menu::print_xml($menu);
     }
-
-    # contextual admin menu
-    my $item =
-    menu::add_item('menu'   => 'admin', 'label' => 'Logs',   'url' => "${ADMIN_BASE_URL}logs/");
-    menu::add_item('parent' => $item,   'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
-    menu::add_item('parent' => $item,   'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
 }
 
 =xml
