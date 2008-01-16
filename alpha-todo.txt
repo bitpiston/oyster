@@ -91,3 +91,5 @@ TODO
 - cgi.pm should accept array/hash values (carefully...)
 - various utils should use console::util to parse args instead of just using @ARGV
 - possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
+- better logic for getting content-type
+- recompile server_base.xsl dynamically as needed
