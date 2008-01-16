@@ -161,11 +161,11 @@ sub _process_form_post {
 
     read(STDIN, $buffer, $ENV{'CONTENT_LENGTH'});
 
-    my ($type) = ($ENV{'CONTENT_TYPE'} =~ /^(.+?);/);
+    my ($type) = ($ENV{'CONTENT_TYPE'} =~ /^(.+?);/o);
 
     # multipart encrypted (for file uploads)
     if ($type eq 'multipart/form-data') {
-        my ($boundary) = ($ENV{'CONTENT_TYPE'} =~ /boundary=(\S+)/);
+        my ($boundary) = ($ENV{'CONTENT_TYPE'} =~ /boundary=(\S+)/o);
         chomp($boundary);
 
         # process $buffer until it is empty
@@ -179,13 +179,13 @@ sub _process_form_post {
                 substr($buffer, 0, length($1), '');
 
                 # parse headers
-                my @headers = split(/;\s+?|(?:\015\012)/, $headers); # most entries are separated by '; ' but Content-Type is on its own line
+                my @headers = split(/;\s+?|(?:\015\012)/o, $headers); # most entries are separated by '; ' but Content-Type is on its own line
                 my %headers;
                 for my $header (@headers) {
-                    my ($name, $value) = ($header =~ /^(.+?)\s*(?::|=)\s*(.+)$/); # some entries are divided by ': ' some by '='
+                    my ($name, $value) = ($header =~ /^(.+?)\s*(?::|=)\s*(.+)$/o); # some entries are divided by ': ' some by '='
                     if (substr($value, 0, 1) eq '"') { # if the value is quoted
                         $value = substr($value, 1, length($value) - 2); # remove surrounding quotes
-                        $value =~ s/\\(?=")//g; # remove escapes before quotes in the value
+                        $value =~ s/\\(?=")//og; # remove escapes before quotes in the value
                     }
                     $headers{lc($name)} = $value;
                 }
@@ -215,8 +215,8 @@ sub _process_form_post {
                 else {
 
                     # add data to %INPUT
-                    $content =~ s/\r\n/\n/g;
-                    $content =~ s/\r/\n/g;
+                    $content =~ s/\r\n/\n/og;
+                    $content =~ s/\r/\n/og;
                     $oyster::INPUT{$headers{'name'}} = $content;
                 }
             }
@@ -234,13 +234,13 @@ sub _process_form_post {
 
     # normal post data
     else {
-        my @pairs = split(/&/, $buffer);
+        my @pairs = split(/&/o, $buffer);
         for (@pairs) {
             my ($name, $value) = split /=/;
             $value =~ tr/+/ /;
-            $value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
-            $value =~ s/\r\n/\n/g;
-            $value =~ s/\r/\n/g;
+            $value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/oeg;
+            $value =~ s/\r\n/\n/og;
+            $value =~ s/\r/\n/og;
             $oyster::INPUT{$name} = $value;
         }
     }
@@ -267,8 +267,8 @@ sub _process_form_get {
     my @pairs = split(/&/, $ENV{'QUERY_STRING'});
     for (@pairs) {
         my ($name, $value) = split /=/;
-        $value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg;
-        $value =~ s/\r//g; # fastcgi cant handle carriage returns?
+        $value =~ s/%([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/oeg;
+        $value =~ s/\r//og; # fastcgi cant handle carriage returns?
         $oyster::INPUT{$name} = $value;
     }
 }
@@ -289,10 +289,10 @@ sub _process_form_get {
 
 sub _process_cookies {
     return unless length $ENV{'HTTP_COOKIE'};
-    my @pairs = split(/\; /, $ENV{'HTTP_COOKIE'});
+    my @pairs = split(/\; /o, $ENV{'HTTP_COOKIE'});
     my $pair;
     foreach $pair (@pairs) {
-        my ($key, $value) = split(/=/, $pair);
+        my ($key, $value) = split(/=/o, $pair);
         $oyster::COOKIES{$key} = $value;
     }
 }

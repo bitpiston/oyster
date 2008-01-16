@@ -150,6 +150,55 @@ sub modules {
 sub logs {
     user::require_permission('admin_logs');
 
+    # clear a log
+    if ($INPUT{'clear'} eq 'error' or $INPUT{'clear'} eq 'status') {
+        try {
+            confirm("Are you sure you want to clear the $INPUT{clear} log?");
+            $DB->do("DELETE FROM ${DB_PREFIX}logs WHERE type = '$INPUT{clear}'");
+            confirmation("The $INPUT{clear} log has been cleared.");
+        };
+    }
+
+    # view a log
+    elsif ($INPUT{'view'} eq 'error' or $INPUT{'view'} eq 'status') {
+
+        # include logs.xsl
+        style::include_template('logs');
+        
+        # fetch log entries
+        my $offset = (exists $INPUT{'offset'} and $INPUT{'offset'} =~ /^[0-9]+$/) ? $INPUT{'offset'} : 0;
+        my $query = $DB->query("SELECT id, time, message, trace FROM ${DB_PREFIX}logs WHERE type = '$INPUT{view}' ORDER BY time DESC LIMIT 25 OFFSET $offset");
+
+        # list log entries
+        my $attrs;
+        $attrs .= ' next_offset="' . ($offset + 25) . '"' if $query->rows() == 25;
+        $attrs .= ' prev_offset="' . ($offset - 25) . '"' if $offset >= 25;
+        print qq~\t<admin action="logs" log="$INPUT{view}"$attrs>\n~;
+        while (my $entry = $query->fetchrow_hashref()) {
+            print qq~\t\t<entry id="$entry->{id}" time="$entry->{time}">\n~;
+            chomp($entry->{'message'});
+            print "\t\t\t<message>" . xml::entities($entry->{'message'}) . "</message>\n";
+            print "\t\t\t<trace>" . xml::entities($entry->{'trace'}) . "</trace>\n" if length $entry->{'trace'};
+            print "\t\t</entry>\n";
+        }
+        print "\t</admin>\n";
+    }
+
+    # display a menu of logs
+    else {
+        my $menu = 'admin_logs';
+        menu::label($menu, 'Logs');
+        menu::description($menu, 'Logs can contain useful information about your site including simple status messages or fatal errors.');
+        menu::add_item('menu' => $menu, 'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
+        menu::add_item('menu' => $menu, 'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
+        menu::print_xml($menu);
+    }
+
+    # contextual admin menu
+    my $item =
+    menu::add_item('menu'   => 'admin', 'label' => 'Logs',   'url' => "${ADMIN_BASE_URL}logs/");
+    menu::add_item('parent' => $item,   'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
+    menu::add_item('parent' => $item,   'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
 }
 
 =xml
