@@ -101,3 +101,34 @@ sub do {
 =xml
 </document>
 =cut
+
+__END__
+
+site_ipc
+
+ipc
+    ctime
+    module
+    message
+    args
+
+# ipc::message_all(string module => string message[, 'when' => string][, 'args' => arrayref])
+
+sub message_all {
+    my %args = @_;
+    $args{'when'} = 'request_pre' unless exists $args{'when'};
+
+}
+
+sub message_one {
+
+}
+
+sub message_global_all {
+
+}
+
+sub message_global_one {
+
+}
+
