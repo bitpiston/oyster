@@ -45,7 +45,6 @@ our $daemon_id = string::random();  # a unique id for this instance of oyster
 my %regex_urls;                       # regular expression urls -- these are loaded once and cached, using the database for regular expression matches is a bad idea
 my @request_exception_handlers;       # inner exception handlers for requests
 my @request_fatal_exception_handlers; # outer exception handlers for requests
-my %delayed_imports;                  # if packages 'use oyster' before oyster is loaded, delay their import until it is
 
 =xml
     <section title="Internals">
@@ -54,95 +53,175 @@ my %delayed_imports;                  # if packages 'use oyster' before oyster i
         </synopsis>
 =cut
 
-# Description:
-#   called to load oyster and prepare the oyster environment
-# Notes:
-#   * The optional argument load_modules defaults to true, this is used by
-#     some outside utilities to only load the oyster config and library,
-#     but not the modules.
-#   * ditto for load_libs -- note: load_libs does not actually determine
-#     whether libraries are loaded or not, but only whether their load
-#     routines are executed (which often depend on the database connection)
-#   * ditto for load_request -- note: load_request determines whether this
-#     daemon should be prepared to serve page requests or not.
-#   * ditto for db_connect
-#   * Some of the above options rely on others.  None of them can be performed
-#     without db_connect.  Some dependencies cannot be known until runtime;
-#     use these options with caution.
-# Prototype:
-#   oyster::load(hashref configuration[, db_connect => bool][, load_config => bool][, load_modules => bool][, load_libs => bool][, load_request => bool])
-sub load {
-    my ($conf, %options) = @_;
+=xml
+        <function name="import">
+            <synopsis>
+                Exports Oyster variables
+            </synopsis>
+            <note>
+                Can optionally be passed an argument to be imported into a specific package instead of the caller.
+            </note>
+            <note>
+                Import sets: module, launcher, test, daemon (some are NYI or dont export anything)
+            </note>
+            <prototype>
+                oyster::import(string package_name[, string import_set])
+            </prototype>
+            <prototype>
+                use oyster [string import_set]
+            </prototype>
+            <prototype>
+                oyster->import([string import_set])
+            </prototype>
+        </function>
+=cut
 
-    # default options
-    for my $option (qw(db_connect load_config load_modules load_libs load_request)) {
-        $options{$option} = 1 unless (exists $options{$option} and !$options{$option});
+sub import {
+
+    # do nothing if oyster has not been loaded yet
+    return unless %CONFIG;
+
+    # do nothing if no import set was specified
+    return unless length $_[1];
+
+    # figure out which package to import to
+    my $pkg = $_[0] ne 'oyster' ? $_[0] : caller();
+
+    # figure out the import set
+    my $import_set = $_[1];
+
+    # module
+    if ($import_set eq 'module') {
+
+        # functions
+        *{ $pkg . '::confirm'      } = \&confirm;
+        *{ $pkg . '::confirmation' } = \&confirmation;
+
+        # global variables
+        *{ $pkg . '::BASE_URL'       } = \$CONFIG{'url'};
+        *{ $pkg . '::DB_PREFIX'      } = \$CONFIG{'db_prefix'};
+        *{ $pkg . '::TMP_PATH'       } = \$CONFIG{'tmp_path'};
+        *{ $pkg . '::REQUEST'        } = \%REQUEST;
+        *{ $pkg . '::COOKIES'        } = \%COOKIES;
+        *{ $pkg . '::INPUT'          } = \%INPUT;
+        ${ $pkg . '::DB'             } = $DB;
+        *{ $pkg . '::CONFIG'         } = \%CONFIG;
+        ${ $pkg . '::ADMIN_BASE_URL' } = "$CONFIG{url}admin/";
+
+        # module-specific variables
+        my ($module) = ( $pkg =~ /::/ ? ($pkg =~ /^(.+?)::/) : $pkg );
+        ${ $pkg . '::module_path'           } = "$CONFIG{shared_path}modules/$module/"; # no need to reference, these don't change
+        ${ $pkg . '::module_admin_base_url' } = "$CONFIG{url}admin/${module}/";
+        ${ $pkg . '::module_db_prefix'      } = "$CONFIG{db_prefix}${module}_";
+        *{ $pkg . '::config'                } = \%{"${module}::CONFIG"} if $pkg ne $module;
     }
 
-    # save a permanent copy of the configuration options passed to load()
-    %CONFIG = %{$conf};
+    # launcher
+    elsif ($import_set eq 'launcher') {
+        # nothing
+    }
 
-    # change $conf into a reference to the new %CONFIG
-    # - this destroys the now-useless $conf variable (which is a package variable, so it isnt GC'd), but points it to exactly the same data
-    $_[0] = \%CONFIG; # have to do this via @_ to change the original variable
+    # daemon
+    elsif ($import_set eq 'daemon') {
+        # todo
+    }
+
+    # daemon
+    elsif ($import_set eq 'test') {
+        # todo
+    }
+}
+
+=xml
+        <function name="load">
+            <synopsis>
+                Load Oyster and prepares the oyster environment
+            </synopsis>
+            <note>
+                The optional arguments can be used to tell Oyster to only load certain things.  This can be useful for certain scripts that only need a minimal Oyster environment.
+            </note>
+            <note>
+                All optional arguments default to true.
+            </note>
+            <note>
+                'load_config' determines whether additional configuration data should be loaded from the database.
+            </note>
+            <note>
+                'load_libs' does not actually determine whether libraries are loaded or not, but whether their load event routines are called.
+            </note>
+            <note>
+                'load_request' determines whether Oyster should be prepared to serve page requests.
+            </note>
+            <note>
+                'load_modules' determines whether modules will be loaded.
+            </note>
+            <prototype>
+                oyster::load(hashref configuration[, db_connect => bool][, load_config => bool][, load_modules => bool][, load_libs => bool][, load_request => bool])
+            </prototype>
+        </function>
+=cut
+
+sub load {
+    *CONFIG = shift; # alias %CONFIG to the configuration hash passed in, so that the program calling load() gets the full config
+    %options = @_;
+
+    # append misc other values to %CONFIG
+    $CONFIG{'tmp_path'}  = $CONFIG{'shared_path'} . 'tmp/';
+    $CONFIG{'db_prefix'} = $CONFIG{'site_id'} . '_';
 
     # enable UTF8 output
     binmode STDOUT, ':utf8';
 
+    # load oyster
     try {
 
         # establish a database connection
-        if ($options{'db_connect'}) {
+        if (!exists $options{'db_connect'} or !$options{'db_connect'}) {
             _db_connect();
-        } else { # disable these options since they may contain db stuff
-            $options{'load_config'}  = 0;
-            $options{'load_modules'} = 0;
-            $options{'load_libs'}    = 0;
-            $options{'load_request'} = 0;
+        }
+
+        # if a database connection was not established, do no more
+        else {
+            abort();
         }
 
         # load oyster/site configuration from database
-        if ($options{'load_config'}) {
-            _load_config();
+        _load_config() if (!exists $options{'load_config'} or !$options{'load_config'});
 
-            # perform delayed imports
-            _delayed_imports();
+        # run library initialization event
+        if (!exists $options{'load_libs'} or !$options{'load_libs'}) {
+            event::execute('load_lib');
+            event::destroy('load_lib');
         }
 
-        # run library initialization
-# TODO: is this event being used properly?
-        event::execute('load_lib') if $options{'load_libs'};
-        event::destroy('load_lib');
-
         # load modules
-        _load_modules() if $options{'load_modules'};
+        _load_modules() if (!exists $options{'load_modules'} or !$options{'load_modules'});
 
         # load/cache stuff necessary to handle requests
-        _load_exception_handlers() if $options{'load_request'};
+        _load_exception_handlers() if (!exists $options{'load_request'} or !$options{'load_request'});
     }
     catch 'db_error', with {
-        my $error = shift;
-        die $error;
+        die shift();
     }
     catch 'perl_error', with {
-        my $error = shift;
-        die $error;
+        die shift();
     };
 }
 
-sub _delayed_imports {
-    for my $pkg (keys %delayed_imports) {
-        oyster::import($pkg, $delayed_imports{ $pkg });
-    }
-    undef %delayed_imports;
-}
+=xml
+        <function name="_db_connect">
+            <synopsis>
+                Establishes a database connection if one isn't already active
+            </synopsis>
+            <todo>
+                Ensure the 'force_reconnect' argument properly re-uses the same database object.
+            </todo>
+            <prototype>
+                _db_connect([bool force_reconnect])
+            </prototype>
+        </function>
+=cut
 
-# Description:
-#   Establish a database connection if one isn't already active
-# Notes:
-#   * This must be called with $CONFIG{'database'} available!
-# Prototype:
-#   oyster::_db_connect([bool force_reconnect])
 sub _db_connect {
     return if $DB->{'Active'} and !$_[0]; # note: this autovififies $DB into a hashref if it isn't one
 
@@ -170,33 +249,39 @@ sub _db_connect {
     elsif ($dbconfig->{'driver'} eq 'Pg') {
         $DB->{'pg_server_prepare'}    = 0; # disable server side prepared statements
     }
-
-    $CONFIG{'db_prefix'} = $CONFIG{'site_id'} . '_';
 }
 
-# Description:
-#   Loads (or reloads) oyster configuration
-# Prototype:
-#   oyster::_load_config()
-sub _load_config {
+=xml
+        <function name="_load_config">
+            <synopsis>
+                Loads (or reloads) oyster configuration
+            </synopsis>
+            <prototype>
+                _load_config()
+            </prototype>
+        </function>
+=cut
 
-    # establish a database connection
-    _db_connect();
+sub _load_config {
 
     # load oyster configuration and append it to %CONFIG
     config::load('table' => 'config', 'config_hash' => \%CONFIG);
 
     # load site configuration and append it to %CONFIG
     config::load('table' => "$CONFIG{db_prefix}config", 'config_hash' => \%CONFIG);
-
-    # append misc other values to %CONFIG
-    $CONFIG{'tmp_path'} = "$CONFIG{shared_path}tmp/";
 }
 
-# Description:
-#   Loads (or reloads) oyster modules
-# Prototype:
-#   oyster::_load_modules()
+=xml
+        <function name="_load_modules">
+            <synopsis>
+                Loads (or reloads) oyster modules
+            </synopsis>
+            <prototype>
+                _load_modules()
+            </prototype>
+        </function>
+=cut
+
 sub _load_modules {
 
     # if modules are already loaded, unload them
@@ -224,20 +309,44 @@ sub _load_modules {
     event::destroy('load');
 }
 
-# Description:
-#   Called before each page request
-# Prototype:
-#   oyster::request_pre()
-sub request_pre {
+=xml
+    </section>
+    
+    <section title="Request Handling">
+        <synopsis>
+            These functions deal with handling page requests.  Like the above internal functions, should rarely be called by outside code (except for launchers).
+        </synopsis>
+=cut
 
-    # perform any necessary IPC
+=xml
+        <function name="request_pre">
+            <synopsis>
+                Called before each page request
+            </synopsis>
+            <note>
+                This is primarily used to perform updates necessary to keep daemons in sync before the next page should be served.
+            </note>
+            <prototype>
+                oyster::request_pre()
+            </prototype>
+        </function>
+=cut
+
+sub request_pre {
     ipc::do();
 }
 
-# Description:
-#   Called to handle each page request
-# Prototype:
-#   oyster::request_handler()
+=xml
+        <function name="request_handler">
+            <synopsis>
+                Called to handle each page request
+            </synopsis>
+            <prototype>
+                oyster::request_handler()
+            </prototype>
+        </function>
+=cut
+
 sub request_handler {
 
     # remember the time this request started (for some reason putting this with the rest of %REQUEST's declaration completely random times are spat out)
@@ -344,17 +453,23 @@ sub request_handler {
     } @request_fatal_exception_handlers;
 }
 
-# Description:
-#   Performed after request_handler, after the connection is closed
-# Notes:
-#   * Hooking into request_cleanup is favorable to request_finish (unless you
-#     have a good reason), since request_finish hooks should not print
-#     anything anyways.  The only difference is that request_finish traps
-#     exceptions.
-# TODO:
-#   * Hmmm... untrapped exceptions..
-# Prototype:
-#   oyster::request_cleanup()
+=xml
+        <function name="request_cleanup">
+            <synopsis>
+                Performed after request_handler, after the connection is closed
+            </synopsis>
+            <note>
+                Hooking into request_cleanup is favorable to request_finish (unless you have a good reason), since request_finish hooks should not print anything anyways.
+            </note>
+            <warning>
+                request_cleanup does NOT trap exceptions! (TODO!)
+            </warning>
+            <prototype>
+                oyster::request_cleanup()
+            </prototype>
+        </function>
+=cut
+
 sub request_cleanup {
 
     # signal the request_cleanup hook
@@ -364,9 +479,16 @@ sub request_cleanup {
     %REQUEST = ();
 }
 
-#
-# Exception Handlers
-#
+=xml
+        <function name="_load_exception_handlers">
+            <synopsis>
+                Prepares the exception handlers necessary to serve a page request.
+            </synopsis>
+            <prototype>
+                _load_exception_handlers()
+            </prototype>
+        </function>
+=cut
 
 sub _load_exception_handlers {
 
@@ -528,6 +650,9 @@ sub restart {
             <prototype>
                 oyster::perl_require(string filename)
             </prototype>
+            <todo>
+                Is this necessary? The fact that all of our libs are lowercase should stop conflicts anyways.  This is only a slower, less flexible, version of 'require'
+            </todo>
         </function>
 =cut
 
@@ -572,17 +697,22 @@ sub shell_escape {
     return $string;
 }
 
-
 =xml
         <function name="dump">
             <synopsis>
-                
+                Uses Data::Dumper to return a dump of a variable.
             </synopsis>
             <note>
-                
+                This is simply here for convenience.
+            </note>
+            <note>
+                It is probably not a good idea to use this in production code, as it loads Data::Dumper once it is called, which requires a significant amount of memory.
+            </note>
+            <note>
+                Like Data::Dumper::Dumper, be sure to pass a ref.
             </note>
             <prototype>
-                
+                variable = oyster::dump(ref)
             </prototype>
         </function>
 =cut
@@ -591,7 +721,6 @@ sub dump {
     require Data::Dumper;
     return Data::Dumper::Dumper(@_);
 }
-
 
 =xml
     </section>
@@ -663,75 +792,6 @@ sub confirmation {
 
 =xml
     </section>
-=cut
-
-# Description:
-#   Exports Oyster variables
-# Notes::
-#   * Can optionally be passed an argument to be imported into a specific
-#     package instead of the caller.
-#   * Import sets: module, launcher
-# Prototype:
-#   oyster::import(string package_name[, string import_set])
-#   or
-#   use oyster [string import_set]
-#   or
-#   oyster->import([string import_set])
-sub import {
-
-    # do nothing if no import set was specified
-    return unless length $_[1];
-
-    # figure out which package to import to
-    my $pkg = $_[0] ne 'oyster' ? $_[0] : caller();
-
-    # figure out the import set
-    my $import_set = $_[1];
-
-    # if oyster has not yet been loaded, delay this import
-    unless (%CONFIG) {
-        $delayed_imports{ $pkg } = $import_set;
-        return;
-    }
-
-    # module
-    if ($import_set eq 'module') {
-
-        # functions
-        *{ $pkg . '::confirm'      } = \&confirm;
-        *{ $pkg . '::confirmation' } = \&confirmation;
-
-        # global variables
-        *{ $pkg . '::BASE_URL'       } = \$CONFIG{'url'};
-        *{ $pkg . '::DB_PREFIX'      } = \$CONFIG{'db_prefix'};
-        *{ $pkg . '::TMP_PATH'       } = \$CONFIG{'tmp_path'};
-        *{ $pkg . '::REQUEST'        } = \%REQUEST;
-        *{ $pkg . '::COOKIES'        } = \%COOKIES;
-        *{ $pkg . '::INPUT'          } = \%INPUT;
-        ${ $pkg . '::DB'             } = $DB;
-        *{ $pkg . '::CONFIG'         } = \%CONFIG;
-        ${ $pkg . '::ADMIN_BASE_URL' } = "$CONFIG{url}admin/";
-
-        # module-specific variables
-        my ($module) = ( $pkg =~ /::/ ? ($pkg =~ /^(.+?)::/) : $pkg );
-        ${ $pkg . '::module_path'           } = "$CONFIG{shared_path}modules/$module/"; # no need to reference, these don't change
-        ${ $pkg . '::module_admin_base_url' } = "$CONFIG{url}admin/${module}/";
-        ${ $pkg . '::module_db_prefix'      } = "$CONFIG{db_prefix}${module}_";
-        *{ $pkg . '::config'                } = \%{"${module}::CONFIG"} if $pkg ne $module;
-    }
-
-    # launcher
-    elsif ($import_set eq 'launcher') {
-        # nothing
-    }
-
-    # daemon
-    elsif ($import_set eq 'daemon') {
-        # todo
-    }
-}
-
-=xml
 </document>
 =cut
 

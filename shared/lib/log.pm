@@ -102,6 +102,7 @@ sub _message {
     unless ($success) {
         open(my $log, '>>', "$oyster::CONFIG{site_path}logs/error.log");
         print $log scalar(localtime) . "\t$message\n";
+        # TODO: should this store a trace?
     }
 }
 
