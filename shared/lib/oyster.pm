@@ -195,7 +195,7 @@ sub load {
     try {
 
         # establish a database connection
-        if (!exists $options{'db_connect'} or !$options{'db_connect'}) {
+        if (!exists $options{'db_connect'} or $options{'db_connect'}) {
             _db_connect();
         }
 
@@ -205,19 +205,19 @@ sub load {
         }
 
         # load oyster/site configuration from database
-        _load_config() if (!exists $options{'load_config'} or !$options{'load_config'});
+        _load_config() if (!exists $options{'load_config'} or $options{'load_config'});
 
         # run library initialization event
-        if (!exists $options{'load_libs'} or !$options{'load_libs'}) {
+        if (!exists $options{'load_libs'} or $options{'load_libs'}) {
             event::execute('load_lib');
             event::destroy('load_lib');
         }
 
         # load modules
-        _load_modules() if (!exists $options{'load_modules'} or !$options{'load_modules'});
+        _load_modules() if (!exists $options{'load_modules'} or $options{'load_modules'});
 
         # load/cache stuff necessary to handle requests
-        _load_exception_handlers() if (!exists $options{'load_request'} or !$options{'load_request'});
+        _load_exception_handlers() if (!exists $options{'load_request'} or $options{'load_request'});
     }
     catch 'db_error', with {
         die shift();
