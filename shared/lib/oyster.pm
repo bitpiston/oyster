@@ -32,16 +32,34 @@ use style;
 use url;
 use xml;
 
+=xml
+    <section title="Global Variables">
+        <synopsis>
+            These are exported to modules.
+        </synopsis>
+        <dl>
+            <dt>%REQUEST</dt>
+            <dd>Data associated with the current request (such as the style, templates, module, action, etc).  This is a good place to store data that you want to persist for only the current request; but be careful to avoid conflicts.</dd>
+            <dt>%INPUT</dt>
+            <dd>GET/POST data for the current request</dd>
+            <dt>%COOKIES</dt>
+            <dd>Cookie data for the current request</dd>
+            <dt>$DB</dt>
+            <dd>The database object</dd>
+            <dt>%CONFIG</dt>
+            <dd>The Oyster configuration, a combination of config.pl, information from the database, and some values added when Oyster is loaded</dd>
+        </dl>
+    </section>
+=cut
+
 # global variables (exported to modules)
-our %REQUEST; # data associated with the current request (such as the style, module template, or module to be executed) 
+our %REQUEST; # data associated with the current request (such as the style, module template, or module to be executed)
 our %INPUT;   # GET/POST data for the current request
 our %COOKIES; # cookie data for the current request
 our $DB;      # the database object
+our %CONFIG;  # oyster configuration, a combination of information from the database, config.pl, and created on the fly; capitalized for consistency with module %CONFIGs
 
-# private variables (not exported by default)
-our %CONFIG;                        # oyster configuration, a combination of information from the database, config.pl, and created on the fly; capitalized for consistency with module %CONFIGs
-our $daemon_id = string::random();  # a unique id for this instance of oyster
-
+# private variables
 my %regex_urls;                       # regular expression urls -- these are loaded once and cached, using the database for regular expression matches is a bad idea
 my @request_exception_handlers;       # inner exception handlers for requests
 my @request_fatal_exception_handlers; # outer exception handlers for requests
@@ -168,6 +186,7 @@ sub load {
     # append misc other values to %CONFIG
     $CONFIG{'tmp_path'}  = $CONFIG{'shared_path'} . 'tmp/';
     $CONFIG{'db_prefix'} = $CONFIG{'site_id'} . '_';
+    $CONFIG{'daemon_id'} = string::random();
 
     # enable UTF8 output
     binmode STDOUT, ':utf8';
@@ -445,7 +464,7 @@ sub request_handler {
         event::execute('request_end');
 
         # print the footer
-        print qq~\t<daemon>$daemon_id</daemon>\n~ if $CONFIG{'debug'};
+        print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'};
         style::print_footer();
 
         # signal the request_finish hook

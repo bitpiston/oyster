@@ -18,7 +18,7 @@ our ($ipc_insert_query, $ipc_get_query, $ipc_last_do);
 event::register_hook('load_lib', '_ipc_load');
 sub _ipc_load {
     $ipc_insert_query = $oyster::DB->server_prepare("INSERT INTO ipc (ctime, command, daemon_id, site_id) VALUES (UTC_TIMESTAMP(), ?, ?, ?)");
-    $ipc_get_query    = $oyster::DB->server_prepare("SELECT command FROM ipc WHERE ctime > FROM_UNIXTIME(?) and (site_id = '$oyster::CONFIG{site_id}' or site_id = '') and daemon_id != '$oyster::daemon_id' ORDER BY ctime ASC");
+    $ipc_get_query    = $oyster::DB->server_prepare("SELECT command FROM ipc WHERE ctime > FROM_UNIXTIME(?) and (site_id = '$oyster::CONFIG{site_id}' or site_id = '') and daemon_id != '$oyster::CONFIG{daemon_id}' ORDER BY ctime ASC");
     $ipc_last_do      = datetime::gmtime();
 }
 
@@ -58,8 +58,8 @@ sub eval {
     return if ($@ or $oyster::CONFIG{'mode'} ne 'fastcgi');
 
     # insert this task into the ipc queue
-    #log::status("\$ipc_insert_query->execute($cmd, $oyster::daemon_id, $oyster::CONFIG{site_id})");
-    $ipc_insert_query->execute($cmd, $oyster::daemon_id, $oyster::CONFIG{'site_id'});
+    #log::status("\$ipc_insert_query->execute($cmd, $oyster::CONFIG{daemon_id}, $oyster::CONFIG{site_id})");
+    $ipc_insert_query->execute($cmd, $oyster::CONFIG{'daemon_id'}, $oyster::CONFIG{'site_id'});
 }
 
 =xml
