@@ -61,16 +61,12 @@ Setting Up an Oyster Development Environment
     with it -- however, the pure-perl version of Digest::SHA that Oyster uses
     as a fallback is quite slow, it is not recommended for use in production
     environments.  Time::HiRes usually comes with Perl.
-* (optional)
-  Create a user for Oyster to run as.  On *nix based operating systems this can
-  be done using the `adduser` utility.
-* (optional)
-  Log in as that user.
-* Get a fresh SVN checkout from svn://bitpiston.com/oyster
-* Navigate to the trunk/shared directory:
-  `cd trunk/shared`
+* Get a fresh SVN checkout:
+  `svn co svn://bitpiston.com/oyster oyster`
+* Navigate to the shared directory:
+  `cd oyster/trunk/shared`
 * Copy the config file template:
-  cp config.pl.tmpl config.pl
+  `cp config.pl.tmpl config.pl`
 * Edit config.pl with the text editor of your choice.
 * Install Oyster:
   `perl script/update.pl`

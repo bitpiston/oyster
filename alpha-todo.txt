@@ -25,6 +25,7 @@ DELAYED
 + ajax.pm
 + create a script to clean tmp directories
 + remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
++ browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 
 COMPLETED
 
@@ -65,6 +66,8 @@ COMPLETED
 * email.pm has a few functions that need their argument lists updated
 * Remove any remaining 'deprecated' stuff and fix anything that depends on it
 	+ there are still a few things in xml::parser, but that is more of an auxiliary module
+* server last conf should go in tmp (/script/ shouldn't be assumed writable)
+* Clean up testing framework
 
 TODO
 
@@ -78,14 +81,12 @@ TODO
 	+ ajax
 	- module creation walkthrough
 - menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
-- Clean up testing framework
 - Spec out the new admin module and begin writing it
 - make sure STDERR is being used when it should be
 - dont use image; by default
 - Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
 	- possibly use the new module::order_by_dependencies()
 - look over libraries (again) to ensure consistent naming conventions
-- browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
 - consider removing image.pm (and all imagemagick) stuff for alpha
 - cgi.pm should accept array/hash values (carefully...)
@@ -93,3 +94,4 @@ TODO
 - possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
 - better logic for getting content-type
 - recompile server_base.xsl dynamically as needed
+- figure out if @INC should include module directories

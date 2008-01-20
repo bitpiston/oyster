@@ -47,7 +47,7 @@ die "Startup Failed: An error occured while loading Oyster: $@" if $@;
 eval { require oyster::webserver };
 die "Startup Failed: Could not locate oyster web server library. $@" if $@;
 
-my $server_last_conf = './script/server_last_conf.txt';
+my $server_last_conf = './tmp/server_last_conf.txt';
 unless ($oyster::config::args{''} or $oyster::config::args{'host'} or $oyster::config::args{'port'}) {
     $oyster::config::args{''} = file::read($server_last_conf) if -e $server_last_conf;
 }
