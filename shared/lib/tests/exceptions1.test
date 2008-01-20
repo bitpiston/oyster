@@ -1,5 +1,0 @@
-{
-    'name'        => 'Basic Exceptions',
-    'description' => 'Testing basic exception handling.',
-    'output'      => '1',
-}

@@ -11,6 +11,24 @@ use exceptions;
 
 our %loaded; # currently loaded modules
 
+sub get_available {
+    my @modules;
+    for my $file (<./modules/*/meta.pl>) { # find all modules with meta.pl files
+        my ($module) = ($file =~ m!^.+/(.+?)/meta\.pl$!);  # extract the module name from the meta.pl file path
+        push @modules, $module;
+    }
+    return @modules;
+}
+
+sub get_installed {
+    my @modules;
+    my $query = $oyster::DB->query("SELECT id FROM modules WHERE site_$oyster::CONFIG{site_id} = '1'");
+    while (my $module = $query->fetchrow_arrayref()) {
+        push @modules, $module->[0];
+    }
+    return @modules;
+}
+
 sub is_enabled {
     my $module_id = shift;
     #my $query = $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $module_id);
@@ -52,7 +70,7 @@ sub get_latest_revision {
     my $module_id = shift;
     my $rev_file  = "./modules/$module_id/revisions.pl";
     throw 'perl_error' => "File does not exist '$rev_file'" unless -e $rev_file;
-    ${ $module_id . '::revisions::just_getting_revs' } = 1;
+    #${ $module_id . '::revisions::just_getting_revs' } = 1;
     require $rev_file;
     my $latest_rev = $#{ $module_id . '::revisions::revision' };
     undef @{ $module_id . '::revisions::revision' };
@@ -78,7 +96,7 @@ sub get_latest_revision {
 
 sub enable {
     my $module_id = shift;
-    return if exists $loaded{$module_name};
+    #return if exists $loaded{$module_id};
     $oyster::DB->query("UPDATE modules SET site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $module_id);
     #load($module_id); # removed because this could cause revision files to load the module before it is finished installing/updating, maybe make it an arg?
 }
@@ -104,7 +122,7 @@ sub disable {
     my $module_id = shift;
     return unless exists $loaded{$module_id};
     $oyster::DB->query("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = ?", $module_id);
-    unload($module_id);
+    unload($module_id); # TODO: remove this to be consistent with enable?
 }
 
 =xml
@@ -200,6 +218,9 @@ sub unregister {
         </prototype>
         <todo>
            try {} ?
+        </todo>
+        <todo>
+            http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
         </todo>
     </function>
 =cut

@@ -1,0 +1,15 @@
+[
+    {
+        'name'        => 'Testing Tests',
+        'description' => 'Just to test that tests work.',
+        'output'      => '1',
+        'source'      => <<'END_SOURCE'
+            print '1';
+END_SOURCE
+    },
+    {
+        'name'        => 'Skipping Tests',
+        'description' => 'Testing the Ability to Skip Tests',
+        'skip'        => 1,
+    },
+]

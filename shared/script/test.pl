@@ -8,10 +8,18 @@
         returns an array ref, if so, treat each item like an individual test)
     </todo>
     <todo>
+        Add test source to the .test file instead of external .pl files
+    </todo>
+    <todo>
+        http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
+    </todo>
+    <todo>
         A 'how to' doc for creating tests.
     </todo>
 =cut
 package oyster::script::test;
+
+# this purposefully does NOT use the oyster environment! otherwise, we couldn't test it.
 
 # variables
 our @tests; # hashref with meta data of each test with some extra variables
@@ -21,7 +29,7 @@ our @tests; # hashref with meta data of each test with some extra variables
 print "Beginning Test Suite...\n";
 
 # iterate through directories and populate test data
-iter_dir('');
+test_dir('');
 
 # print totals
 print_totals();
@@ -55,14 +63,13 @@ sub print_totals {
     print "  $num_failures (" . (sprintf('%.2f', $num_failures / $num_tested) * 100) . "\%) failures\n";
     for my $i (@failures) {
         my $test = $tests[$i];
-        print "    $test->{path}tests/$test->{file}\n";
+        print "    $test->{name}\n";
     }
-    print "\nTo debug a particular test type: perl (path to test listed above).pl\n" if @failures;
     # might want to reset @tests here in case some day a script runs more than one sequence of tests
 }
 
 # iterates through a directory and all sub-directories, testing as necessary and adding data to @tests
-sub iter_dir {
+sub test_dir {
     my $path = shift;
 
     # open directory to iterate over
@@ -75,29 +82,60 @@ sub iter_dir {
         opendir(my $tests_dir, $tests_path) or die "Error reading test directory '$tests_path':\n$!\n";
         print "\nTesting Directory: $path\n\n";
         while (my $file = readdir($tests_dir)) {
-            next unless $file =~ /\.test$/;
-            my $test = eval { require "$tests_path$file" };
-            die "Error reading test meta data file for test '${path}tests/$file':\n$@\n" if $@;
-            $test->{'path'} = $path;                # the relative path of the directory that owns this test
-            $test->{'file'} = substr($file, 0, -5); # the name of the file minus the extension
-            print "  Running '$test->{name}'...\n";
-            print "    $test->{description}\n" if $test->{'description'};
-            if ($test->{'skip'}) {
-                print "    [ Skipped ]\n";
-            } else {
-                my $output = `perl $tests_path$test->{file}.pl$test->{args}`;
-                $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
-                print $test->{'result'} ? "    [ Success ]\n" : "    ! Failure !\n" ;
+            next unless $file =~ /\.test$/o;
+
+            # read the test file
+            my $test;
+            unless ($test = do "$tests_path$file") {
+                die "Error parsing: '$tests_path$file'"               if $@;
+                die "Error reading: '$tests_path$file': $!"           unless defined $test;
+                die "File did not return a value: '$tests_path$file'" unless $test;
             }
-            push(@tests, $test);
+
+            # if the file contains multiple tests
+            if (ref $test eq 'ARRAY') {
+                for my $subtest (@{$test}) {
+                    run_test($subtest);
+                }
+            }
+
+            # if the file contained a single test
+            elsif (ref $test eq 'HASH') {
+                run_test($test);
+            }
+
+            # wtf?
+            else {
+                die "Test did not return valid data: '$tests_path$file'";
+            }
         }
     }
 
     # iterate through directories in the current directory
     while (my $file = readdir($dir)) {
         next if ($file eq '.' or $file eq '..' or $file eq 'tests' or $file eq '.svn');
-        iter_dir("$path$file/") if -d "$full_path$file/";
+        test_dir("$path$file/") if -d "$full_path$file/";
     }
+}
+
+sub run_test {
+    my $test = shift;
+
+    print "  Running '$test->{name}'...\n";
+    print "    $test->{description}\n" if length $test->{'description'};
+    if ($test->{'skip'}) {
+        print "    [ Skipped ]\n";
+    } else {
+        my $test_file = './tmp/test.tmp';
+        open my $fh, '>', $test_file or die "Error creating temporary test file: $!";
+        print $fh $test->{'source'};
+        my $output = `perl $test_file$test->{'args'}`;
+        $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
+        print $test->{'result'} ? "    [ Success ]\n" : "    ! Failure !\n" ;
+        close $fh;
+        unlink $test_file;
+    }
+    push(@tests, $test);
 }
 
 =xml

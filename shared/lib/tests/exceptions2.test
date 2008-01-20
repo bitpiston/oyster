@@ -1,5 +1,0 @@
-{
-    'name'        => 'Exception Catching',
-    'description' => 'Testing exception catching.',
-    'output'      => '1',
-}
