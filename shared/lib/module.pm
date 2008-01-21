@@ -160,8 +160,16 @@ sub set_revision {
 
 sub get_revision {
     my $module_id = shift;
-    my $query = $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id);
-    return $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
+    my $rev = 0;
+    try {
+        my $query = $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id);
+        abort(1) unless $query->rows() == 1;
+        $rev = $query->fetchrow_arrayref()->[0];
+    }
+    catch 'db_error', with {
+        abort(1);
+    };
+    return $rev;
 }
 
 =xml

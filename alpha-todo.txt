@@ -26,6 +26,7 @@ DELAYED
 + create a script to clean tmp directories
 + remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 + browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
++ cgi.pm should accept array/hash values (carefully...)
 
 COMPLETED
 
@@ -89,7 +90,6 @@ TODO
 - look over libraries (again) to ensure consistent naming conventions
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
 - consider removing image.pm (and all imagemagick) stuff for alpha
-- cgi.pm should accept array/hash values (carefully...)
 - various utils should use console::util to parse args instead of just using @ARGV
 - possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
 - better logic for getting content-type

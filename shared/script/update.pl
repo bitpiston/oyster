@@ -10,7 +10,7 @@
         Document arguments
     </todo>
     <todo>
-        This whole utility really needs to be cleaned up and possibly rewritten or refactored.
+        This whole utility really needs to be cleaned up and possibly rewritten or refactored.  It should use module.pm more.
     </todo>
 =cut
 package oyster::script::update;
@@ -24,6 +24,7 @@ BEGIN {
 # load oyster libraries
 use oyster 'launcher';
 use exceptions;
+use module;
 
 # if no module id was specified, assume they want to update all modules
 unless (exists $oyster::config::args{'module'}) {
@@ -36,10 +37,10 @@ unless (exists $oyster::config::args{'module'}) {
     }
 
     exit;
-};
+}
 
 # if the user is trying to install/update the oyster module
-if ($oyster::config::args{'module'} eq 'oyster') {
+if ($oyster::config::args{'module'} eq 'oyster') { # TODO: this is only necessary for first install, add a check to only perform this special thing if oyster is not installed
 
     # load a minimal version of the oyster environment
     eval { oyster::load($config, 'load_config' => 0, 'load_modules' => 0, 'load_libs' => 0, 'load_request' => 0) };

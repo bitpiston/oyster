@@ -15,17 +15,20 @@
             <dd>Specifies a port to bind to, defaults to 80</dd>
         </dl>
         <p>
-        	Host and port can alternatively be passed as a single string, without a name.  For example:
-        	<code type="conf">
-        		perl script/server.pl 192.168.1.100:82
-        	</code>
-        	<code type="conf">
-        		perl script/server.pl 192.168.1.100
-        	</code>
-        	<code type="conf">
-        		perl script/server.pl 82
-        	</code>
+            Host and port can alternatively be passed as a single string, without a name.  For example:
+            <code type="conf">
+                perl script/server.pl 192.168.1.100:82
+            </code>
+            <code type="conf">
+                perl script/server.pl 192.168.1.100
+            </code>
+            <code type="conf">
+                perl script/server.pl 82
+            </code>
         </p>
+        <note>
+            Each time server.pl runs it saves its configuration and will automatically re-use its last configuration if host and port are not specified.
+        </note>
     </section>
 =cut
 package oyster::script::server;
@@ -66,7 +69,10 @@ if ($oyster::config::args{''}) {
 
 # save this configuration
 if ($oyster::config::args{'host'} or $oyster::config::args{'port'}) {
-    file::write($server_last_conf, $oyster::config::args{'host'} . ':' . $oyster::config::args{'port'});
+    my $conf = $oyster::config::args{'host'};
+    $conf .= ':' if length $conf and length $oyster::config::args{'port'};
+    $conf .= $oyster::config::args{'port'};
+    file::write($server_last_conf, $conf);
 }
 
 # start the web server
