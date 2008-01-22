@@ -278,6 +278,8 @@ sub get_permissions {
 sub load {
     my $module_id = shift;
 
+	return if $module_id eq 'oyster'; # do nothing if you are trying to load the oyster module
+
     # if the module is currently loaded, unload it
     module::unload($module_id) if exists $loaded{$module_id};
 
@@ -285,7 +287,8 @@ sub load {
     config::load('table' => "$oyster::CONFIG{db_prefix}${module_id}_config", 'config_hash' => \%{"${module_id}::CONFIG"});
 
     # load module's perl source
-    eval { require "$oyster::CONFIG{shared_path}modules/${module_id}/${module_id}.pm" };
+    #eval { require "$oyster::CONFIG{shared_path}modules/${module_id}/${module_id}.pm" };
+    eval { require "$oyster::CONFIG{shared_path}modules/${module_id}.pm" };
     die("Error loading $module_id: $@") if $@;
 
     # add to oyster loaded module hash
@@ -299,11 +302,12 @@ sub load {
         </todo>
     </function>
 =cut
+
 sub reload_config {
     my $module_id = shift;
 
     # clear current config
-    %{"${module_id}::CONFIG"} = ();
+    %{"${module_id}::config"} = ();
 
     # load module configuration
     config::load('table' => "$oyster::CONFIG{db_prefix}${module_id}_config", 'config_hash' => \%{"${module_id}::config"});

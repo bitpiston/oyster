@@ -27,8 +27,9 @@ sub init {
     #@oyster::config::original_inc = @INC;
     #unshift @INC, $oyster::config::shared_path . 'lib/';
     #unshift @INC, $oyster::config::shared_path . 'perllib/';
-    eval "use lib '${oyster::config::shared_path}lib/'";
+    eval "use lib '${oyster::config::shared_path}modules/'";
     eval "use lib '${oyster::config::shared_path}perllib/'";
+    eval "use lib '${oyster::config::shared_path}lib/'";
 
     # parse command line arguments
     if (@ARGV) {

@@ -12,7 +12,8 @@ use oyster 'module';
 use exceptions;
 
 # import modules
-user->import();
+#user->import();
+use user;
 
 =xml
     <section title="Actions">
