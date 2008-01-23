@@ -25,6 +25,35 @@ BEGIN {
 use oyster 'launcher';
 use exceptions;
 use module;
+use database;
+
+my @update_modules;
+
+# connect to the db, check if Oyster has been installed at all yet
+my $oyster_rev;
+unless (exists $oyster::config::args{'is_installed'}) {
+    my $dbconfig = $config->{'database'};
+    my $DB = database::connect(
+        'driver'   => $dbconfig->{'driver'},
+        'host'     => $dbconfig->{'host'},
+        'user'     => $dbconfig->{'user'},
+        'password' => $dbconfig->{'pass'},
+        'database' => $dbconfig->{'db'},
+        'port'     => $dbconfig->{'port'},
+    );
+    $oyster::DB = $DB; # necessary for module::stuff
+    $oyster_rev = module::get_revision('oyster');
+
+    # get a list of modules to update
+    @update_modules = module::get_installed();
+}
+
+# if no module id was specified, assume all modules should be updated (only installed modules, if possible)
+unless (exists $oyster::config::args{'module'}) {
+    
+}
+
+__END__
 
 # if no module id was specified, assume they want to update all modules
 unless (exists $oyster::config::args{'module'}) {
