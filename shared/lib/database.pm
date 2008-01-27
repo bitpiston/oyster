@@ -37,7 +37,8 @@ push(@DBI::st::ISA, 'oyster::database::dbi::st');
 sub connect {
     my %args = @_;
     my $DB = DBI->connect(
-           "dbi:$args{driver}:dbname=$args{database};host=$args{host};port=$args{port}", $args{'user'}, $args{'password'}, {            'AutoCommit'  => 1,
+           "dbi:$args{driver}:dbname=$args{database};host=$args{host};port=$args{port}", $args{'user'}, $args{'password'}, {
+            'AutoCommit'  => 1,
             'RaiseError'  => 0,
             'HandleError' =>
                 sub {

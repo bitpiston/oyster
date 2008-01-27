@@ -12,7 +12,6 @@ use oyster 'module';
 use exceptions;
 
 # import modules
-#user->import();
 use user;
 
 =xml

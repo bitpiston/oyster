@@ -219,7 +219,7 @@ sub unregister {
         </synopsis>
         <note>
             Returns undef if no meta information is available, although that should
-            never happen.
+            never happen unless the module does not exist.
         </note>
         <prototype>
             hashref = module::get_meta(string module_name)

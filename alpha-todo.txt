@@ -27,6 +27,7 @@ DELAYED
 + remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 + browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 + cgi.pm should accept array/hash values (carefully...)
++ preprocessor, new config option to optimize for memory or cpu/db access
 
 COMPLETED
 
@@ -69,12 +70,15 @@ COMPLETED
 	+ there are still a few things in xml::parser, but that is more of an auxiliary module
 * server last conf should go in tmp (/script/ shouldn't be assumed writable)
 * Clean up testing framework
+* move bbcode/xhtml tags to just be hard coded -- this saves memory and speeds load time
+* figure out if @INC should include module directories
 
 TODO
 
 - convert /swaf/ to /oyster/ in all xml/xslt
 - docs:
-	* coding conventions (just needs to be converted to xml)
+	* coding conventions
+	* sql compatability
 	- xml/xslt conventions
 	+ xslt browser gotchas
 	+ how to use strict in your module
@@ -89,9 +93,10 @@ TODO
 	- possibly use the new module::order_by_dependencies()
 - look over libraries (again) to ensure consistent naming conventions
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
-- consider removing image.pm (and all imagemagick) stuff for alpha
+	- possible create an import() for every lib to allow forcing it to load outside of an oyster env (if necessary)
 - various utils should use console::util to parse args instead of just using @ARGV
 - possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
 - better logic for getting content-type
 - recompile server_base.xsl dynamically as needed
-- figure out if @INC should include module directories
+- certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
+- console search is broken, investigate this

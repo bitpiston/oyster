@@ -20,24 +20,112 @@ package xml;
 use exceptions;
 use event;
 
-# load xml entities -- these are in the db primarily because my text editor doesn't support UTF8! so I could never edit this file with all of the entities here!
-our (%bbcode, %xhtml_tags);
-event::register_hook('load_lib', '_load');
-sub _load {
-
-    # load bbcode tags
-    my $query = $oyster::DB->query("SELECT * FROM bbcode");
-    while (my $tag = $query->fetchrow_hashref()) {
-        my $tag_name = delete $tag->{'tag'}; # deleted to save *a little* memory
-        $bbcode{$tag_name} = $tag;
+my %bbcode = (
+    'img'   => {},
+    's'     => {
+        'xhtml_tag' => 'del',
+    },
+    'size'  => {},
+    'color' => {},
+    'u'     => {
+        'xhtml_tag' => 'span',
+        'extra'     => ' class="underline"',
+    },
+    'b'     => {
+        'xhtml_tag' => 'strong',
+    },
+    'quote' => {
+        'is_block'             => 1,
+        'xhtml_tag'            => 'div',
+        'consume_post_newline' => 1,
+        'consume_pre_newline'  => 1,
+    },
+    'url'   => {
+        'xhtml_tag' => 'a',
+    },
+    'list'  => {
+        'is_block'             => 1,
+        'disable_paragraphs'   => 1,
+        'consume_post_newline' => 1,
+        'consume_pre_newline'  => 1,
+    },
+    'i'     => {
+        'xhtml_tag' => 'em',
+    },
+    'code'  => {
+        'is_block'             => 1,
+        'xhtml_tag'            => 'pre',
+        'consume_post_newline' => 1,
+        'consume_pre_newline'  => 1,
+        'extra'                => ' class="quote"',
     }
+);
 
-    # load xhtml tags
-    my $query = $oyster::DB->query("SELECT * FROM xhtml_tags");
-    while (my $tag = $query->fetchrow_hashref()) {
-        $xhtml_tags{$tag->{'tag'}} = $tag->{'permission_level'};
-    }
-}
+my %xhtml_tags = (
+    'tr'         => 2,
+    'input'      => 1,
+    'a'          => 1,
+    'date'       => 1,
+    'table'      => 2,
+    'form'       => 1,
+    'img'        => 1,
+    'thead'      => 2,
+    'map'        => 1,
+    'abbr'       => 1,
+    'tfoot'      => 2,
+    'caption'    => 2,
+    'h6'         => 2,
+    'sup'        => 1,
+    'address'    => 1,
+    'param'      => 1,
+    'th'         => 2,
+    'code'       => 1,
+    'h1'         => 2,
+    'tbody'      => 2,
+    'acronym'    => 1,
+    'br'         => 0,
+    'strong'     => 1,
+    'legend'     => 1,
+    'dd'         => 2,
+    'h4'         => 2,
+    'em'         => 1,
+    'q'          => 1,
+    'li'         => 2,
+    'td'         => 2,
+    'span'       => 1,
+    'label'      => 1,
+    'dl'         => 2,
+    'kbd'        => 1,
+    'small'      => 1,
+    'div'        => 2,
+    'object'     => 1,
+    'dt'         => 2,
+    'area'       => 1,
+    'ol'         => 2,
+    'samp'       => 1,
+    'col'        => 2,
+    'var'        => 1,
+    'blockcode'  => 2,
+    'option'     => 1,
+    'cite'       => 1,
+    'select'     => 1,
+    'ul'         => 2,
+    'bdo'        => 1,
+    'del'        => 1,
+    'blockquote' => 2,
+    'colgroup'   => 2,
+    'h2'         => 2,
+    'ins'        => 1,
+    'dfn'        => 1,
+    'p'          => 0,
+    'big'        => 1,
+    'fieldset'   => 1,
+    'sub'        => 1,
+    'h3'         => 2,
+    'button'     => 1,
+    'optgroup'   => 1,
+    'textarea'   => 1,
+);
 
 =xml
     <function name="strip_elements">
@@ -97,10 +185,12 @@ sub replace_entities {
     $string =~ s/&#8722;/-/og;     # subtraction
     $string =~ s/&#8211;/-/og;     # hypens
     $string =~ s/&#8230;/.../og;   # ellipses
-    $string =~ s/&#8216;/'/og;     # single quotes
-    $string =~ s/&#8217;/'/og;
-    $string =~ s/&#8220;/"/og;     # double quotes
-    $string =~ s/&#8221;/"/og;        
+    #$string =~ s/&#8216;/'/og;     # single quotes
+    #$string =~ s/&#8217;/'/og;
+    #$string =~ s/&#8220;/"/og;     # double quotes
+    #$string =~ s/&#8221;/"/og;        
+    $string =~ s/&#821[67];/'/og;  # single quotes
+    $string =~ s/&#822[01];/"/og;  # double quotes   
     $string =~ s/&#39;/'/og;       # apostrophes
 
     # replace any remaining numerical entities
@@ -147,7 +237,7 @@ sub replace_entities {
 sub entities {
     my $string = shift;
     return '' unless length $string; # don't return undef, theyll always be expecting a string (will error if you try to insert undef into the db for a string column)
-                                   # don't just check for trueness! otherwise xml::entities('0') returns ''!
+                                     # don't just check for trueness! otherwise xml::entities('0') returns ''!
 
     my %flags = map {($_ => undef)} @_;
 
@@ -410,7 +500,7 @@ sub bbcode {
         # no more ['s, so there must not be any more bbcode tags, entity the rest of the text
         else {
             $remove_len = length $text;
-            $xml .= entities($text, 'proper_english');
+            $xhtml .= entities($text, 'proper_english');
         }
 
         # remove parsed text from $text
