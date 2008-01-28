@@ -29,9 +29,12 @@ use database;
 
 my @update_modules;
 
-# connect to the db, check if Oyster has been installed at all yet
-my $oyster_rev;
-unless (exists $oyster::config::args{'is_installed'}) {
+#
+# get Oyster's revision
+#
+
+#my $oyster_rev;
+#unless (exists $oyster::config::args{'is_installed'}) {
     my $dbconfig = $config->{'database'};
     my $DB = database::connect(
         'driver'   => $dbconfig->{'driver'},
@@ -42,16 +45,58 @@ unless (exists $oyster::config::args{'is_installed'}) {
         'port'     => $dbconfig->{'port'},
     );
     $oyster::DB = $DB; # necessary for module::stuff
-    $oyster_rev = module::get_revision('oyster');
+    my $oyster_rev = module::get_revision('oyster');
+#}
 
-    # get a list of modules to update
-    @update_modules = module::get_installed();
-}
-
+#
 # if no module id was specified, assume all modules should be updated (only installed modules, if possible)
+#
+
 unless (exists $oyster::config::args{'module'}) {
-    
+
+    # if oyster has been installed, only update installed modules, otherwise, install all available modules
+    my @update_modules = $oyster_rev ? module::get_installed() : module::get_available() ;
+
+    # order modules by dependencies
+    my @update_modules = module::order_by_dependencies(@update_modules);
+
+    # update 'em
+    my $params;
+    $params .= " -siteonly" if exists $oyster::config::args{'siteonly'};
+    for my $module (@update_modules) {
+        print `perl ./script/update.pl -module $module$params`;
+    }
+
+    # do no more
+    exit;
 }
+
+#
+# a specific module was specified
+#
+
+my $module = $oyster::config::args{'module'};
+
+# if oyster is not installed/updated, ensure that it is being installed first
+die "The 'oyster' module must be updated before this module can be updated or installed." if ($oyster_rev != module::get_latest_revision('oyster') and $module ne 'oyster');
+
+# load the Oyster environment
+my %load_args;
+unless ($oyster_rev) { # if oyster is not installed, load a minimal environment
+    $load_args{'load_config'}  = 0;
+    $load_args{'load_modules'} = 0;
+    $load_args{'load_libs'}    = 0;
+    $load_args{'load_request'} = 0;
+}
+eval { oyster::load($config, %load_args) };
+die "Startup Failed: An error occured while loading Oyster: $@" if $@;
+
+# check module dependencies
+my $meta = module::get_meta($module);
+for my $dependency_id (@{$meta->{'requires'}}) {
+    die "The '$dependency_id' module must be updated before this module can be updated or installed." unless module::get_revision($dependency_id) == module::get_latest_revision($dependency_id);
+}
+
 
 __END__
 

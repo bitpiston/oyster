@@ -35,6 +35,8 @@ oyster::config::heavy::init($default_site_id, $default_environment);
 
 $config{'shared'}{'development'} = {
 
+    # GENERAL
+
     # This should be a unique id for this computer/server; use only lowercase
     # letters -- change this! Each machine needs a unique identifier when
     # using tools that communicate with other servers.
@@ -50,6 +52,18 @@ $config{'shared'}{'development'} = {
         'port'   => 3306,
     },
 
+    # Enable Detailed Error Messages
+    #  Note: Recommended only for testing, these can expose vulnerabilities.
+    'debug'            => 1,
+
+    # Files
+    #  The url and path below should link to a web-accessible directory.
+    #  Note: The default settings are usually fine.
+    'shared_file_url'  => '/files/',
+    'shared_file_path' => "${sites_path}site/files/",
+
+    # LIBRARY SETTINGS
+
     # Sendmail
     #  Note: If left blank, instead of sending emails, SIMS will print emails
     #  inside a <pre> node.  This feature should only be used for testing.
@@ -59,25 +73,15 @@ $config{'shared'}{'development'} = {
     'sendmail_from'    => 'test@test.com',
 
     # Image Magick Executables Path
-    #  Note: SIMS will run without imagemagick present, just don't try to do
-    #  anything that requires inspecting or manipulating images.  This
+    #  Note: Oyster will run without imagemagick present, just don't try to
+    #  do anything that requires inspecting or manipulating images.  This
     #  feature should be used for development environments only.
     'imagemagick'      => '/usr/bin/',
-
-    # Enable Detailed Error Messages
-    #  Note: Recommended only for testing, these can expose vulnerabilities.
-    'debug'            => 1,
 
     # Enable automatic style compilation
     #  Note: This should be disabled for production environments.  Use:
     #  `perl script/xslcompiler.pl` instead.
     'compile_styles'   => 1,
-
-    # Files
-    #  The url and path below should link to a web-accessible directory.
-    #  Note: The default settings are usually fine.
-    'shared_file_url'  => '/files/',
-    'shared_file_path' => "${sites_path}site/files/",
 };
 
 # ----------------------------------------------------------------------------

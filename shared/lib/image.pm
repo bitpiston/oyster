@@ -4,6 +4,9 @@
         Inspect and manipulate images using ImageMagick.  This is basically a
         lightweight version of perlmagick that can potentially use other backends.
     </synopsis>
+    <warning>
+        This library is considered pre-alpha.  It needs to be updated to prevent shell injection and to use exceptions.
+    </warning>
     <todo>
         Allow alternatives to ImageMagick
     </todo>
