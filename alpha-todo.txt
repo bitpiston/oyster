@@ -2,6 +2,7 @@
 \ = canned
 * = done
 + = moved or likely moved to beta (or maybe canned altogether)
+& = in progress
 
 ANKLE
 
@@ -28,6 +29,7 @@ DELAYED
 + browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 + cgi.pm should accept array/hash values (carefully...)
 + preprocessor, new config option to optimize for memory or cpu/db access
++ possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
 
 COMPLETED
 
@@ -72,10 +74,13 @@ COMPLETED
 * Clean up testing framework
 * move bbcode/xhtml tags to just be hard coded -- this saves memory and speeds load time
 * figure out if @INC should include module directories
+* menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
+	* updated menu lib to obey 'require_children' for all items
+* console search is broken, investigate this (seems to be ok now)
+* convert /swaf/ to /oyster/ in all xml/xslt
 
 TODO
 
-- convert /swaf/ to /oyster/ in all xml/xslt
 - docs:
 	* coding conventions
 	* sql compatability
@@ -85,18 +90,15 @@ TODO
 	- testing framework
 	+ ajax
 	- module creation walkthrough
-- menu lib currently ignores 'require_children' for anything but top level items -- leave this as a limitation?
-- Spec out the new admin module and begin writing it
+& Spec out the new admin module and begin writing it
 - make sure STDERR is being used when it should be
-- dont use image; by default
-- Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
+& Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
 	- possibly use the new module::order_by_dependencies()
 - look over libraries (again) to ensure consistent naming conventions
 - possibly add a warn() to all libraries if they are loaded outside of an oyster environment
 	- possible create an import() for every lib to allow forcing it to load outside of an oyster env (if necessary)
 - various utils should use console::util to parse args instead of just using @ARGV
-- possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
 - better logic for getting content-type
 - recompile server_base.xsl dynamically as needed
 - certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
-- console search is broken, investigate this
+

@@ -17,7 +17,7 @@
 		<input value="img" onclick="oyster.editbuttons.insert_tag(this, '{$field_id}', 'img', 0)" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
 		<input value="list" onclick="oyster.editbuttons.insert_tag(this, '{$field_id}', 'ul', 1)" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
 		<input value="item" onclick="oyster.editbuttons.insert_tag(this, '{$field_id}', 'li', 1)" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
-		<input value="insert file" onclick="oyster.ajax.popup('{/swaf/@base}file/ajax_insert/?field_id={$field_id}&amp;handler=ajax');" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
+		<input value="insert file" onclick="oyster.ajax.popup('{/oyster/@base}file/ajax_insert/?field_id={$field_id}&amp;handler=ajax');" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
 	</div>
 
 	<!-- bbcode editor buttons -->
@@ -29,6 +29,6 @@
 		<input value="img" onclick="oyster.editbuttons.insert_tag(this, '{$field_id}', 'img', 1)" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
 		<input value="list" onclick="oyster.editbuttons.insert_tag(this, '{$field_id}', 'list', 1)" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
 		<input value="item" onclick="oyster.editbuttons.insert_tag(this, '{$field_id}', '*', 0)" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
-		<input value="insert file" onclick="oyster.ajax.popup('{/swaf/@base}file/ajax_insert/?field_id={$field_id}&amp;handler=ajax');" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
+		<input value="insert file" onclick="oyster.ajax.popup('{/oyster/@base}file/ajax_insert/?field_id={$field_id}&amp;handler=ajax');" style="padding: 0px; padding-left: 2px; padding-right: 2px; margin: 1px; font-size: 10pt" type="button" />
 	</div>
 </xsl:template>

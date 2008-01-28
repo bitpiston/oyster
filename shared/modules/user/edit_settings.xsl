@@ -1,16 +1,16 @@
-<xsl:template match="/swaf/user[@action = 'edit_settings']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'edit_settings']" mode="heading">
 	User Settings
 	<xsl:if test="@id">
 		- <xsl:value-of select="@name" />
 	</xsl:if>
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'edit_settings']" mode="description">
+<xsl:template match="/oyster/user[@action = 'edit_settings']" mode="description">
 	<!-- TODO: some blurb about user settings -->
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'edit_settings']" mode="content">
-	<form id="user_edit_settings" method="post" action="{/swaf/@url}">
+<xsl:template match="/oyster/user[@action = 'edit_settings']" mode="content">
+	<form id="user_edit_settings" method="post" action="{/oyster/@url}">
 		<xsl:if test="@id">
 			<input type="hidden" name="id" value="{@id}" />
 		</xsl:if>
@@ -22,7 +22,7 @@
 				<dd><select id="group_id" name="group_id">
 					<xsl:for-each select="groups/group">
 						<option>
-							<xsl:if test="@id = /swaf/user[@mode = 'edit_settings']/@group_id"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>
+							<xsl:if test="@id = /oyster/user[@mode = 'edit_settings']/@group_id"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>
 							<xsl:attribute name="value"><xsl:value-of select="@id" /></xsl:attribute>
 							<xsl:apply-templates />
 						</option>

@@ -1,13 +1,13 @@
-<xsl:template match="/swaf/user[@action = 'admin_config']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'admin_config']" mode="heading">
 	User Configuration
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_config']" mode="description">
+<xsl:template match="/oyster/user[@action = 'admin_config']" mode="description">
 	These options control various aspects of your user module.
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_config']" mode="content">
-	<form id="user_admin_config" method="post" action="{/swaf/@url}">
+<xsl:template match="/oyster/user[@action = 'admin_config']" mode="content">
+	<form id="user_admin_config" method="post" action="{/oyster/@url}">
 		<div>
 			<fieldset id="user_admin_config_general">
 				<legend>Global Settings</legend>

@@ -40,6 +40,7 @@ sub add_item {
     return $item_list->[ $i - 1 ];
 }
 
+=comment
 sub print_xml {
     my $menu = scalar @_ == 1 ? shift : $default_menu ;
 
@@ -97,6 +98,64 @@ sub _print_item_xml {
     else {
         print qq~$indent<item$attrs />\n~;
     }
+}
+=cut
+
+sub print_xml {
+    my $menu = scalar @_ == 1 ? shift : $default_menu ;
+
+    # do nothing if the menu contained no items
+    return unless scalar @{ $menus{$menu} };
+
+    my $xml;
+
+    # iterate through menu items
+    for my $item (@{ $menus{$menu} }) {
+        $xml .= _get_item_xml($item, 1);
+    }
+
+    my $menu_printed = 0;
+    if (length $xml) {
+        my $attrs;
+        $attrs .= exists $menu_labels{$menu} ? qq~ label="$menu_labels{$menu}"~ : qq~ id="$menu"~ ;
+        $attrs .= qq~ description="$menu_descriptions{$menu}"~ if exists $menu_descriptions{$menu};
+        print qq~\t<menu$attrs>\n$xml\t</menu>\n~;
+        $menu_printed = 1;
+    }
+
+    delete_menu($menu);
+
+    return $menu_printed;
+}
+
+sub _get_item_xml {
+    my $item   = shift;
+    my $depth  = shift;
+    my $indent = "\t" . ("\t" x $depth);
+    my $xml;
+
+    my $attrs;
+    $attrs .= qq~ id="$item->{id}"~       if exists $item->{'id'};
+    $attrs .= qq~ label="$item->{label}"~ if exists $item->{'label'};
+    $attrs .= qq~ url="$item->{url}"~     if exists $item->{'url'};
+
+    # if the item has sub-items
+    if (exists $item->{'items'}) {
+        $xml .= qq~$indent<item$attrs>\n~;
+        my $next_depth = $depth + 1;
+        for my $item (@{ $item->{'items'} }) {
+            $xml .= _get_item_xml($item, $next_depth);
+        }
+        $xml .= "$indent</item>\n";
+    }
+
+    # if the item has no sub-items
+    else {
+        return if $item->{'require_children'};
+        $xml .= qq~$indent<item$attrs />\n~;
+    }
+
+    return $xml;
 }
 
 sub delete_menu {

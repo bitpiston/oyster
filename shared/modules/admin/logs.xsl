@@ -1,10 +1,10 @@
-<xsl:template match="/swaf/admin[@action = 'logs']" mode="heading">Logs</xsl:template>
+<xsl:template match="/oyster/admin[@action = 'logs']" mode="heading">Logs</xsl:template>
 
-<xsl:template match="/swaf/admin[@action = 'logs']" mode="description">
+<xsl:template match="/oyster/admin[@action = 'logs']" mode="description">
 	Logs can contain useful information about your site including simple status messages or fatal errors.
 </xsl:template>
 
-<xsl:template match="/swaf/admin[@action = 'logs']" mode="content">
+<xsl:template match="/oyster/admin[@action = 'logs']" mode="content">
 	<xsl:if test="count(entry) = 0">
 		<p>There are currently no entries in this log.</p>
 	</xsl:if>
@@ -13,11 +13,11 @@
 	</xsl:if>
 	<div class="offset">
 		<xsl:if test="@prev_offset">
-			<a href="{/swaf/@url}?view={@log}&amp;offset={@prev_offset}" class="previous">Previous Page (Newer)</a>
+			<a href="{/oyster/@url}?view={@log}&amp;offset={@prev_offset}" class="previous">Previous Page (Newer)</a>
 		</xsl:if>
 		<xsl:if test="@prev_offset and @next_offset"> | </xsl:if>
 		<xsl:if test="@next_offset">
-			<a href="{/swaf/@url}?view={@log}&amp;offset={@next_offset}" class="next">Next Page (Older)</a>
+			<a href="{/oyster/@url}?view={@log}&amp;offset={@next_offset}" class="next">Next Page (Older)</a>
 		</xsl:if>
 	</div>
 	<xsl:for-each select="entry">
@@ -45,11 +45,11 @@
 	</xsl:for-each>
 	<div class="offset">
 		<xsl:if test="@prev_offset">
-			<a href="{/swaf/@url}?view={@log}&amp;offset={@prev_offset}" class="previous">Previous Page (Newer)</a>
+			<a href="{/oyster/@url}?view={@log}&amp;offset={@prev_offset}" class="previous">Previous Page (Newer)</a>
 		</xsl:if>
 		<xsl:if test="@prev_offset and @next_offset"> | </xsl:if>
 		<xsl:if test="@next_offset">
-			<a href="{/swaf/@url}?view={@log}&amp;offset={@next_offset}" class="next">Next Page (Older)</a>
+			<a href="{/oyster/@url}?view={@log}&amp;offset={@next_offset}" class="next">Next Page (Older)</a>
 		</xsl:if>
 	</div>
 </xsl:template>

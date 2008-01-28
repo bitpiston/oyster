@@ -1,13 +1,13 @@
-<xsl:template match="/swaf/user[@action = 'admin_groups_edit']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'admin_groups_edit']" mode="heading">
 	Edit Group - <xsl:value-of select="@name" />
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_groups_edit']" mode="description">
+<xsl:template match="/oyster/user[@action = 'admin_groups_edit']" mode="description">
 	User groups are sets of permissions that can be applied to multiple users.
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_groups_edit']" mode="content">
-	<form id="admin_groups_edit" method="post" action="{/swaf/@url}?group={@id}">
+<xsl:template match="/oyster/user[@action = 'admin_groups_edit']" mode="content">
+	<form id="admin_groups_edit" method="post" action="{/oyster/@url}?group={@id}">
 		<div>
 			<dl>
 				<dt>

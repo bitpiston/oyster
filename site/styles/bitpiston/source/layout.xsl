@@ -3,7 +3,7 @@
 
 	<!-- Ajax Template -->
 
-	<xsl:template match="/swaf[@handler = 'ajax']">
+	<xsl:template match="/oyster[@handler = 'ajax']">
 		<html xml:lang="en">
 
 			<head>
@@ -17,7 +17,7 @@
 			</head>
 
 			<!-- admin menu -->
-			<xsl:if test="count(/swaf/menu[@id = 'admin']/menu) > 0 or count(/swaf/menu[@id = 'admin']/item) > 0">
+			<xsl:if test="count(/oyster/menu[@id = 'admin']/menu) > 0 or count(/oyster/menu[@id = 'admin']/item) > 0">
 				<div id="admin">
 					<script type="text/javascript">
 						function toggleMenu(menu_id, link) {
@@ -32,17 +32,17 @@
 						  }
 					</script>
 					<a class="toggle" href="#" onclick="toggleMenu('admin', this)" title="Collapse this item">Administration</a>
-					<xsl:if test="count(/swaf/menu[@id = 'admin']/item) > 0">
+					<xsl:if test="count(/oyster/menu[@id = 'admin']/item) > 0">
 						<div>
 							<span>Other</span>
 							<ul>
-								<xsl:for-each select="/swaf/menu[@id = 'admin']/item">
+								<xsl:for-each select="/oyster/menu[@id = 'admin']/item">
 									<li><a href="{@url}"><xsl:value-of select="@label" /></a></li>
 								</xsl:for-each>
 							</ul>
 						</div>
 					</xsl:if>
-					<xsl:for-each select="/swaf/menu[@id = 'admin']/menu">
+					<xsl:for-each select="/oyster/menu[@id = 'admin']/menu">
 						<xsl:sort select="position()" data-type="number" order="descending" />
 						<div>
 							<span><xsl:value-of select="@label" /></span>
@@ -66,12 +66,12 @@
 
 					<!-- title -->
 					<div id="title">
-						<h1><xsl:apply-templates mode="heading" select="/swaf/*[1]" /></h1>
+						<h1><xsl:apply-templates mode="heading" select="/oyster/*[1]" /></h1>
 						<p>
-							<xsl:if test="/swaf/content/@title = 'Home'">
+							<xsl:if test="/oyster/content/@title = 'Home'">
 								<xsl:attribute name="class">frontpage</xsl:attribute>
 							</xsl:if>
-							<xsl:apply-templates mode="description" select="/swaf/*[1]" />
+							<xsl:apply-templates mode="description" select="/oyster/*[1]" />
 						</p>
 					</div>
 
@@ -81,19 +81,19 @@
 
 			<!-- send content to parent page -->
 			<script type="text/javascript">
-				parent.oyster.ajax.send(document.getElementById('content').innerHTML, '<xsl:value-of select="/swaf/@ajax_target" />')
+				parent.oyster.ajax.send(document.getElementById('content').innerHTML, '<xsl:value-of select="/oyster/@ajax_target" />')
 			</script>
 		</html>
 	</xsl:template>
 
 	<!-- Base Template (Layout) -->
 
-	<xsl:template match="/swaf[not(@handler)]">
+	<xsl:template match="/oyster[not(@handler)]">
 		<html xml:lang="en">
 			<head>
 				<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
 				<meta http-equiv="content-style-type" content="text/css" />
-				<title><xsl:apply-templates mode="heading" select="/swaf/*[1]" /> | <xsl:value-of select="@title" /></title>
+				<title><xsl:apply-templates mode="heading" select="/oyster/*[1]" /> | <xsl:value-of select="@title" /></title>
 
 				<!-- IE7.js for IE6 compatibility -->
 				<xsl:comment>[if lt IE 7]&gt;&lt;script src="{@styles}ie7/ie7-standard-p.js" type="text/javascript"&gt;&lt;/script&gt;&lt;![endif]</xsl:comment>
@@ -114,7 +114,7 @@
 				<div id="container">
 
 					<!-- admin menu -->
-					<xsl:if test="count(/swaf/menu[@id = 'admin']/item) > 0">
+					<xsl:if test="count(/oyster/menu[@id = 'admin']/item) > 0">
 						<div id="admin">
 							<script type="text/javascript">
 								function toggleMenu(menu_id, link) {
@@ -129,7 +129,7 @@
 								  }
 							</script>
 							<a class="toggle" href="#" onclick="toggleMenu('admin', this)" title="Collapse this item">Administration</a>
-							<xsl:for-each select="/swaf/menu[@id = 'admin']/item">
+							<xsl:for-each select="/oyster/menu[@id = 'admin']/item">
 								<xsl:sort select="position()" data-type="number" order="descending" />
 								<div>
 									<span>
@@ -154,9 +154,9 @@
 
 					<!-- header / navigation -->
 					<div id="header">
-						<a href="{/swaf/@base}"><img src="{@styles}{@style}/images/header.logo.png" alt="BitPiston" /></a>
+						<a href="{/oyster/@base}"><img src="{@styles}{@style}/images/header.logo.png" alt="BitPiston" /></a>
 						<ul id="navigation">
-							<xsl:for-each select="/swaf/menu[@id='navigation']/item">
+							<xsl:for-each select="/oyster/menu[@id='navigation']/item">
 								<li>
 									<xsl:if test="@selected = 'true'">
 										<xsl:attribute name="class">selected</xsl:attribute>
@@ -190,12 +190,12 @@
 
 							<!-- title -->
 							<div id="title">
-								<h1><xsl:apply-templates mode="heading" select="/swaf/*[1]" /></h1>
+								<h1><xsl:apply-templates mode="heading" select="/oyster/*[1]" /></h1>
 								<p>
-									<xsl:if test="/swaf/content/@title = 'Home'">
+									<xsl:if test="/oyster/content/@title = 'Home'">
 										<xsl:attribute name="class">frontpage</xsl:attribute>
 									</xsl:if>
-									<xsl:apply-templates mode="description" select="/swaf/*[1]" />
+									<xsl:apply-templates mode="description" select="/oyster/*[1]" />
 								</p>
 							</div>
 

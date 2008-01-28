@@ -1,13 +1,13 @@
-<xsl:template match="/swaf/user[@action = 'admin_groups_create']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'admin_groups_create']" mode="heading">
 	Create a User Group
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_groups_create']" mode="description">
+<xsl:template match="/oyster/user[@action = 'admin_groups_create']" mode="description">
 	User groups are sets of permissions that can be applied to multiple users.
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_groups_create']" mode="content">
-	<form id="admin_groups_create" method="post" action="{/swaf/@url}">
+<xsl:template match="/oyster/user[@action = 'admin_groups_create']" mode="content">
+	<form id="admin_groups_create" method="post" action="{/oyster/@url}">
 		<div>
 			<dl>
 				<dt><label for="name">Group Name:</label></dt>

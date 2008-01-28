@@ -1,13 +1,13 @@
-<xsl:template match="/swaf/user[@action = 'register']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'register']" mode="heading">
 	Register
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'register']" mode="description">
+<xsl:template match="/oyster/user[@action = 'register']" mode="description">
 	<!-- TODO: some blurb about creating an account -->
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'register']" mode="content">
-	<form id="user_register" method="post" action="{/swaf/@url}">
+<xsl:template match="/oyster/user[@action = 'register']" mode="content">
+	<form id="user_register" method="post" action="{/oyster/@url}">
 		<p>All fields are required.</p>
 		<dl>
 			<dt><label for="username">Username:</label></dt>

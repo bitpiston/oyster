@@ -1,13 +1,13 @@
-<xsl:template match="/swaf/user[@action = 'login']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'login']" mode="heading">
 	Log In
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'login']" mode="description">
+<xsl:template match="/oyster/user[@action = 'login']" mode="description">
 	Logging in gives you access to your account's settings and profile.
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'login']" mode="content">
-	<form id="user_login" method="post" action="{/swaf/@url}">
+<xsl:template match="/oyster/user[@action = 'login']" mode="content">
+	<form id="user_login" method="post" action="{/oyster/@url}">
 		<div>
 			<input type="hidden" name="referer" value="{@referer}" />
 			<fieldset>
@@ -35,8 +35,8 @@
 				</dl>
 			</fieldset>
 			<input type="submit" value="Log In" /><br />
-			<p>Forgot your password? <a href="{/swaf/@base}user/recover/" class="options">Recover your password</a></p>
-			<p>Don't have an account? <a href="{/swaf/@base}register/" class="options">Register an account</a></p>
+			<p>Forgot your password? <a href="{/oyster/@base}user/recover/" class="options">Recover your password</a></p>
+			<p>Don't have an account? <a href="{/oyster/@base}register/" class="options">Register an account</a></p>
 		</div>
 	</form>
 </xsl:template>

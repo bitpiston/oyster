@@ -1,11 +1,11 @@
-<xsl:template match="/swaf/ssxslt[@mode = 'admin_config']" mode="heading">Server Side XSLT Configuration</xsl:template>
+<xsl:template match="/oyster/ssxslt[@mode = 'admin_config']" mode="heading">Server Side XSLT Configuration</xsl:template>
 
-<xsl:template match="/swaf/ssxslt[@mode = 'admin_config']" mode="description"></xsl:template>
+<xsl:template match="/oyster/ssxslt[@mode = 'admin_config']" mode="description"></xsl:template>
 
-<xsl:template match="/swaf/ssxslt[@mode = 'admin_config']" mode="sidebar"></xsl:template>
+<xsl:template match="/oyster/ssxslt[@mode = 'admin_config']" mode="sidebar"></xsl:template>
 
-<xsl:template match="/swaf/ssxslt[@mode = 'admin_config']">
-	<form id="ssxslt_admin_config" method="post" action="{/swaf/@url}">
+<xsl:template match="/oyster/ssxslt[@mode = 'admin_config']">
+	<form id="ssxslt_admin_config" method="post" action="{/oyster/@url}">
 		<dl>
 			<dt>
 				<input type="checkbox" name="force_server_side" id="force_server_side">

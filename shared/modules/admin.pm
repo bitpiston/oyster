@@ -151,10 +151,9 @@ sub logs {
     user::require_permission('admin_logs');
 
     # contextual admin menu
-    my $item =
-    menu::add_item('menu'   => 'admin', 'label' => 'Logs',   'url' => "${ADMIN_BASE_URL}logs/");
-    menu::add_item('parent' => $item,   'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
-    menu::add_item('parent' => $item,   'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
+    my $item = menu::add_item('menu' => 'admin', 'label' => 'Logs', 'url' => "${ADMIN_BASE_URL}logs/");
+    menu::add_item('parent' => $item, 'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
+    menu::add_item('parent' => $item, 'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
 
     # clear a log
     if ($INPUT{'clear'} eq 'error' or $INPUT{'clear'} eq 'status') {

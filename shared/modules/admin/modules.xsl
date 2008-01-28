@@ -1,10 +1,10 @@
-<xsl:template match="/swaf/admin[@action = 'modules']" mode="heading">Manage Modules</xsl:template>
+<xsl:template match="/oyster/admin[@action = 'modules']" mode="heading">Manage Modules</xsl:template>
 
-<xsl:template match="/swaf/admin[@action = 'modules']" mode="description">
+<xsl:template match="/oyster/admin[@action = 'modules']" mode="description">
 	Modules add functionality to Oyster.  This page allows you to manage modules.
 </xsl:template>
 
-<xsl:template match="/swaf/admin[@action = 'modules']" mode="content">
+<xsl:template match="/oyster/admin[@action = 'modules']" mode="content">
 	<p>Some modules cannot be disabled; this is because they are either part of the Oyster core or because other modules depend on them.</p>
 
 	<!-- iterate through modules -->
@@ -36,14 +36,14 @@
 		<!-- actions -->
 		<p><small>
 			<xsl:if test="@loaded and not(@required) and count(../module[@enabled ]/requires[@id = current()/@id]) = 0">
-				[ <a href="{/swaf/@base}admin/modules/?a=disable&amp;id={@id}">Disable</a> ]
+				[ <a href="{/oyster/@base}admin/modules/?a=disable&amp;id={@id}">Disable</a> ]
 			</xsl:if>
 			<xsl:if test="not(@loaded)">
-				[ <a href="{/swaf/@base}admin/modules/?a=enable&amp;id={@id}">Enable</a> ]
+				[ <a href="{/oyster/@base}admin/modules/?a=enable&amp;id={@id}">Enable</a> ]
 			</xsl:if>
 			<!--
 			<xsl:if test="@rev &lt; @latest_rev">
-				[ <a href="{/swaf/@base}admin/modules/?a=update&amp;id={@id}">Update or Install</a> ]
+				[ <a href="{/oyster/@base}admin/modules/?a=update&amp;id={@id}">Update or Install</a> ]
 			</xsl:if>
 			-->
 		</small></p>

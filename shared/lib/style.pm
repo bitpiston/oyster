@@ -103,7 +103,7 @@ sub print_header {
         $attrs .= ' ajax_target="' . $oyster::INPUT{'ajax_target'} . '"' if exists $oyster::INPUT{'ajax_target'};
     }
 
-    print "<swaf$attrs>\n";
+    print "<oyster$attrs>\n";
 
     $oyster::REQUEST{'printed_header'} = 1;
 }
@@ -126,7 +126,7 @@ sub print_header {
 sub print_footer {
     return if $oyster::REQUEST{'printed_footer'};
     print "\t<benchmark>" . sprintf('%.5f', Time::HiRes::gettimeofday() - $oyster::REQUEST{'start_time'}) . "</benchmark>\n" if $oyster::CONFIG{'debug'};
-    print "</swaf>\n";
+    print "</oyster>\n";
     $oyster::REQUEST{'printed_footer'} = 1;
 }
 
@@ -334,7 +334,7 @@ sub _get_module_stylesheets {
 sub _needs_compilation {
     my ($style, $file, $is_server_side) = @_;
 
-    return if $is_server_side; # this isn't used for anything server side (note: it is called on <swaf:include, but those don't even do anything for server-side styles)
+    return if $is_server_side; # this isn't used for anything server side (note: it is called on <oyster:include, but those don't even do anything for server-side styles)
 
     my $style_path = "$oyster::CONFIG{site_path}styles/$style/";
 
@@ -396,7 +396,7 @@ sub _compile_style {
     my $stylesheet = file::slurp($file);
 
     # replace conditionals
-    $stylesheet =~ s{<swaf:(.+?)>([\s\S]+?)</swaf:\1>}{
+    $stylesheet =~ s{<oyster:(.+?)>([\s\S]+?)</oyster:\1>}{
         my ($tag, $data) = ($1, $2);
         if ($tag eq 'if_client_side') {
             $is_server_side ? '' : $data ;
@@ -407,7 +407,7 @@ sub _compile_style {
     }eg;
 
     # replace singleton tags
-    $stylesheet =~ s{<swaf:(.+?) />}{
+    $stylesheet =~ s{<oyster:(.+?) />}{
         my $tag = $1;
         my $insert;
 

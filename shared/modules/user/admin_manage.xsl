@@ -1,13 +1,13 @@
-<xsl:template match="/swaf/user[@action = 'admin_manage']" mode="heading">
+<xsl:template match="/oyster/user[@action = 'admin_manage']" mode="heading">
 	Manage Users
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_manage']" mode="description">
+<xsl:template match="/oyster/user[@action = 'admin_manage']" mode="description">
 	TODO:
 </xsl:template>
 
-<xsl:template match="/swaf/user[@action = 'admin_manage']" mode="content">
-	<form id="user_admin_manage" method="get" action="{/swaf/@url}">
+<xsl:template match="/oyster/user[@action = 'admin_manage']" mode="content">
+	<form id="user_admin_manage" method="get" action="{/oyster/@url}">
 		<dl>
 			<dt><label for="find">Enter a user id or username:</label></dt>
 			<dd><input type="text" name="find" id="find" class="small" value="{@find}" /></dd>
