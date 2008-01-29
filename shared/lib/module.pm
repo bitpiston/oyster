@@ -66,12 +66,20 @@ sub order_by_dependencies {
     return @ordered_modules;
 }
 
+=xml
+    <function name="get_latest_revision">
+        <todo>
+            http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
+        </todo>
+    </function>
+=cut
+
 sub get_latest_revision {
     my $module_id = shift;
     my $rev_file  = "./modules/$module_id/revisions.pl";
     throw 'perl_error' => "File does not exist '$rev_file'" unless -e $rev_file;
-    #${ $module_id . '::revisions::just_getting_revs' } = 1;
-    require $rev_file;
+    #require $rev_file;
+    do $rev_file;
     my $latest_rev = $#{ $module_id . '::revisions::revision' };
     undef @{ $module_id . '::revisions::revision' };
     return $latest_rev;

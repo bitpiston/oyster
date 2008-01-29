@@ -44,7 +44,8 @@ my @update_modules;
         'database' => $dbconfig->{'db'},
         'port'     => $dbconfig->{'port'},
     );
-    $oyster::DB = $DB; # necessary for module::stuff
+    $oyster::DB     = $DB;     # necessary for module::stuff
+    *oyster::CONFIG = $config;
     my $oyster_rev = module::get_revision('oyster');
 #}
 
@@ -127,7 +128,8 @@ else {
 
     # load revisions file
     try {
-        require "./modules/$module/revisions.pl";
+        #require "./modules/$module/revisions.pl";
+        do "./modules/$module/revisions.pl";
     }
     catch 'perl_error', with {
         die shift();
