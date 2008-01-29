@@ -131,17 +131,17 @@ sub print_footer {
 }
 
 =xml
-        <function name="print_styles">
+        <function name="print_styles_xml">
             <synopsis>
                 Prints styles in an xml-friendly manner.
             </synopsis>
             <prototype>
-                style::print_styles()
+                style::print_styles_xml()
             </prototype>
         </function>
 =cut
 
-sub print_styles {
+sub print_styles_xml {
     _load();
     print "\t\t<styles>\n";
     for my $style (values %styles) {
@@ -151,17 +151,17 @@ sub print_styles {
 }
 
 =xml
-        <function name="print_enabled_styles">
+        <function name="print_enabled_styles_xml">
             <synopsis>
                 Print enabled styles in an xml-friendly manner.
             </synopsis>
             <prototype>
-                style::print_enabled_styles()
+                style::print_enabled_styles_xml()
             </prototype>
         </function>
 =cut
 
-sub print_enabled_styles {
+sub print_enabled_styles_xml {
     _load();
     print "\t\t<styles>\n";
     for my $style (values %styles) {
@@ -326,7 +326,7 @@ sub _get_module_stylesheets {
 =xml
         <function name="_needs_compilation">
             <todo>
-                Documentate this function
+                Document this function
             </todo>
         </function>
 =cut
@@ -381,7 +381,7 @@ sub _load {
                 should hooks/global includes be compiled?
             </todo>
             <todo>
-                Documentate this function
+                Document this function
             </todo>
         </function>
 =cut

@@ -97,7 +97,7 @@ sub config {
             throw 'validation_error' => 'A site name is required.'  unless $INPUT{'site_name'};
             $INPUT{'site_name'} = xml::entities($INPUT{'site_name'});
             throw 'validation_error' => 'Invalid default url.'      unless url::is_registered($INPUT{'default_url'});
-            throw 'validation_error' => 'Invalid default style.'    unless -e "$swaf::CONFIG{site_path}styles/$INPUT{default_style}/source/layout.xsl";
+            throw 'validation_error' => 'Invalid default style.'    unless style::is_valid_style($INPUT{'default_style'});
             throw 'validation_error' => 'Invalid navigation depth.' unless ($INPUT{'navigation_depth'} =~ /^\d+$/ and $INPUT{'navigation_depth'} > 0);
             throw 'validation_error' => 'Invalid time offset.'      unless datetime::is_valid_time_offset($INPUT{'time_offset'});
             $INPUT{'error_message'} = xml::validate_xhtml($INPUT{'error_message'});
@@ -122,7 +122,7 @@ sub config {
     style::set_template('admin_config');
     print "\t<oyster action=\"admin_config\"$fields>\n";
     module::print_modules_xml();
-    style::print_enabled_styles();
+    style::print_enabled_styles_xml();
     print "\t</oyster>\n";
 }
 

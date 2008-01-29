@@ -283,7 +283,7 @@ sub edit_settings {
     print qq~\t<user action="edit_settings"$attrs>\n~;
     _print_groups() if $permissions{'user_admin_find'};
     datetime::print_date_formats_xml();
-    style::print_enabled_styles() if $config{'customizable_styles'};
+    style::print_enabled_styles_xml() if $config{'customizable_styles'};
     print "\t</user>\n";
 }
 
