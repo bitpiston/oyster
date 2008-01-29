@@ -16,6 +16,8 @@ CANNED
 \ menu lib doesnt xml::entities anything... it probably should | entity it yourself before sending if necessary.
 \ possibly add a new menu item attribute that allows to insert arbitrary xml -- big maybe on this.
 \ Benchmark prepare_cached versus how queries are cached now, because the current method is confusing and ugly
+\ possibly add a warn() to all libraries if they are loaded outside of an oyster environment
+	\ possible create an import() for every lib to allow forcing it to load outside of an oyster env (if necessary)
 
 DELAYED
 
@@ -95,8 +97,6 @@ TODO
 & Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
 	- possibly use the new module::order_by_dependencies()
 - look over libraries (again) to ensure consistent naming conventions
-- possibly add a warn() to all libraries if they are loaded outside of an oyster environment
-	- possible create an import() for every lib to allow forcing it to load outside of an oyster env (if necessary)
 - various utils should use console::util to parse args instead of just using @ARGV
 - better logic for getting content-type
 - recompile server_base.xsl dynamically as needed
