@@ -85,6 +85,45 @@ sub menu {
 sub config {
     user::require_permission('admin_config');
 
+    my @fields = qw(default_url time_offset default_style site_name error_message navigation_depth);
+    my $input_source;
+
+    # the form has been submitted
+    if (%INPUT) {
+        $input_source = \%INPUT;
+        try {
+
+            # validate user input
+            throw 'validation_error' => 'A site name is required.'  unless $INPUT{'site_name'};
+            $INPUT{'site_name'} = xml::entities($INPUT{'site_name'});
+            throw 'validation_error' => 'Invalid default url.'      unless url::is_registered($INPUT{'default_url'});
+            throw 'validation_error' => 'Invalid default style.'    unless -e "$swaf::CONFIG{site_path}styles/$INPUT{default_style}/source/layout.xsl";
+            throw 'validation_error' => 'Invalid navigation depth.' unless ($INPUT{'navigation_depth'} =~ /^\d+$/ and $INPUT{'navigation_depth'} > 0);
+            throw 'validation_error' => 'Invalid time offset.'      unless datetime::is_valid_time_offset($INPUT{'time_offset'});
+            $INPUT{'error_message'} = xml::validate_xhtml($INPUT{'error_message'});
+
+            # everything validated, update settings
+            my $query_update_site_config   = $DBH->prepare("UPDATE ${DB_PREFIX}config SET value = ? WHERE name = ?");
+            for my $field (@fields)   { $query_update_site_config->execute($INPUT{$field}, $field) }
+
+            # print a confirmation message
+            confirmation('Settings have been saved.');
+
+            # reload configuration in all daemons
+# TODO
+        };
+    } else {
+        $input_source = \%CONFIG;
+    }
+
+    # print the edit config form
+    my $fields;
+    for my $field (@fields)   { $fields .= " $field=\"" . xml::entities($input_source->{$field}) . "\"" }
+    style::set_template('admin_config');
+    print "\t<oyster action=\"admin_config\"$fields>\n";
+    module::print_modules_xml();
+    style::print_enabled_styles();
+    print "\t</oyster>\n";
 }
 
 =xml

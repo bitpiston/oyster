@@ -62,11 +62,6 @@ sub send {
     my %headers = @_;
     $headers{'from'} = $oyster::CONFIG{'sendmail_from'} unless grep /^from$/i, keys %headers;
 
-    #my ($to, $subject, $content, %headers) = @_;
-    #$headers{'to'}      = $to;
-    #$headers{'subject'} = $subject;
-    #$headers{'from'}    = $oyster::CONFIG{'sendmail_from'} unless grep /^from$/i, keys %headers;
-
     my @headers;
     for my $header (keys %headers) {
         my $name = string::proper_caps($header);
@@ -126,7 +121,7 @@ sub send_template {
 =xml
     <function name="add_template">
         <todo>
-            Documentate this function
+            Document this function
         </todo>
     </function>
 =cut
