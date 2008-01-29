@@ -77,7 +77,7 @@ sub order_by_dependencies {
 sub get_latest_revision {
     my $module_id = shift;
     my $rev_file  = "./modules/$module_id/revisions.pl";
-    throw 'perl_error' => "File does not exist '$rev_file'" unless -e $rev_file;
+    throw 'perl_error' => "Revision file does not exist '$rev_file'." unless -e $rev_file;
     #require $rev_file;
     do $rev_file;
     my $latest_rev = $#{ $module_id . '::revisions::revision' };

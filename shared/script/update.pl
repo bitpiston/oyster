@@ -192,8 +192,13 @@ else {
     }
 }
 
+=xml
+</document>
+=cut
 
+1;
 
+# Copyright BitPiston 2008
 
 
 
@@ -400,10 +405,3 @@ sub get_module_update_order {
     return @update_modules;
 }
 
-=xml
-</document>
-=cut
-
-1;
-
-# Copyright BitPiston 2008
