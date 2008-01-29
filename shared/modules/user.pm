@@ -24,9 +24,6 @@ our (%USER, %PERMISSIONS);
 event::register_hook('load', 'hook_load', 90);
 sub hook_load {
 
-    # load module config
-    _load_config();
-
     # cache queries
     our $select_group_by_id       = $DB->server_prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1");
     our $select_user_by_session   = $DB->server_prepare("SELECT users.id, users.name, users.time_offset, users.date_format, users.ip, users.restrict_ip, users.style, ${DB_PREFIX}user_permissions.group_id FROM users, ${DB_PREFIX}user_permissions WHERE users.session = ? and ${DB_PREFIX}user_permissions.user_id = users.id LIMIT 1");
@@ -490,7 +487,7 @@ sub admin_config {
         confirmation('User settings have been saved.');
 
         # reload configuration for all daemons
-        ipc::eval('user::_load_config()');
+        ipc::eval("module::load_config('user')");
     } if $ENV{'REQUEST_METHOD'} eq 'POST';
 
     # print the edit config form
@@ -941,16 +938,6 @@ sub hook_admin_center_modules_menu {
 # ----------------------------------------------------------------------------
 # Helpers
 # ----------------------------------------------------------------------------
-
-sub _load_config {
-
-    # reset data structure (necessary for a reload)
-    %config = ();
-
-    # load module configuration
-    config::load();
-    config::load('table' => 'user_config');
-}
 
 sub _validate_email {
     throw 'validation_error' => 'Invalid email address.' unless email::is_valid_email($INPUT{'email'});
