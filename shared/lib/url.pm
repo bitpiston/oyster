@@ -134,9 +134,6 @@ sub unique {
                 Should it perform error checking? (possibly create an alternative
                 register_safe for that)
             </todo>
-            <todo>
-                this is sims-specific! it really shouldnt be here!
-            </todo>
         </function>
 =cut
 
@@ -246,9 +243,6 @@ sub register {
             </todo>
             <todo>
                 this doesn't handle regex urls
-            </todo>
-            <todo>
-                this is sims-specific! it really shouldnt be here!
             </todo>
         </function>
 =cut

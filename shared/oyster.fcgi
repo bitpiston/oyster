@@ -49,13 +49,6 @@ eval {
 };
 die("An error occured while handling a request: $@") if $@;
 
-sub die {
-    my $error_message = shift;
-    open(my $log, '>>', "$config->{site_path}logs/error.log");
-    print $log localtime() . "\tFATAL: $error_message\n";
-    exit;
-}
-
 # ----------------------------------------------------------------------------
 # Copyright
 ##############################################################################

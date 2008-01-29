@@ -15,7 +15,7 @@
 			</dl>
 			<xsl:for-each select="permissions/module">
 				<fieldset>
-					<legend onclick="sims.toggle_visibility('permissions_{@id}')"><xsl:value-of select="@name" /></legend>
+					<legend onclick="oyster.toggle_visibility('permissions_{@id}')"><xsl:value-of select="@name" /></legend>
 					<dl id="permissions_{@id}">
 						<xsl:for-each select="permission">
 							<dt><xsl:value-of select="@name" />:</dt>

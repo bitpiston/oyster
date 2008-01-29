@@ -15,10 +15,8 @@ package launcher;
 BEGIN {
     our $config = eval { require './config.pl' };
     die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+    $config->{'mode'} = 'cgi';
 }
-
-# set oyster's mode to standard CGI
-$config->{'mode'} = 'cgi';
 
 # load the oyster base class
 use oyster 'launcher';

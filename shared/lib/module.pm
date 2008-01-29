@@ -358,9 +358,6 @@ sub unload {
         <prototype>
             print_module_xml()
         </prototype>
-        <todo>
-            Should this be in SIMS?
-        </todo>
     </function>
 =cut
 
