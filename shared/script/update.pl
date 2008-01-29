@@ -30,7 +30,7 @@ use database;
 my @update_modules;
 
 #
-# get Oyster's revision
+# get Oyster's revision and established a temporary DB connection to use until Oyster is loaded
 #
 
 #my $oyster_rev;
@@ -49,7 +49,7 @@ my @update_modules;
 #}
 
 #
-# if no module id was specified, assume all modules should be updated (only installed modules, if possible)
+# if no module id was specified, assume all modules should be updated
 #
 
 unless (exists $oyster::config::args{'module'}) {
@@ -81,7 +81,8 @@ my $module = $oyster::config::args{'module'};
 die "The 'oyster' module must be updated before this module can be updated or installed." if ($oyster_rev != module::get_latest_revision('oyster') and $module ne 'oyster');
 
 # load the Oyster environment
-my %load_args;
+$DB->disconnect(); # ensure the temporary database connection is replaced by oyster::load's
+my %load_args = ('skip_outdated_modules' => 1);
 unless ($oyster_rev) { # if oyster is not installed, load a minimal environment
     $load_args{'load_config'}  = 0;
     $load_args{'load_modules'} = 0;
@@ -96,6 +97,102 @@ my $meta = module::get_meta($module);
 for my $dependency_id (@{$meta->{'requires'}}) {
     die "The '$dependency_id' module must be updated before this module can be updated or installed." unless module::get_revision($dependency_id) == module::get_latest_revision($dependency_id);
 }
+
+# get current module revision
+my $current_revision = module::get_revision($module);
+
+# get the module's latest revision
+my $latest_revision = module::get_latest_revision($module);
+
+# module is up to date
+if ($latest_revision == $current_revision) {
+    print "'$module' is up to date (revision $current_revision).\n";
+}
+
+# something weird happened
+elsif ($current_revision > $latest_revision) {
+    print "Error: '$module' has a current revision ($current_revision) greater than the latest revision ($latest_revision)!\n";
+}
+
+# module needs to be updated
+else {
+
+    # import variables into the revisions script
+    my $pkg = "${module}::revisions";
+    ${"${pkg}::SITE_ID"}          = $oyster::CONFIG{'site_id'};
+    ${"${pkg}::DB_PREFIX"}        = $oyster::CONFIG{'db_prefix'};
+    ${"${pkg}::MODULE_PATH"}      = "$oyster::CONFIG{shared_path}modules/$module_id/";
+    ${"${pkg}::MODULE_DB_PREFIX"} = "$oyster::CONFIG{db_prefix}${module_id}_";
+    ${"${pkg}::DB"}               = $oyster::DB;
+
+    # load revisions file
+    try {
+        require "./modules/$module/revisions.pl";
+    }
+    catch 'perl_error', with {
+        die shift();
+    }
+    catch 'db_error', with {
+        my $error = shift;
+        die "Database Error: $error\nQuery: $database::current_query\n";
+    };
+
+    # update the module
+    print "Updating '$module' from revision $current_revision to revision $latest_revision...\n" unless exists $oyster::config::args{'siteonly'};
+    for my $rev (@{"${module}::revisions::revision"}[ $current_revision + 1 .. $latest_revision ]) {
+        $current_revision++;
+        
+        # perform the site update
+        if (exists $oyster::config::args{'siteonly'}) {
+            if (ref $rev->{'up'}->{'site'} eq 'CODE') {
+                print "  Revision $current_revision site '$oyster::CONFIG{site_id}' update...\n";
+                try {
+                    $rev->{'up'}->{'site'}->();
+                }
+                catch 'perl_error', with {
+                    die shift();
+                }
+                catch 'db_error', with {
+                    my $error = shift;
+                    die "Database Error: $error\nQuery: $database::current_query\n";
+                };
+            }
+        }
+
+        # perform the shared update
+        else {
+            if (ref $rev->{'up'}->{'shared'} eq 'CODE') {
+                print "  Revision $current_revision shared update...\n";
+                try {
+                    $rev->{'up'}->{'shared'}->();
+                }
+                catch 'perl_error', with {
+                    die shift();
+                }
+                catch 'db_error', with {
+                    my $error = shift;
+                    die "Database Error: $error\nQuery: $database::current_query\n";
+                };
+            }
+        }
+    }
+
+    # if the shared update was performed
+    unless (exists $oyster::config::args{'siteonly'}) {
+
+        # perform the site update
+        print `perl ./script/update.pl -module $module -site $oyster::CONFIG{site_id} -siteonly`;
+
+        # update the module revision
+        module::set_revision($module, $latest_revision);
+
+        print "  Done.\n";
+    }
+}
+
+
+
+
 
 
 __END__

@@ -214,7 +214,7 @@ sub load {
         }
 
         # load modules
-        _load_modules() if (!exists $options{'load_modules'} or $options{'load_modules'});
+        _load_modules($options{'skip_outdated_modules'}) if (!exists $options{'load_modules'} or $options{'load_modules'});
 
         # load/cache stuff necessary to handle requests
         _load_exception_handlers() if (!exists $options{'load_request'} or $options{'load_request'});
@@ -302,26 +302,56 @@ sub _load_config {
 =cut
 
 sub _load_modules {
+    my $skip_outdated = shift;
 
     # if modules are already loaded, unload them
     module::unload($_) for keys %module::loaded;
 
     # get a list of enabled modules
-    my @modules;
-    my $query = $DB->query("SELECT id FROM modules WHERE site_$CONFIG{site_id} = '1'");
-    while (my $module = $query->fetchrow_arrayref()) {
-        push @modules, $module->[0];
-    }
+    my @modules = module::get_installed();
     die('No modules were loaded.  Your modules table may have been corrupted.') unless @modules;
 
     # order modules by dependencies
     @modules = module::order_by_dependencies(@modules);
 
     # load modules
+    my $i = 0;
     for my $module (@modules) {
-        die "Module '$module' is out of date.  Please run the update utility." unless module::get_revision($module) == module::get_latest_revision($module);
-        module::load($module);
-    }
+
+        # if the module is up to date
+        if (module::get_revision($module) == module::get_latest_revision($module)) {
+
+            # if skip_outdated is enabled, ensure all of this module's prereqs have been loaded (they may have been skipped because they are out of date)
+            if ($skip_outdated) {
+                 my $meta = module::get_meta($module);
+                 my $failed_deps = 0;
+                 for my $dep (@{$meta->{'requires'}}) {
+                     unless (exists $module::loaded{$dep}) {
+                         $failed_deps = 1;
+                         last;
+                     }
+                 }
+                 module::load($module) unless $failed_deps;
+            }
+
+            # otherwise, just load the module as normal
+            else {
+                module::load($module);
+            }
+        }
+
+        # if the module needs to be updated
+        else {
+
+            # if the skip outdated modules option was set, do nothing
+            if ($skip_outdated) {}
+
+            # otherwise, die until the module is updated
+            else {
+                die "Module '$module' is out of date.  Please run the update utility.";
+            }
+        }
+    } continue { $i++ }
 
     # execute and destroy the load hook lookup table
     event::execute('load');
