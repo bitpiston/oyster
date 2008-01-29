@@ -110,7 +110,7 @@ sub config {
             confirmation('Settings have been saved.');
 
             # reload configuration in all daemons
-# TODO
+            ipc::eval('oyster::_load_config()');
         };
     } else {
         $input_source = \%CONFIG;
@@ -119,11 +119,11 @@ sub config {
     # print the edit config form
     my $fields;
     for my $field (@fields)   { $fields .= " $field=\"" . xml::entities($input_source->{$field}) . "\"" }
-    style::set_template('admin_config');
-    print "\t<oyster action=\"admin_config\"$fields>\n";
+    style::include_template('config');
+    print "\t<admin action=\"config\"$fields>\n";
     module::print_modules_xml();
     style::print_enabled_styles_xml();
-    print "\t</oyster>\n";
+    print "\t</admin>\n";
 }
 
 =xml
