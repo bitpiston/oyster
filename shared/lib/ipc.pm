@@ -122,9 +122,9 @@ sub _parse_message_args {
 
 # ipc::message(string module => string message[, 'global' => bool][, 'args' => arrayref])
 
-my $last_fetch_time = $DB->query("SELECT UTC_TIMESTAMP()")->fetchrow_arrayref()->[0];
+my $last_fetch_time = datetime::gmtime();
 my $insert_ipc      = $DB->prepare("INSERT INTO ipc (ctime, module, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
-my $fetch_ipc       = $DB->prepare("SELECT module, args, UTC_TIMESTAMP() as now FROM ipc WHERE ctime > ? and (global = '1' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
+my $fetch_ipc       = $DB->prepare("SELECT module, args as now FROM ipc WHERE ctime > ? and (global = '1' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
 
 sub message {
 
@@ -149,8 +149,8 @@ sub do {
     while (my $msg = $fetch_ipc->fetchrow_arrayref()) {
         my ($module, $args) = @{$msg};
         &{"$args{module'}::ipc"}(split("\0", $args));
-        $last_fetch_time = $msg->[2];
     }
+    $last_fetch_time = datetime::gmtime();
 }
 
 
