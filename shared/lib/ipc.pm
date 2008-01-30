@@ -108,7 +108,6 @@ ipc
     ctime
     module
     args
-    when
     daemon
     global
     site
@@ -121,29 +120,37 @@ sub _parse_message_args {
     return "@_"; # this isn't actually used atm...
 }
 
-# ipc::message(string module => string message[, 'when' => string][, 'global' => bool][, 'args' => arrayref])
+# ipc::message(string module => string message[, 'global' => bool][, 'args' => arrayref])
+
+my $last_fetch_time = $DB->query("SELECT UTC_TIMESTAMP()")->fetchrow_arrayref()->[0];
+my $insert_ipc      = $DB->prepare("INSERT INTO ipc (ctime, module, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
+my $fetch_ipc       = $DB->prepare("SELECT module, args, UTC_TIMESTAMP() as now FROM ipc WHERE ctime > ? and (global = '1' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
 
 sub message {
 
     # parse arguments
     my %args = @_;
-    $args{'when'} = 'request_pre' unless exists $args{'when'};
-    $args{'global'} = $args{'global'} ? '1' : '0' ; # Pg expects a string
+    my $global = $args{'global'} ? '1' : '0' ; # Pg expects a string
     my $args = "";
     $args = _parse_message_args($args{'args'}) if exists $args{'args'};
 
     # ensure that the destination module is prepared to accept ipc
     throw 'perl_error' => "IPC failure: destination module '$args{module}' cannot handle IPC." unless UNIVERSAL::can($args{'module'}, 'ipc');
 
-    # if 'when' is request_pre, execute it immediately in this daemon
-    if ($args{'when'} eq 'request_pre') {
-        &{"$args{module'}::ipc"}(split("\0", $args));
-    }
+    # execute it immediately in this daemon
+    &{"$args{module'}::ipc"}(split("\0", $args));
 
     # insert the request into the database
-    #
+    $insert_ipc->execute($args{'module'}, $args, $global);
 }
 
-
+sub do {
+    $fetch_ipc->execute($last_fetch_time);
+    while (my $msg = $fetch_ipc->fetchrow_arrayref()) {
+        my ($module, $args) = @{$msg};
+        &{"$args{module'}::ipc"}(split("\0", $args));
+        $last_fetch_time = $msg->[2];
+    }
+}
 
 
