@@ -104,31 +104,46 @@ sub do {
 
 __END__
 
-site_ipc
-
 ipc
     ctime
     module
-    message
     args
+    when
+    daemon
+    global
+    site
 
-# ipc::message_all(string module => string message[, 'when' => string][, 'args' => arrayref])
+sub _parse_message_args {
+    local $" = "\0"; # use tricky string interpolation instead of join
 
-sub message_all {
+    return "@{$_[0]}"      if ref $_[0] eq 'ARRAY';
+    return "@{[%{$_[0]}]}" if ref $_[0] eq 'HASH';
+    return "@_"; # this isn't actually used atm...
+}
+
+# ipc::message(string module => string message[, 'when' => string][, 'global' => bool][, 'args' => arrayref])
+
+sub message {
+
+    # parse arguments
     my %args = @_;
     $args{'when'} = 'request_pre' unless exists $args{'when'};
+    $args{'global'} = $args{'global'} ? '1' : '0' ; # Pg expects a string
+    my $args = "";
+    $args = _parse_message_args($args{'args'}) if exists $args{'args'};
 
+    # ensure that the destination module is prepared to accept ipc
+    throw 'perl_error' => "IPC failure: destination module '$args{module}' cannot handle IPC." unless UNIVERSAL::can($args{'module'}, 'ipc');
+
+    # if 'when' is request_pre, execute it immediately in this daemon
+    if ($args{'when'} eq 'request_pre') {
+        &{"$args{module'}::ipc"}(split("\0", $args));
+    }
+
+    # insert the request into the database
+    #
 }
 
-sub message_one {
 
-}
 
-sub message_global_all {
-
-}
-
-sub message_global_one {
-
-}
 

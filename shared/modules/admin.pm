@@ -103,8 +103,8 @@ sub config {
             $INPUT{'error_message'} = xml::validate_xhtml($INPUT{'error_message'});
 
             # everything validated, update settings
-            my $query_update_site_config   = $DBH->prepare("UPDATE ${DB_PREFIX}config SET value = ? WHERE name = ?");
-            for my $field (@fields)   { $query_update_site_config->execute($INPUT{$field}, $field) }
+            my $query_update_site_config = $DBH->prepare("UPDATE ${DB_PREFIX}config SET value = ? WHERE name = ?");
+            for my $field (@fields) { $query_update_site_config->execute($INPUT{$field}, $field) }
 
             # print a confirmation message
             confirmation('Settings have been saved.');
@@ -118,7 +118,7 @@ sub config {
 
     # print the edit config form
     my $fields;
-    for my $field (@fields)   { $fields .= " $field=\"" . xml::entities($input_source->{$field}) . "\"" }
+    for my $field (@fields) { $fields .= " $field=\"" . xml::entities($input_source->{$field}) . "\"" }
     style::include_template('config');
     print "\t<admin action=\"config\"$fields>\n";
     module::print_modules_xml();
