@@ -105,53 +105,54 @@ sub do {
 __END__
 
 ipc
-    ctime
+    id
     module
     function
     args
     daemon
-    global
     site
 
-sub _parse_message_args {
-    local $" = "\0"; # use tricky string interpolation instead of join
+my $query = $DB->query("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
+our $last_fetch_id = $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
+our $insert_ipc    = $DB->prepare("INSERT INTO ipc (ctime, module, function, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
+our $fetch_ipc     = $DB->prepare("SELECT id, module, function, args as now FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
 
-    return "@{$_[0]}"      if ref $_[0] eq 'ARRAY';
-    return "@{[%{$_[0]}]}" if ref $_[0] eq 'HASH';
-    return "@_"; # this isn't actually used atm...
-}
-
-# ipc::message(module => string module, function => string function[, 'global' => bool][, 'args' => arrayref])
-
-my $last_fetch_time = datetime::gmtime();
-my $insert_ipc      = $DB->prepare("INSERT INTO ipc (ctime, module, function, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
-my $fetch_ipc       = $DB->prepare("SELECT module, function, args as now FROM ipc WHERE ctime > ? and (global = '1' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
-
-sub message {
-
-    # parse arguments
-    my %args = @_;
-    my $global = $args{'global'} ? '1' : '0' ; # Pg expects a string
-    my $args = "";
-    $args = _parse_message_args($args{'args'}) if exists $args{'args'};
-
-    # ensure that the destination module is prepared to accept ipc
-    throw 'perl_error' => "IPC failure: destination module '$args{module}' cannot handle function '$args{function}'." unless UNIVERSAL::can($args{'module'}, $args{'function'});
-
-    # execute it immediately in this daemon
-    &{ $args{'module'} . '::' . $args{'function'} }(split("\0", $args));
-
-    # insert the request into the database
-    $insert_ipc->execute($args{'module'}, $args{'function'}, $args, $global);
-}
-
-sub do {
-    $fetch_ipc->execute($last_fetch_time);
-    $last_fetch_time = datetime::gmtime();
-    while (my $msg = $fetch_ipc->fetchrow_arrayref()) {
-        my ($module, $func, $args) = @{$msg};
+# get all tasks since last update and execute them
+# TODO: try {}
+sub update {
+    $fetch_ipc->execute($last_fetch_id);
+    while (my $task = $fetch_ipc->fetchrow_arrayref()) {
+        my ($id, $module, $func, $args) = @{$task};
         &{ $module . '::' . $func }(split("\0", $args));
+        $last_fetch_id = $id;
     }
 }
 
+sub do {
+    my $global   = ($_[0] eq '~global' and shift) ? '1' : '0' ;
+    my $module   = shift;
+    my $function = shift;
+    my $args     = join("\0", @_);
 
+    # validate the module and function
+    throw 'perl_error' => "IPC failure: destination module '$module' cannot handle function '$function'." unless UNIVERSAL::can($module, $function);
+
+    # execute it immediately in this daemon
+    &{ $module . '::' . $function }(@_);
+
+    # insert the request into the database
+    $insert_ipc->execute($module, $function, $args, $global);
+}
+
+sub global_do {
+    unshift @_, '~global';
+    goto &do;
+}
+
+#sub _parse_message_args {
+#    local $" = "\0"; # use tricky string interpolation instead of join
+#
+#    return "@{$_[0]}"      if ref $_[0] eq 'ARRAY';
+#    return "@{[%{$_[0]}]}" if ref $_[0] eq 'HASH';
+#    return "@_";
+#}

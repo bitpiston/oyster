@@ -80,6 +80,7 @@ while (@dirs) {
 }
 
 # work function
+# TODO: this should obey __END__ and __DATA__
 sub extract_xml {
     my $filename = shift;
     open(my $fh, '<', $filename) or die "Could not open file for reading: '$filename'.";
