@@ -101,4 +101,6 @@ TODO
 - better logic for getting content-type
 - recompile server_base.xsl dynamically as needed
 - certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
+& new ipc library
+- revisions should probably just return their @revision arrays, like meta.pl/permissions.pl
 

@@ -107,6 +107,7 @@ __END__
 ipc
     ctime
     module
+    function
     args
     daemon
     global
@@ -120,11 +121,11 @@ sub _parse_message_args {
     return "@_"; # this isn't actually used atm...
 }
 
-# ipc::message(string module => string message[, 'global' => bool][, 'args' => arrayref])
+# ipc::message(module => string module, function => string function[, 'global' => bool][, 'args' => arrayref])
 
 my $last_fetch_time = datetime::gmtime();
-my $insert_ipc      = $DB->prepare("INSERT INTO ipc (ctime, module, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
-my $fetch_ipc       = $DB->prepare("SELECT module, args as now FROM ipc WHERE ctime > ? and (global = '1' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
+my $insert_ipc      = $DB->prepare("INSERT INTO ipc (ctime, module, function, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
+my $fetch_ipc       = $DB->prepare("SELECT module, function, args as now FROM ipc WHERE ctime > ? and (global = '1' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
 
 sub message {
 
@@ -135,22 +136,22 @@ sub message {
     $args = _parse_message_args($args{'args'}) if exists $args{'args'};
 
     # ensure that the destination module is prepared to accept ipc
-    throw 'perl_error' => "IPC failure: destination module '$args{module}' cannot handle IPC." unless UNIVERSAL::can($args{'module'}, 'ipc');
+    throw 'perl_error' => "IPC failure: destination module '$args{module}' cannot handle function '$args{function}'." unless UNIVERSAL::can($args{'module'}, $args{'function'});
 
     # execute it immediately in this daemon
-    &{"$args{module'}::ipc"}(split("\0", $args));
+    &{ $args{'module'} . '::' . $args{'function'} }(split("\0", $args));
 
     # insert the request into the database
-    $insert_ipc->execute($args{'module'}, $args, $global);
+    $insert_ipc->execute($args{'module'}, $args{'function'}, $args, $global);
 }
 
 sub do {
     $fetch_ipc->execute($last_fetch_time);
-    while (my $msg = $fetch_ipc->fetchrow_arrayref()) {
-        my ($module, $args) = @{$msg};
-        &{"$args{module'}::ipc"}(split("\0", $args));
-    }
     $last_fetch_time = datetime::gmtime();
+    while (my $msg = $fetch_ipc->fetchrow_arrayref()) {
+        my ($module, $func, $args) = @{$msg};
+        &{ $module . '::' . $func }(split("\0", $args));
+    }
 }
 
 

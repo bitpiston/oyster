@@ -221,16 +221,6 @@ sub replace_entities {
         <example>
             print xml::entities($INPUT{'title'});
         </example>
-        <todo>
-            This should accept multiple strings like attr_entities
-        </todo>
-        <todo>
-            This should NOT protect against double-entitying something (add entities_safe or something for that)
-        </todo>
-        <todo>
-            check if these (?:)'s are necessary
-        </todo>
-        
     </function>
 =cut
 
