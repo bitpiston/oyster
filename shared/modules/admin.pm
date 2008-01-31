@@ -111,6 +111,7 @@ sub config {
 
             # reload configuration in all daemons
             ipc::eval('oyster::_load_config()');
+            #ipc::message('module' => 'oyster', 'function' => '_load_config');
         };
     } else {
         $input_source = \%CONFIG;

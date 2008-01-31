@@ -197,6 +197,7 @@ sub register {
         my $tmp_url = $update{'url'};
         my $num_slashes = ($tmp_url =~ s!/!!g);
         ipc::eval('url::load_navigation()') if $oyster::CONFIG{'navigation_depth'} <= $num_slashes + 1;
+        #ipc::message('module' => 'url', 'function' => 'load_navigation') if $oyster::CONFIG{'navigation_depth'} <= $num_slashes + 1;
     }
 
     # return url id and url
@@ -305,6 +306,7 @@ sub update {
         my $tmp_url = $url{'url'};
         my $num_slashes = ($tmp_url =~ s!/!!g);
         ipc::eval('url::load_navigation()') if $oyster::CONFIG{'navigation_depth'} <= $num_slashes + 1;
+        #ipc::message('module' => 'url', 'function' => 'load_navigation') if $oyster::CONFIG{'navigation_depth'} <= $num_slashes + 1;
     }
 
     # return the url id and url
