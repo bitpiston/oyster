@@ -1,5 +1,8 @@
 =xml
 <document title="Paypal API">
+    <warning>
+        This library is considered pre-alpha.
+    </warning>
     <synopsis>
         This library provides access to Paypal's NVP api.
     </synopsis>

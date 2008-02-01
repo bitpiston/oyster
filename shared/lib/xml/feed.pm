@@ -1,5 +1,8 @@
 =xml
 <document title="XML Feed Functions">
+    <warning>
+        This library is considered pre-alpha.
+    </warning>
     <synopsis>
         Provides an object to parse and read from rss/atom feeds.
     </synopsis>
@@ -17,7 +20,6 @@
         Documentation
     </todo>
 =cut
-
 package xml::feed;
 use base 'xml::parser';
 
@@ -81,6 +83,7 @@ sub new {
         </example>
     </function>
 =cut
+
 sub parse_url {
     my $self = shift;
     my $url  = shift;
@@ -105,6 +108,7 @@ sub parse_url {
         </example>
     </function>
 =cut
+
 sub _node_start_handler {
     my $self       = shift;
     my $namespace  = shift;
@@ -167,6 +171,7 @@ sub _node_start_handler {
             </example>
         </function>
 =cut
+
 sub _rss_node_start_handler {
     my $self       = shift;
     my $namespace  = shift;
@@ -211,6 +216,7 @@ sub _rss_node_start_handler {
             </example>
         </function>
 =cut
+
 sub _rss_node_end_handler {
     my $self      = shift;
     my $namespace = shift;
@@ -250,6 +256,7 @@ sub _rss_node_end_handler {
             </example>
         </function>
 =cut
+
 sub _atom_node_start_handler {
     my $self       = shift;
     my $namespace  = shift;
@@ -293,6 +300,7 @@ sub _atom_node_start_handler {
             </example>
         </function>
 =cut
+
 sub _atom_node_end_handler {
     my $self      = shift;
     my $namespace = shift;

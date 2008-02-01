@@ -53,17 +53,17 @@ sub include_template {
 }
 
 =xml
-    <function name="register">
-        <synopsis>
-            Adds an entry to the current site's styles table
-        </synopsis>
-        <prototype>
-            style::register(string style_id, string style_name)
-        </prototype>
-        <note>
-            THis does nothing (and returns undef) if the given style ID is already registered.
-        </note>
-    </function>
+        <function name="register">
+            <synopsis>
+                Adds an entry to the current site's styles table
+            </synopsis>
+            <prototype>
+                style::register(string style_id, string style_name)
+            </prototype>
+            <note>
+                THis does nothing (and returns undef) if the given style ID is already registered.
+            </note>
+        </function>
 =cut
 
 sub register {
@@ -73,17 +73,17 @@ sub register {
 }
 
 =xml
-    <function name="unregister">
-        <synopsis>
-            Removes a style's entry in the current site's styles table
-        </synopsis>
-        <note>
-            This does nothing if passed a non-existant style ID.
-        </note>
-        <prototype>
-            style::unregister(string style_id)
-        </prototype>
-    </function>
+        <function name="unregister">
+            <synopsis>
+                Removes a style's entry in the current site's styles table
+            </synopsis>
+            <note>
+                This does nothing if passed a non-existant style ID.
+            </note>
+            <prototype>
+                style::unregister(string style_id)
+            </prototype>
+        </function>
 =cut
 
 sub unregister {
@@ -92,17 +92,17 @@ sub unregister {
 }
 
 =xml
-    <function name="enable">
-        <synopsis>
-            Enables a style
-        </synopsis>
-        <note>
-            This does nothing if passed an invalid style ID.
-        </note>
-        <prototype>
-            style::enable(string style_id)
-        </prototype>
-    </function>
+        <function name="enable">
+            <synopsis>
+                Enables a style
+            </synopsis>
+            <note>
+                This does nothing if passed an invalid style ID.
+            </note>
+            <prototype>
+                style::enable(string style_id)
+            </prototype>
+        </function>
 =cut
 
 sub enable {
@@ -111,17 +111,17 @@ sub enable {
 }
 
 =xml
-    <function name="disable">
-        <synopsis>
-            Disables a style
-        </synopsis>
-        <note>
-            This does nothing if passed an invalid style ID.
-        </note>
-        <prototype>
-            style::disable(string style_id)
-        </prototype>
-    </function>
+        <function name="disable">
+            <synopsis>
+                Disables a style
+            </synopsis>
+            <note>
+                This does nothing if passed an invalid style ID.
+            </note>
+            <prototype>
+                style::disable(string style_id)
+            </prototype>
+        </function>
 =cut
 
 sub disable {
@@ -130,14 +130,14 @@ sub disable {
 }
 
 =xml
-    <function name="is_enabled">
-        <synopsis>
-            Checks if a given style is enabled
-        </synopsis>
-        <prototype>
-            bool = style::is_enablde(string style_id)
-        </prototype>
-    </function>
+        <function name="is_enabled">
+            <synopsis>
+                Checks if a given style is enabled
+            </synopsis>
+            <prototype>
+                bool = style::is_enabled(string style_id)
+            </prototype>
+        </function>
 =cut
 
 sub is_enabled {
@@ -146,14 +146,14 @@ sub is_enabled {
 }
 
 =xml
-    <function name="is_registered">
-        <synopsis>
-            Checks if a given style is registered
-        </synopsis>
-        <prototype>
-            bool = style::is_registered(string style_id)
-        </prototype>
-    </function>
+        <function name="is_registered">
+            <synopsis>
+                Checks if a given style is registered
+            </synopsis>
+            <prototype>
+                bool = style::is_registered(string style_id)
+            </prototype>
+        </function>
 =cut
 
 sub is_registered {
