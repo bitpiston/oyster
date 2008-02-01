@@ -81,6 +81,12 @@ COMPLETED
 * console search is broken, investigate this (seems to be ok now)
 * convert /swaf/ to /oyster/ in all xml/xslt
 
+Finished but need testing
+
+* new ipc library
+* Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
+* make sure STDERR is being used when it should be
+
 TODO
 
 - docs:
@@ -93,14 +99,10 @@ TODO
 	+ ajax
 	- module creation walkthrough
 & Spec out the new admin module and begin writing it
-- make sure STDERR is being used when it should be
-& Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
-	- possibly use the new module::order_by_dependencies()
 - look over libraries (again) to ensure consistent naming conventions
 - various utils should use console::util to parse args instead of just using @ARGV
 - better logic for getting content-type
 - recompile server_base.xsl dynamically as needed
 - certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
-& new ipc library
 - revisions should probably just return their @revision arrays, like meta.pl/permissions.pl
 
