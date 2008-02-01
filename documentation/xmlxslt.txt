@@ -1,0 +1,40 @@
+XML
+
+We do not have a strict DTD for Oyster, you are free to output any XML you want.  However, all official code follows a rough set of rules.
+
+The document root is always <oyster ...> where '...' is various configuration/environmental/request variables.  Immediately after the <oyster> node is any xml printed from request_start hooks.  After that comes any module-generated XML.  The standard node for module output is <modulename action="function and .xsl filename">.  For pages that simply use menus/confirmations/etc (do not require custom .xsl), this may be ommitted completely.  Confirmation messages and validation errors should usually be printed before the <module> node;  they can be placed inside, but will you have to call xsl:apply-templates to display them.
+
+XSL
+
+Module Templates
+
+Continuing with the standards above, each XSL consists of several templates that match something like "/oyster/mymodule[@action = 'foo']".  Along with the normal 'match' attribute, Oyster templates also use 'mode'.  The various modes determine where the template output will be inserted into the layout.  Current modes are:
+* heading
+  the page title
+* description
+  a description of the page
+* content
+  the page content
+* html_head
+  inside the <head> html element
+None are required, use only what you need.  Individual layouts can implement more modes (like 'sidebar' or 'footer').
+
+Styles
+
+Each style is contained inside of 'site_path/styles/style_id/'.  CSS and Javascript files should be placed directly in this directory.  The source 'layout.xsl' for each layout should be placed in 'source/layout.xsl'.  Custom style-specific templates to override base modules templates can be placed in 'modules/module_id/templatename.xsl'.
+
+Style Compilation
+
+Oyster uses a style compiler to take the base stylesheets and transform them into the final .xsl files used by Oyster.  The style compiler takes the base stylesheets and parses them into the final styles for each template;  this is why base templates do not require '<?xml' or '<xsl:stylesheet' lines, the compiler adds these for you.  The compiler also has a set of preprocessor commands that can be used to manipulate the template at compile time.
+
+The current set of preprocessor commands are:
+* <oyster:include href="foo.xsl" />
+* <oyster:import href="foo.xsl" />
+  The above two should be used instead of <xsl:include /> and <xsl:import />, because you do not know the final .xsl url when you write the import/include lines.  The path is relative to the 'modules' directory (for example: <oyster:include href="user/login.xsl" />).  WARNING: you should NOT depend on the precedence difference between 'import' and 'include'; they are treated equally for server-side xsl transformation.
+* <oyster:include hook="hookname" />
+  Hooks allow you to create points where other modules can insert XSL into your templates.  If you implemented the above line, any files named module/somemodule/hookname.hook.xsl would be included.
+* <oyster:if_client_side>stuff here</oyster:if_client_side>
+  Conditionally includes stuff for client-side xsl only.
+* <oyster:if_server_side>stuff here</oyster:if_server_side>
+  Conditionally includes stuff for server-side xsl only.
+  

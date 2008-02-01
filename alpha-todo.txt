@@ -37,7 +37,11 @@ DELAYED
 + docs
 	+ xslt browser gotchas
 	+ how to use strict in your module
+		- not really essential
 	+ ajax
+		- waiting for ajax.pm
+	+ testing framework
+		- necessary, but the testing framework is simple enough that this isn't really REQUIRED for alpha
 + various utils should use console::util to parse args instead of just using @ARGV
 	- Some probably should, but some that don't do it for a reason (file move/copy)
 
@@ -108,7 +112,6 @@ TODO
 
 - docs:
 	- xml/xslt conventions
-	- testing framework
 	- module creation walkthrough
 & Spec out the new admin module and begin writing it
 - better logic for getting content-type
