@@ -308,7 +308,7 @@ sub _load_modules {
     module::unload($_) for keys %module::loaded;
 
     # get a list of enabled modules
-    my @modules = module::get_installed();
+    my @modules = module::get_enabled();
     die('No modules were loaded.  Your modules table may have been corrupted.') unless @modules;
 
     # order modules by dependencies

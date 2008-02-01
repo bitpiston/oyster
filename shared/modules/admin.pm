@@ -131,6 +131,9 @@ sub config {
             <synopsis>
                 Allows you to manage installed modules
             </synopsis>
+            <todo>
+                Either explicitely require the restarting of Oyster for changes to take effect or at least warn the user that dynamic module unloading may not work.
+            </todo>
         </function>
 =cut
 
@@ -141,14 +144,40 @@ sub modules {
     my %modules;
 
     # assemble module data
-    for my $module (<./modules/*/>) {
-        my ($module_id) = ($module =~ m!^\./modules/(.+?)/$!);
+    # TODO: this assumes that this module has been installed to this site!!!!
+    my @available_modules = module::get_available();
+    for my $module_id (@available_modules) {
         $modules{$module_id}->{'latest_rev'} = module::get_latest_revision($module_id);
         $modules{$module_id}->{'rev'}        = module::get_revision($module_id);
         $modules{$module_id}->{'meta'}       = module::get_meta($module_id);
     }
 
     my @ordered_modules = module::order_by_dependencies(keys %modules);
+
+    # enable a module
+    if (exists $INPUT{'enable'} and exists $modules{$INPUT{'enable'}}) {
+        module::enable($INPUT{'enable'});
+        ipc::do('module', 'load', $INPUT{'enable'});
+        confirmation('The selected module has been enabled.');
+    }
+
+    # disable a module
+    elsif (exists $INPUT{'disable'} and exists $modules{$INPUT{'disable'}}) {
+        try {
+
+            # check required
+            throw 'validation_error' => 'The selected module cannot be disabled, it is required.' if $modules{$INPUT{'disable'}}->{'meta'}->{'required'};
+
+            # check deps
+            for my $module_id (keys %module::loaded) {
+                throw 'validation_error' => 'The selected module cannot be disabled, it is required by currently enabled modules.' if grep(/\Q$INPUT{disable}\E/, @{$modules{$module_id}->{'meta'}->{'requires'}});
+            }
+
+            module::disable($INPUT{'disable'});
+            ipc::do('module', 'unload', $INPUT{'disable'});
+            confirmation('The selected module has been disabled.');
+        };
+    }
 
     print qq~\t<admin action="modules">\n~;
     for my $module_id (@ordered_modules) {
@@ -251,6 +280,20 @@ sub styles {
 
     # preview a style
     $REQUEST{'style'} = $INPUT{'preview'} if style::is_registered($INPUT{'preview'});
+
+    # enable a style
+    if (exists $INPUT{'enable'} and style::is_registered($INPUT{'enable'})) {
+        style::enable($INPUT{'enable'});
+        ipc::do('style', '_load');
+        confirmation('The selected style has been enabled.');    
+    }
+
+    # disable a style
+    elsif (exists $INPUT{'disable'} and style::is_registered($INPUT{'disable'})) {
+        style::disable($INPUT{'disable'}); # TODO: also change users who have this style selected?
+        ipc::do('style', '_load');
+        confirmation('The selected style has been disabled.');
+    }
 
     print qq~\t<admin action="styles">\n~;
     style::print_styles_xml();

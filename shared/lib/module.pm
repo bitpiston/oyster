@@ -32,17 +32,17 @@ sub get_available {
 }
 
 =xml
-    <function name="get_installed">
+    <function name="get_enabled">
         <synopsis>
-            Retreives a list of installed modules
+            Retreives a list of enabled modules
         </synopsis>
         <prototype>
-            array = module::get_installed()
+            array = module::get_enabled()
         </prototype>
     </function>
 =cut
 
-sub get_installed {
+sub get_enabled {
     my @modules;
     my $query = $oyster::DB->query("SELECT id FROM modules WHERE site_$oyster::CONFIG{site_id} = '1'");
     while (my $module = $query->fetchrow_arrayref()) {

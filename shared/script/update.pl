@@ -56,7 +56,7 @@ my @update_modules;
 unless (exists $oyster::config::args{'module'}) {
 
     # if oyster has been installed, only update installed modules, otherwise, install all available modules
-    my @update_modules = $oyster_rev ? module::get_installed() : module::get_available() ;
+    my @update_modules = $oyster_rev ? module::get_enabled() : module::get_available() ;
 
     # order modules by dependencies
     my @update_modules = module::order_by_dependencies(@update_modules);
