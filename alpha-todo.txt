@@ -38,6 +38,8 @@ DELAYED
 	+ xslt browser gotchas
 	+ how to use strict in your module
 	+ ajax
++ various utils should use console::util to parse args instead of just using @ARGV
+	- Some probably should, but some that don't do it for a reason (file move/copy)
 
 COMPLETED
 
@@ -91,12 +93,16 @@ COMPLETED
 * docs
 	* coding conventions
 	* sql compatability
+* certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
+	* left them in, but added a <warning> that they are pre-alpha
 
 Finished but need testing
 
 * new ipc library
 * Finish the algorithm for update.pl (if swaf is installed, only update installed modules)
 * make sure STDERR is being used when it should be
+* some lib functions (particularly newer ones) are undocumented, some functions have outdated (misleading) documentation
+* look over libraries (again) to ensure consistent naming conventions
 
 TODO
 
@@ -105,9 +111,5 @@ TODO
 	- testing framework
 	- module creation walkthrough
 & Spec out the new admin module and begin writing it
-- look over libraries (again) to ensure consistent naming conventions
-- various utils should use console::util to parse args instead of just using @ARGV
 - better logic for getting content-type
 	- maybe build user rendering engine/version number detection into oyster instead of putting it into ssxslt.pm
-- certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
-- some lib functions (particularly newer ones) are undocumented, some functions have outdated (misleading) documentation
