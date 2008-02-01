@@ -57,7 +57,7 @@ event::register_hook('request_init', 'hook_request_init', 110);
 sub hook_request_init {
     return if $disable_ssxslt;
 
-log::status("UA[$ENV{REMOTE_ADDR}]: $ENV{HTTP_USER_AGENT}");
+log::status("UA[$ENV{REMOTE_ADDR}]: $ENV{HTTP_USER_AGENT}") if exists $ENV{REMOTE_ADDR};
 
     $REQUEST{'server_side_xslt'} = 0;
     if    ($ENV{'HTTP_USER_AGENT'} =~ /MSIE (\d+\.\d+)/) {              # IE 5.5 or greater (all versions of IE need a diff mime type for xhtml)
