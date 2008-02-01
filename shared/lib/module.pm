@@ -11,6 +11,17 @@ use exceptions;
 
 our %loaded; # currently loaded modules
 
+=xml
+    <function name="get_available">
+        <synopsis>
+            Retreives a list of all available modules.
+        </synopsis>
+        <prototype>
+            array = module::get_available()
+        </prototype>
+    </function>
+=cut
+
 sub get_available {
     my @modules;
     for my $file (<./modules/*/meta.pl>) { # find all modules with meta.pl files
@@ -19,6 +30,17 @@ sub get_available {
     }
     return @modules;
 }
+
+=xml
+    <function name="get_installed">
+        <synopsis>
+            Retreives a list of installed modules
+        </synopsis>
+        <prototype>
+            array = module::get_installed()
+        </prototype>
+    </function>
+=cut
 
 sub get_installed {
     my @modules;
@@ -29,7 +51,20 @@ sub get_installed {
     return @modules;
 }
 
-# note: this is susceptible to infinte looping if modules have circular dependencies
+=xml
+    <function name="order_by_dependencies">
+        <synopsis>
+            Given a list of modules, orders them based on their dependencies
+        </synopsis>
+        <note>
+            This is susceptible to infinte looping if modules have circular dependencies
+        </note>
+        <prototype>
+            array = module::order_by_dependencies(array)
+        </prototype>
+    </function>
+=cut
+
 sub order_by_dependencies {
     my @modules = @_;
 
@@ -60,6 +95,12 @@ sub order_by_dependencies {
 
 =xml
     <function name="get_latest_revision">
+        <synopsis>
+            Retreives the latest revision available for a module
+        </synopsis>
+        <prototype>
+            int = module::get_latest_revision(string module_id)
+        </prototype>
         <todo>
             http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
         </todo>
@@ -70,7 +111,6 @@ sub get_latest_revision {
     my $module_id = shift;
     my $rev_file  = "./modules/$module_id/revisions.pl";
     throw 'perl_error' => "Revision file does not exist '$rev_file'." unless -e $rev_file;
-    #require $rev_file;
     do $rev_file;
     my $latest_rev = $#{ $module_id . '::revisions::revision' };
     undef @{ $module_id . '::revisions::revision' };
@@ -80,10 +120,10 @@ sub get_latest_revision {
 =xml
     <function name="enable">
         <synopsis>
-            Enables and loads a module
+            Enables a module
         </synopsis>
         <note>
-            This does nothing if the module is already enabled and loaded.
+            This does not load the module
         </note>
         <prototype>
             module::enable(string module_id)
@@ -96,39 +136,54 @@ sub get_latest_revision {
 
 sub enable {
     my $module_id = shift;
-    #return if exists $loaded{$module_id};
     $oyster::DB->query("UPDATE modules SET site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $module_id);
-    #load($module_id); # removed because this could cause revision files to load the module before it is finished installing/updating, maybe make it an arg?
 }
 
 =xml
     <function name="disable">
         <synopsis>
-            Disables and unloads a module
+            Disables a module
         </synopsis>
         <note>
-            This does nothing if the module is not enabled.
+            This does not unload the module if it is currently loaded.
         </note>
         <prototype>
             module::disable(string module_id)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
 =cut
 
 sub disable {
     my $module_id = shift;
-    #return unless exists $loaded{$module_id};
     $oyster::DB->query("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = ?", $module_id);
-    #unload($module_id); # TODO: remove this to be consistent with enable?
 }
+
+=xml
+    <function name="is_enabled">
+        <synopsis>
+            Checks if a given module is enabled
+        </synopsis>
+        <prototype>
+            bool = module::is_enable(string module_id)
+        </prototype>
+    </function>
+=cut
 
 sub is_enabled {
     my $module_id = shift;
     return $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ?", $module_id)->fetchrow_arrayref()->[0];
 }
+
+=xml
+    <function name="is_registered">
+        <synopsis>
+            Checks if a given module is registered
+        </synopsis>
+        <prototype>
+            bool = module::is_registered(string module_id)
+        </prototype>
+    </function>
+=cut
 
 sub is_registered {
     my $module_id = shift;
