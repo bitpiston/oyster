@@ -78,6 +78,11 @@ sub is_enabled {
     return $oyster::DB->query("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id)->fetchrow_arrayref()->[0];
 }
 
+sub is_registered {
+    my $style_id = shift;
+    return if $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->fetchrow_arrayref()->[0];
+}
+
 =xml
         <function name="print_header">
             <synopsis>

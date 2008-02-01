@@ -249,6 +249,9 @@ sub styles {
     user::require_permission('admin_styles');
     style::include_template('styles');
 
+    # preview a style
+    $REQUEST{'style'} = $INPUT{'preview'} if style::is_registered($INPUT{'preview'});
+
     print qq~\t<admin action="styles">\n~;
     style::print_styles_xml();
     print "\t</admin>\n";

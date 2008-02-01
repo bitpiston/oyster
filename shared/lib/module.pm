@@ -29,14 +29,6 @@ sub get_installed {
     return @modules;
 }
 
-sub is_enabled {
-    my $module_id = shift;
-    #my $query = $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $module_id);
-    #return $query->rows() == 0 ? '1' : '0' ;
-    return $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ?", $module_id)->fetchrow_arrayref()->[0];
-
-}
-
 # note: this is susceptible to infinte looping if modules have circular dependencies
 sub order_by_dependencies {
     my @modules = @_;
@@ -133,6 +125,56 @@ sub disable {
     #unload($module_id); # TODO: remove this to be consistent with enable?
 }
 
+sub is_enabled {
+    my $module_id = shift;
+    return $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ?", $module_id)->fetchrow_arrayref()->[0];
+}
+
+sub is_registered {
+    my $module_id = shift;
+    return if $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $module_id)->fetchrow_arrayref()->[0];
+}
+
+=xml
+    <function name="register">
+        <synopsis>
+            Adds an entry to the modules table
+        </synopsis>
+        <prototype>
+            module::register(string module_id[, revision])
+        </prototype>
+        <todo>
+            error if module is already installed? (or just update revision?)
+        </todo>
+    </function>
+=cut
+
+sub register {
+    my ($module_id, $revision) = @_;
+    return if $oyster::DB->query('SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1', $module_id)->fetchrow_arrayref()->[0] == 1;
+    $revision = 0 unless defined $revision;
+    $oyster::DB->query("INSERT INTO modules (id, revision) VALUES (?, ?)", $module_id, $revision);
+}
+
+=xml
+    <function name="unregister">
+        <synopsis>
+            Removes a module's entry in the modules table
+        </synopsis>
+        <prototype>
+            module::unregister(string module_id)
+        </prototype>
+        <todo>
+            rename?
+        </todo>
+    </function>
+=cut
+
+sub unregister {
+    my $module_id = shift;
+    $oyster::DB->query("DELETE FROM modules WHERE id = ?", $module_id);
+}
+
 =xml
     <function name="set_revision">
         <synopsis>
@@ -178,46 +220,6 @@ sub get_revision {
         abort(1);
     };
     return $rev;
-}
-
-=xml
-    <function name="register">
-        <synopsis>
-            Adds an entry to the modules table
-        </synopsis>
-        <prototype>
-            module::register(string module_id[, revision])
-        </prototype>
-        <todo>
-            error if module is already installed? (or just update revision?)
-        </todo>
-    </function>
-=cut
-
-sub register {
-    my ($module_id, $revision) = @_;
-    return if $oyster::DB->query('SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1', $module_id)->fetchrow_arrayref()->[0] == 1;
-    $revision = 0 unless defined $revision;
-    $oyster::DB->query("INSERT INTO modules (id, revision) VALUES (?, ?)", $module_id, $revision);
-}
-
-=xml
-    <function name="unregister">
-        <synopsis>
-            Removes a module's entry in the modules table
-        </synopsis>
-        <prototype>
-            module::unregister(string module_id)
-        </prototype>
-        <todo>
-            rename?
-        </todo>
-    </function>
-=cut
-
-sub unregister {
-    my $module_id = shift;
-    $oyster::DB->query("DELETE FROM modules WHERE id = ?", $module_id);
 }
 
 =xml
