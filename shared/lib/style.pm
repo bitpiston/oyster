@@ -52,31 +52,109 @@ sub include_template {
     push @{$oyster::REQUEST{'templates'}}, "$module/$template.xsl";
 }
 
+=xml
+    <function name="register">
+        <synopsis>
+            Adds an entry to the current site's styles table
+        </synopsis>
+        <prototype>
+            style::register(string style_id, string style_name)
+        </prototype>
+        <note>
+            THis does nothing (and returns undef) if the given style ID is already registered.
+        </note>
+    </function>
+=cut
+
 sub register {
     my ($style_id, $name) = @_;
     return if $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->fetchrow_arrayref()->[0] == 1;
     $oyster::DB->query("INSERT INTO $oyster::CONFIG{db_prefix}styles (id, name) VALUES (?, ?)", $style_id, $name);
 }
 
+=xml
+    <function name="unregister">
+        <synopsis>
+            Removes a style's entry in the current site's styles table
+        </synopsis>
+        <note>
+            This does nothing if passed a non-existant style ID.
+        </note>
+        <prototype>
+            style::unregister(string style_id)
+        </prototype>
+    </function>
+=cut
+
 sub unregister {
     my $style_id = shift;
     $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id);
 }
+
+=xml
+    <function name="enable">
+        <synopsis>
+            Enables a style
+        </synopsis>
+        <note>
+            This does nothing if passed an invalid style ID.
+        </note>
+        <prototype>
+            style::enable(string style_id)
+        </prototype>
+    </function>
+=cut
 
 sub enable {
     my $style_id = shift;
     $oyster::DB->query("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '1' WHERE id = ?", $style_id);
 }
 
+=xml
+    <function name="disable">
+        <synopsis>
+            Disables a style
+        </synopsis>
+        <note>
+            This does nothing if passed an invalid style ID.
+        </note>
+        <prototype>
+            style::disable(string style_id)
+        </prototype>
+    </function>
+=cut
+
 sub disable {
     my $style_id = shift;
     $oyster::DB->query("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '0' WHERE id = ?", $style_id);
 }
 
+=xml
+    <function name="is_enabled">
+        <synopsis>
+            Checks if a given style is enabled
+        </synopsis>
+        <prototype>
+            bool = style::is_enablde(string style_id)
+        </prototype>
+    </function>
+=cut
+
 sub is_enabled {
     my $style_id = shift;
     return $oyster::DB->query("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id)->fetchrow_arrayref()->[0];
 }
+
+=xml
+    <function name="is_registered">
+        <synopsis>
+            Checks if a given style is registered
+        </synopsis>
+        <prototype>
+            bool = style::is_registered(string style_id)
+        </prototype>
+    </function>
+=cut
 
 sub is_registered {
     my $style_id = shift;

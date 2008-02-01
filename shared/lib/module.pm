@@ -125,12 +125,12 @@ sub get_latest_revision {
         <note>
             This does not load the module
         </note>
+        <note>
+            This does nothing if passed a non-existant module ID.
+        </note>
         <prototype>
             module::enable(string module_id)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
 =cut
 
@@ -146,6 +146,9 @@ sub enable {
         </synopsis>
         <note>
             This does not unload the module if it is currently loaded.
+        </note>
+        <note>
+            This does nothing if passed a non-existant module ID.
         </note>
         <prototype>
             module::disable(string module_id)
@@ -164,7 +167,7 @@ sub disable {
             Checks if a given module is enabled
         </synopsis>
         <prototype>
-            bool = module::is_enable(string module_id)
+            bool = module::is_enabled(string module_id)
         </prototype>
     </function>
 =cut
@@ -198,6 +201,9 @@ sub is_registered {
         <prototype>
             module::register(string module_id[, revision])
         </prototype>
+        <note>
+            This does nothing and returns undef if the given module ID is already registered.
+        </note>
         <todo>
             error if module is already installed? (or just update revision?)
         </todo>
@@ -216,12 +222,12 @@ sub register {
         <synopsis>
             Removes a module's entry in the modules table
         </synopsis>
+        <note>
+            This does nothing if passed a non-existant module ID.
+        </note>
         <prototype>
             module::unregister(string module_id)
         </prototype>
-        <todo>
-            rename?
-        </todo>
     </function>
 =cut
 
