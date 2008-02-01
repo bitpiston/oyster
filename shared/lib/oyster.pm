@@ -382,7 +382,7 @@ sub _load_modules {
 =cut
 
 sub request_pre {
-    ipc::do();
+    ipc::update();
 }
 
 =xml

@@ -110,8 +110,7 @@ sub config {
             confirmation('Settings have been saved.');
 
             # reload configuration in all daemons
-            ipc::eval('oyster::_load_config()');
-            #ipc::message('module' => 'oyster', 'function' => '_load_config');
+            ipc::do('oyster', '_load_config');
         };
     } else {
         $input_source = \%CONFIG;

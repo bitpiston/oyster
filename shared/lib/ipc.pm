@@ -4,66 +4,79 @@
         Functions that allow daemons to communicate.  These are mainly used to force
         daemons to reload cached data when one of them updates it.
     </synopsis>
-    <todo>
-      Investigate, is there a double-eval going on for the daemon that issues
-      the command? -- possibly just store the value of time() instead of using
-      sql NOW()  
-    </todo>
 =cut
 
 package ipc;
 
-our ($ipc_insert_query, $ipc_get_query, $ipc_last_do);
+use exceptions;
+
+our ($last_fetch_id, $insert_ipc, $fetch_ipc);
 
 event::register_hook('load_lib', '_ipc_load');
 sub _ipc_load {
-    $ipc_insert_query = $oyster::DB->server_prepare("INSERT INTO ipc (ctime, command, daemon_id, site_id) VALUES (UTC_TIMESTAMP(), ?, ?, ?)");
-    $ipc_get_query    = $oyster::DB->server_prepare("SELECT command FROM ipc WHERE ctime > FROM_UNIXTIME(?) and (site_id = '$oyster::CONFIG{site_id}' or site_id = '') and daemon_id != '$oyster::CONFIG{daemon_id}' ORDER BY ctime ASC");
-    $ipc_last_do      = datetime::gmtime();
-}
-
-=xml
-    <function name="eval">
-        <synopsis>
-            Issues a command for all daemons of the current site to execute
-        </synopsis>
-        <note>
-            The command is executed in the 'ipc' package.  Be sure to use
-            fully-qualified names for functions and variables.
-        </note>
-        <prototype>
-            ipc::eval(string command)
-        </prototype>
-        <example>
-            ipc::eval('news::_load_labels()');
-        </example>
-        <example>
-            ipc::eval('user::_load_groups()');
-        </example>
-        <todo>
-            this should throw a perl error
-        </todo>
-    </function>
-=cut
-
-sub eval {
-    my $cmd = shift;
-
-    # execute the command in the current process
-    eval "$cmd";
-    # TODO: this should throw a perl error
-    log::error("Error executing IPC command '$cmd': $@") if $@;
-
-    # do no more unless running in fastcgi mode
-    return if ($@ or $oyster::CONFIG{'mode'} ne 'fastcgi');
-
-    # insert this task into the ipc queue
-    #log::status("\$ipc_insert_query->execute($cmd, $oyster::CONFIG{daemon_id}, $oyster::CONFIG{site_id})");
-    $ipc_insert_query->execute($cmd, $oyster::CONFIG{'daemon_id'}, $oyster::CONFIG{'site_id'});
+    my $query = $oyster::DB->query("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
+    $last_fetch_id = $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
+    $insert_ipc    = $oyster::DB->prepare("INSERT INTO ipc (module, function, args, daemon, site) VALUES (?, ?, ?, '$oyster::daemon_id', ?)");
+    $fetch_ipc     = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
 }
 
 =xml
     <function name="do">
+        <synopsis>
+            Issues a command for all daemons of the current site to execute
+        </synopsis>
+        <note>
+            'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
+        </note>
+        <prototype>
+            ipc::do(string module, string function[, args])
+        </prototype>
+        <example>
+            ipc::do('news', 'load_category', $category_id);
+        </example>
+    </function>
+=cut
+
+sub do {
+    my $site     = ($_[0] eq '~global' and shift) ? '' : $oyster::CONFIG{'site_id'} ;
+    my $module   = shift;
+    my $function = shift;
+    my $args     = join("\0", @_);
+
+    # validate the module and function
+    throw 'perl_error' => "IPC failure: destination module '$module' cannot handle function '$function'." unless UNIVERSAL::can($module, $function);
+
+    # execute it immediately in this daemon
+    &{ $module . '::' . $function }(@_);
+
+    # insert the request into the database
+    $insert_ipc->execute($module, $function, $args, $site);
+}
+
+=xml
+    <function name="global_do">
+        <synopsis>
+            Issues a command for all daemons to execute
+        </synopsis>
+        <note>
+            'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
+        </note>
+        <prototype>
+            ipc::global_do(string module, string function[, args])
+        </prototype>
+        <example>
+            ipc::global_do('oyster', '_load_config');
+        </example>
+    </function>
+=cut
+
+sub global_do {
+    unshift @_, '~global';
+    goto &do;
+}
+
+=xml
+    <function name="update">
         <synopsis>
             Executes all waiting tasks in the ipc queue
         </synopsis>
@@ -76,23 +89,20 @@ sub eval {
             task automatically.
         </note>
         <prototype>
-            ipc::do()
+            ipc::update()
         </prototype>
+        <todo>
+            try {}
+        </todo>
     </function>
 =cut
 
-sub do {
-
-    # do no more unless running in fastcgi mode
-    return unless $oyster::CONFIG{'mode'} eq 'fastcgi';
-
-    # fetch and execute any waiting ipc tasks
-    $ipc_get_query->execute($ipc_last_do);
-    $ipc_last_do = datetime::gmtime();
-    while ($task = $ipc_get_query->fetchrow_arrayref()) {
-        my $cmd = $task->[0];
-        eval "$cmd";
-        # TODO: this should throw an exception if the eval fails
+sub update {
+    $fetch_ipc->execute($last_fetch_id);
+    while (my $task = $fetch_ipc->fetchrow_arrayref()) {
+        my ($id, $module, $func, $args) = @{$task};
+        &{ $module . '::' . $func }(split("\0", $args));
+        $last_fetch_id = $id;
     }
 }
 
@@ -112,42 +122,12 @@ ipc
     daemon
     site
 
-my $query = $DB->query("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
-our $last_fetch_id = $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
-our $insert_ipc    = $DB->prepare("INSERT INTO ipc (ctime, module, function, args, daemon, global, site) VALUES (UTC_TIMESTAMP(), ?, ?, ?, '$oyster::daemon_id', ?, '$oyster::CONFIG{site_id}')");
-our $fetch_ipc     = $DB->prepare("SELECT id, module, function, args as now FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
 
 # get all tasks since last update and execute them
 # TODO: try {}
-sub update {
-    $fetch_ipc->execute($last_fetch_id);
-    while (my $task = $fetch_ipc->fetchrow_arrayref()) {
-        my ($id, $module, $func, $args) = @{$task};
-        &{ $module . '::' . $func }(split("\0", $args));
-        $last_fetch_id = $id;
-    }
-}
 
-sub do {
-    my $global   = ($_[0] eq '~global' and shift) ? '1' : '0' ;
-    my $module   = shift;
-    my $function = shift;
-    my $args     = join("\0", @_);
 
-    # validate the module and function
-    throw 'perl_error' => "IPC failure: destination module '$module' cannot handle function '$function'." unless UNIVERSAL::can($module, $function);
 
-    # execute it immediately in this daemon
-    &{ $module . '::' . $function }(@_);
-
-    # insert the request into the database
-    $insert_ipc->execute($module, $function, $args, $global);
-}
-
-sub global_do {
-    unshift @_, '~global';
-    goto &do;
-}
 
 #sub _parse_message_args {
 #    local $" = "\0"; # use tricky string interpolation instead of join

@@ -487,8 +487,7 @@ sub admin_config {
         confirmation('User settings have been saved.');
 
         # reload configuration for all daemons
-        ipc::eval("module::load_config('user')");
-        #ipc::message('module' => 'module', 'function' => 'load_config', 'args' => ['user']);
+        ipc::do('module', 'load_config', 'user');
     } if $ENV{'REQUEST_METHOD'} eq 'POST';
 
     # print the edit config form
@@ -525,8 +524,7 @@ sub admin_delete_group {
         confirmation("\"$group->{name}\" has been deleted.");
 
         # reload label data from the database
-        ipc::eval('user::_load_groups()');
-        #ipc::message('module' => 'user', 'function' => '_load_groups');
+        ipc::do('user', '_load_groups');
 
         # print the manage user groups page
         admin_groups();
@@ -578,8 +576,7 @@ sub admin_edit_group {
         confirmation("The user group \"$name\" has been saved.");
             
         # reload label data from the database
-        ipc::eval('user::_load_groups()');
-        #ipc::message('module' => 'user', 'function' => '_load_groups');
+        ipc::do('user', '_load_groups');
 
         # print the manage user groups page
         admin_groups();
@@ -631,8 +628,7 @@ sub admin_create_group {
         confirmation("The user group \"$name\" has been created.");
             
         # reload label data from the database
-        ipc::eval('user::_load_groups()');
-        #ipc::message('module' => 'user', 'function' => '_load_groups');
+        ipc::do('user', '_load_groups');
 
         # print the manage user groups page
         admin_groups();
