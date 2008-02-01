@@ -5,11 +5,6 @@
         implementation of several File::* CPAN modules.
     </synopsis>
     <todo>
-        copy and rename need to use exceptions, consider writing a custom version
-        of file::copy that doesn't have so many deps and just include it in this
-        library.
-    </todo>
-    <todo>
         Size and mtime should throw exceptions if the file does not exist.
     </todo>
 =cut
@@ -61,15 +56,15 @@ sub tmp_name { $oyster::CONFIG{'tmp_path'} . string::random() . '.tmp' }
         <synopsis>
             Move or rename a file
         </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
         <prototype>
             file::rename(string from_filename, string to_filename)
         </prototype>
         <example>
             file::rename("foo.txt", "bar.txt");
         </example>
-        <todo>
-            use oyster::execute_script()
-        </todo>
     </function>
     
     <function name="move">
@@ -83,9 +78,9 @@ sub move { goto &rename }
 sub rename {
     my ($from, $to) = @_;
     return if $from eq $to;
-    $ret = `perl script/file_move.pl "$from" "$to"`;
+    my $ret = oyster::execute_script('~nosite', 'file_move', $from, $to);
     chomp($ret);
-    return $ret;
+    throw 'perl_error' => $ret unless $ret == 1;
 }
 
 =xml
@@ -93,24 +88,24 @@ sub rename {
         <synopsis>
             Copy a file or a directory
         </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
         <prototype>
             file::copy(string from_filename, string to_filename)
         </prototype>
         <example>
             file::copy("foo.txt", "bar.txt");
         </example>
-        <todo>
-            use oyster::execute_script()
-        </todo>
     </function>
 =cut
 
 sub copy {
     my ($from, $to) = @_;
     return if $from eq $to;
-    my $ret = `perl script/file_copy.pl "$from" "$to"`;
+    my $ret = oyster::execute_script('~nosite', 'file_move', $from, $to);
     chomp($ret);
-    return $ret;
+    throw 'perl_error' => $ret unless $ret == 1;
 }
 
 =xml

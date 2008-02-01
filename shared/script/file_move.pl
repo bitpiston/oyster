@@ -13,7 +13,7 @@ use File::Copy;
 
 my ($from, $dest) = @ARGV;
 
-print move($from, $dest) ? "1\n" : "0\n";
+print move($from, $dest) ? "1\n" : "$!\n";
 
 =xml
 </document>

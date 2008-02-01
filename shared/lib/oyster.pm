@@ -641,7 +641,7 @@ sub _load_exception_handlers {
 =xml
     </section>
 
-    <section title="API">
+    <section title="Public API">
         <synopsis>
             The oyster API is a set of functions available to all oyster code and oyster modules.
         </synopsis>
@@ -665,11 +665,12 @@ sub _load_exception_handlers {
 =cut
 
 sub execute_script {
+    my $site   = ($_[0] eq '~nosite' and shift) ? '' : " -site \"$CONFIG{site_id}\"";
     my $script = shift;
     throw 'perl_error' => "Script '$script' does not exist." unless -e "./script/$script.pl";
     my $args;
     $args .= ' "' . shell_escape($_) . '"' for @_;
-    return scalar(`perl script/$script.pl -site "$CONFIG{site_id}"$args`);
+    return `perl script/$script.pl$site$args`;
 }
 
 =xml

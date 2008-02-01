@@ -6,6 +6,9 @@
     <section title="Command Line Arguments">
         This utility requires two arguments, the file to copy and the destination filename.
     </section>
+    <todo>
+        This should probably use File::Copy::Recursive
+    </todo>
 =cut
 package oyster::script::file_copy;
 
@@ -88,7 +91,7 @@ sub success {
 
 # used to indicate failure
 sub error {
-    print "0\n";
+    print "$!\n";
     exit;
 }
 

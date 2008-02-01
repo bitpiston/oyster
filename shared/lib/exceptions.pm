@@ -9,6 +9,9 @@
     <todo>
         FIXME! If an exception is thrown from a catch block, it should NOT be thrown from the same level it was caught, but one below
     </todo>
+    <todo>
+        Catch blocks should probably assume abort()
+    </todo>
 =cut
 
 package exceptions;
