@@ -4,12 +4,6 @@
 + = moved or likely moved to beta (or maybe canned altogether)
 & = in progress
 
-ANKLE
-
-* update svn on the server (current one is pretty ancient I think)
-* create a new repo for oyster; leave it empty, i'll populate it (svn://bitpiston.com/oyster)
-* create an oyster sub domain, just a static one for now
-
 CANNED
 
 \ add some way for modules and libraries to mark themselves as automatically imported to modules
@@ -20,6 +14,7 @@ CANNED
 	\ possible create an import() for every lib to allow forcing it to load outside of an oyster env (if necessary)
 \ revisions should probably just return their @revision arrays, like meta.pl/permissions.pl
 	\ only metadata style files should do this, but revisions contain code
+\ remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 
 DELAYED
 
@@ -29,7 +24,6 @@ DELAYED
 + many existing scripts could simply be moved to the console, possibly create scripts/console_cmds/ so that more commands can easily be added
 + ajax.pm
 + create a script to clean tmp directories
-+ remove email templates from the core db and just make them arguments passed to email_template; let modules store their own email templates
 + browser sniffing: instead of checking for firefox version or safari version check for gecko version or webkit version
 + cgi.pm should accept array/hash values (carefully...)
 + preprocessor, new config option to optimize for memory or cpu/db access
@@ -67,7 +61,7 @@ COMPLETED
 * possibly revert to having libraries not 'use oyster' -- it can create circular dependency issues if you attempt to just use a library without first using oyster.
 * move navigation stuff to oyster.pm -- should be part of the core
 * remove general _admin permissions -- all they do is control whether you can access menus or not -- and just check the individual permissions
-    > this will be a performance hit but the current way is just too ugly
+    * this will be a performance hit but the current way is just too ugly
 * rename user_admin_find permission (and possibly the associated function and url)
 * remove the 'library' oyster import set
 * menu lib should print nothing if the menu contains nothing, should return true/false for if anything was printed or not
@@ -111,7 +105,7 @@ Finished but need testing
 TODO
 
 - docs:
-	- xml/xslt conventions
+	& xml/xslt conventions
 	- module creation walkthrough
 & Spec out the new admin module and begin writing it
 - better logic for getting content-type

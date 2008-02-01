@@ -2,7 +2,7 @@ XML
 
 We do not have a strict DTD for Oyster, you are free to output any XML you want.  However, all official code follows a rough set of rules.
 
-The document root is always <oyster ...> where '...' is various configuration/environmental/request variables.  Immediately after the <oyster> node is any xml printed from request_start hooks.  After that comes any module-generated XML.  The standard node for module output is <modulename action="function and .xsl filename">.  For pages that simply use menus/confirmations/etc (do not require custom .xsl), this may be ommitted completely.  Confirmation messages and validation errors should usually be printed before the <module> node;  they can be placed inside, but will you have to call xsl:apply-templates to display them.
+The document root is always <oyster ...> where '...' is various configuration/environmental/request variables.  Immediately after the <oyster> node is any xml printed from request_start hooks.  After that comes any module-generated XML.  The standard node for module output is <modulename action="function and .xsl filename">.  For pages that simply use menus/confirmations/etc (do not require custom .xsl), this may be ommitted completely.  Confirmation messages and validation errors should usually be printed before the <module> node;  they can be placed inside, but will you have to call xsl:apply-templates to display them.  Layouts also generally use the first node inside of <oyster> for the page title/description (more on this later).
 
 XSL
 
@@ -37,4 +37,3 @@ The current set of preprocessor commands are:
   Conditionally includes stuff for client-side xsl only.
 * <oyster:if_server_side>stuff here</oyster:if_server_side>
   Conditionally includes stuff for server-side xsl only.
-  
