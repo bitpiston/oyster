@@ -84,6 +84,7 @@ sub menu {
 
 sub config {
     user::require_permission('admin_config');
+    style::include_template('config');
 
     my @fields = qw(default_url time_offset default_style site_name error_message navigation_depth);
     my $input_source;
@@ -103,7 +104,7 @@ sub config {
             $INPUT{'error_message'} = xml::validate_xhtml($INPUT{'error_message'});
 
             # everything validated, update settings
-            my $query_update_site_config = $DBH->prepare("UPDATE ${DB_PREFIX}config SET value = ? WHERE name = ?");
+            my $query_update_site_config = $DB->prepare("UPDATE ${DB_PREFIX}config SET value = ? WHERE name = ?");
             for my $field (@fields) { $query_update_site_config->execute($INPUT{$field}, $field) }
 
             # print a confirmation message
@@ -119,7 +120,6 @@ sub config {
     # print the edit config form
     my $fields;
     for my $field (@fields) { $fields .= " $field=\"" . xml::entities($input_source->{$field}) . "\"" }
-    style::include_template('config');
     print "\t<admin action=\"config\"$fields>\n";
     module::print_modules_xml();
     style::print_enabled_styles_xml();
@@ -247,7 +247,11 @@ sub logs {
 
 sub styles {
     user::require_permission('admin_styles');
+    style::include_template('styles');
 
+    print qq~\t<admin action="styles">\n~;
+    style::print_styles_xml();
+    print "\t</admin>\n";
 }
 
 =xml

@@ -99,7 +99,8 @@ $revision[1]{'up'}{'site'} = sub {
         `name` tinytext NOT NULL,
         `status` tinyint(1) NOT NULL default '1'
         ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
-    $DB->query(qq~INSERT INTO `${DB_PREFIX}styles` (`id`, `name`, `status`) VALUES ('bitpiston', 'BitPiston', 1)~);
+    style::register('bitpiston', 'BitPiston');
+    style::enable('bitpiston');
 
     # Add site entry
     $DB->query('INSERT INTO `sites` (`id`) VALUES (?)', $SITE_ID);

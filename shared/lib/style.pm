@@ -11,11 +11,12 @@ package style;
 
 use exceptions;
 
+our %styles;
+
 event::register_hook('load_lib', '_style_load');
 sub _style_load {
 
     # load style data
-    our %styles;
     _load();
 }
 
@@ -49,6 +50,32 @@ sub include_template {
 
     # add the template file to the list of templates to include
     push @{$oyster::REQUEST{'templates'}}, "$module/$template.xsl";
+}
+
+sub register {
+    my ($style_id, $name) = @_;
+    return if $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->fetchrow_arrayref()->[0] == 1;
+    $oyster::DB->query("INSERT INTO $oyster::CONFIG{db_prefix}styles (id, name) VALUES (?, ?)", $style_id, $name);
+}
+
+sub unregister {
+    my $style_id = shift;
+    $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id);
+}
+
+sub enable {
+    my $style_id = shift;
+    $oyster::DB->query("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '1' WHERE id = ?", $style_id);
+}
+
+sub disable {
+    my $style_id = shift;
+    $oyster::DB->query("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '0' WHERE id = ?", $style_id);
+}
+
+sub is_enabled {
+    my $style_id = shift;
+    return $oyster::DB->query("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id)->fetchrow_arrayref()->[0];
 }
 
 =xml

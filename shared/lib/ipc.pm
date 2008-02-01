@@ -29,7 +29,7 @@ sub _ipc_load {
             'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
         </note>
         <prototype>
-            ipc::do(string module, string function[, args])
+            ipc::do(string module, string function[, array args])
         </prototype>
         <example>
             ipc::do('news', 'load_category', $category_id);
@@ -62,7 +62,7 @@ sub do {
             'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
         </note>
         <prototype>
-            ipc::global_do(string module, string function[, args])
+            ipc::global_do(string module, string function[, array args])
         </prototype>
         <example>
             ipc::global_do('oyster', '_load_config');
@@ -121,13 +121,6 @@ ipc
     args
     daemon
     site
-
-
-# get all tasks since last update and execute them
-# TODO: try {}
-
-
-
 
 #sub _parse_message_args {
 #    local $" = "\0"; # use tricky string interpolation instead of join

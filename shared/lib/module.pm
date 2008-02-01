@@ -128,9 +128,9 @@ sub enable {
 
 sub disable {
     my $module_id = shift;
-    return unless exists $loaded{$module_id};
+    #return unless exists $loaded{$module_id};
     $oyster::DB->query("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = ?", $module_id);
-    unload($module_id); # TODO: remove this to be consistent with enable?
+    #unload($module_id); # TODO: remove this to be consistent with enable?
 }
 
 =xml
@@ -196,9 +196,9 @@ sub get_revision {
 
 sub register {
     my ($module_id, $revision) = @_;
-    return if $oyster::DB->query('SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1', $module_id)->fetchrow_arrayref()->[0];
+    return if $oyster::DB->query('SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1', $module_id)->fetchrow_arrayref()->[0] == 1;
     $revision = 0 unless defined $revision;
-    $oyster::DB->query('INSERT INTO modules (id, revision) VALUES (?, ?)', $module_id, $revision);
+    $oyster::DB->query("INSERT INTO modules (id, revision) VALUES (?, ?)", $module_id, $revision);
 }
 
 =xml

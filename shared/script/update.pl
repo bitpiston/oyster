@@ -120,11 +120,12 @@ else {
 
     # import variables into the revisions script
     my $pkg = "${module}::revisions";
-    ${"${pkg}::SITE_ID"}          = $oyster::CONFIG{'site_id'};
-    ${"${pkg}::DB_PREFIX"}        = $oyster::CONFIG{'db_prefix'};
+    *{"${pkg}::SITE_ID"}          = \$oyster::CONFIG{'site_id'};
+    *{"${pkg}::DB_PREFIX"}        = \$oyster::CONFIG{'db_prefix'};
     ${"${pkg}::MODULE_PATH"}      = "$oyster::CONFIG{shared_path}modules/$module_id/";
     ${"${pkg}::MODULE_DB_PREFIX"} = "$oyster::CONFIG{db_prefix}${module_id}_";
     ${"${pkg}::DB"}               = $oyster::DB;
+    *{"${pkg}::CONFIG"}           = \%oyster::CONFIG;
 
     # load revisions file
     try {

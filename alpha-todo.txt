@@ -18,6 +18,8 @@ CANNED
 \ Benchmark prepare_cached versus how queries are cached now, because the current method is confusing and ugly
 \ possibly add a warn() to all libraries if they are loaded outside of an oyster environment
 	\ possible create an import() for every lib to allow forcing it to load outside of an oyster env (if necessary)
+\ revisions should probably just return their @revision arrays, like meta.pl/permissions.pl
+	\ only metadata style files should do this, but revisions contain code
 
 DELAYED
 
@@ -32,6 +34,10 @@ DELAYED
 + cgi.pm should accept array/hash values (carefully...)
 + preprocessor, new config option to optimize for memory or cpu/db access
 + possibly allow oo-style access to the menu lib, this would require minimal changes (check for an odd number of arguments, if first is a ref, then its a parent, otherwise it's a menu)
++ docs
+	+ xslt browser gotchas
+	+ how to use strict in your module
+	+ ajax
 
 COMPLETED
 
@@ -81,6 +87,10 @@ COMPLETED
 * console search is broken, investigate this (seems to be ok now)
 * convert /swaf/ to /oyster/ in all xml/xslt
 * recompile server_base.xsl dynamically as needed
+* style.pm needs register/unregister/enable/disable
+* docs
+	* coding conventions
+	* sql compatability
 
 Finished but need testing
 
@@ -91,13 +101,8 @@ Finished but need testing
 TODO
 
 - docs:
-	* coding conventions
-	* sql compatability
 	- xml/xslt conventions
-	+ xslt browser gotchas
-	+ how to use strict in your module
 	- testing framework
-	+ ajax
 	- module creation walkthrough
 & Spec out the new admin module and begin writing it
 - look over libraries (again) to ensure consistent naming conventions
@@ -105,5 +110,4 @@ TODO
 - better logic for getting content-type
 	- maybe build user rendering engine/version number detection into oyster instead of putting it into ssxslt.pm
 - certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
-- revisions should probably just return their @revision arrays, like meta.pl/permissions.pl
-
+- some lib functions (particularly newer ones) are undocumented, some functions have outdated (misleading) documentation

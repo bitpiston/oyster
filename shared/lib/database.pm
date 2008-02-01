@@ -72,20 +72,26 @@ sub connect {
 sub compress_metadata {
     return '' unless @_; # sql will expect an empty string
 
-    if (ref $_[0] eq 'HASH') {
-        my @pairs;
-        for my $name (keys %{@_}) {
-            push @pairs, "$name\0$_[0]->{$name}";
-        }
-        return join "\0\0", @pairs;
-    }
+    local $" = "\0"; # use tricky string interpolation instead of join
 
-    my %meta = @_;
-    my @pairs;
-    for my $name (keys %meta) {
-        push @pairs, "$name\0$meta{$name}";
-    }
-    return join "\0\0", @pairs;
+    return "@{$_[0]}"      if ref $_[0] eq 'ARRAY';
+    return "@{[%{$_[0]}]}" if ref $_[0] eq 'HASH';
+    return "@_";
+
+    #if (ref $_[0] eq 'HASH') {
+    #    my @pairs;
+    #    for my $name (keys %{@_}) {
+    #        push @pairs, "$name\0$_[0]->{$name}";
+    #    }
+    #    return join "\0\0", @pairs;
+    #}
+
+    #my %meta = @_;
+    #my @pairs;
+    #for my $name (keys %meta) {
+    #    push @pairs, "$name\0$meta{$name}";
+    #}
+    #return join "\0\0", @pairs;
 }
 
 =xml
@@ -109,14 +115,17 @@ sub compress_metadata {
 =cut
 
 sub expand_metadata {
-    return () unless length $_[0]; # a hash will expect an empty list (TODO: would return; be sufficient?)
-    my %meta;
-    my @pairs = split /\0\0/, shift;
-    for my $pair (@pairs) {
-        my ($name, $value) = split /\0/, $pair;
-        $meta{$name} = $value;
-    }
-    return %meta;
+    #return () unless length $_[0]; # will expect an empty list (TODO: would return; be sufficient?)
+
+    return split(/\0/o, shift);
+
+    #my %meta;
+    #my @pairs = split /\0\0/, shift;
+    #for my $pair (@pairs) {
+    #    my ($name, $value) = split /\0/, $pair;
+    #    $meta{$name} = $value;
+    #}
+    #return %meta;
 }
 
 =xml
