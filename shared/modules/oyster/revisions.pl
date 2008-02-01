@@ -21,14 +21,15 @@ $revision[1]{'up'}{'shared'} = sub {
         ('%B %e, %Y %i:%M %p')~);
 
     # IPC
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `ipc` (
-        `ctime` datetime NOT NULL default '0000-00-00 00:00:00',
-        `command` tinytext NOT NULL,
-        `daemon_id` char(32) NOT NULL,
-        `site_id` tinytext NOT NULL,
-        `task_id` varchar(32) NOT NULL,
-        `id` int(11) NOT NULL auto_increment, UNIQUE KEY `id` (`id`), KEY `ctime` (`ctime`)
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
+    $DB->query(qq~CREATE TABLE IF NOT EXISTS  `ipc` (
+        `id` int(11) NOT NULL auto_increment,
+        `module` tinytext NOT NULL,
+        `function` tinytext NOT NULL,
+        `args` text NOT NULL,
+        `daemon` char(32) NOT NULL,
+        `site` tinytext NOT NULL,
+        UNIQUE KEY `id` (`id`)
+        ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
 
     # Modules
     $DB->query(qq~CREATE TABLE IF NOT EXISTS `modules` (
