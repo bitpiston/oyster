@@ -253,10 +253,12 @@ sub compile {
     my @stylesheets = @_;
     my $style_path  = "$oyster::CONFIG{site_path}styles/$style/";
     my $style_url   = "$oyster::CONFIG{styles_url}$style/";
+    my $recompile_server_base = 0;
 
     # compile the base layout for this style if necessary
     if ($oyster::CONFIG{'compile_styles'} and (!-e "${style_path}base.xsl" or file::mtime("${style_path}source/layout.xsl") > file::mtime("${style_path}base.xsl") or file::mtime("$oyster::CONFIG{shared_path}styles/source.xsl") > file::mtime("${style_path}base.xsl"))) {
         file::write("${style_path}base.xsl", _compile_style($style, "styles/source.xsl"));
+        $recompile_server_base = 1;
     }
 
     # return the url/path to the base layout if no stylesheets were specified
@@ -279,6 +281,7 @@ sub compile {
             my ($module_id) = ($file =~ m!^(.+?)/!);
             file::mkdir("${style_path}modules/$module_id/");
             file::write("${style_path}modules/$file", $template);
+            $recompile_server_base = 1;
         }
     }
 
@@ -294,6 +297,9 @@ sub compile {
         mkdir("${style_path}dynamic/") unless -d "${style_path}dynamic/";
         file::write("${style_path}dynamic/$dyn_name", $dyn_style);
     }
+
+    # recompile server_base.xsl if necessary
+    file::write("${style_path}server_base.xsl", style::_compile_style($style, "styles/source.xsl", 1)) if $recompile_server_base == 1;
 
     return "${style_url}dynamic/$dyn_name", "${style_path}dynamic/$dyn_name";
 }

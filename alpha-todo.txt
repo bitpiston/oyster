@@ -80,6 +80,7 @@ COMPLETED
 	* updated menu lib to obey 'require_children' for all items
 * console search is broken, investigate this (seems to be ok now)
 * convert /swaf/ to /oyster/ in all xml/xslt
+* recompile server_base.xsl dynamically as needed
 
 Finished but need testing
 
@@ -102,7 +103,6 @@ TODO
 - look over libraries (again) to ensure consistent naming conventions
 - various utils should use console::util to parse args instead of just using @ARGV
 - better logic for getting content-type
-- recompile server_base.xsl dynamically as needed
 - certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
 - revisions should probably just return their @revision arrays, like meta.pl/permissions.pl
 

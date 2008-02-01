@@ -22,7 +22,7 @@ use exceptions;
 # Initialization
 #
 
-our $disable_ssxslt;
+our ($disable_ssxslt, $xml_parser, $xslt_parser, %styles, %style_parse_times);
 
 # load module
 event::register_hook('load', 'hook_load');
@@ -40,14 +40,12 @@ sub hook_load {
     }
 
     # create xml/xslt processor objects
-    our $xml_parser  = XML::LibXML->new();
-    our $xslt_parser = XML::LibXSLT->new();
+    $xml_parser  = XML::LibXML->new();
+    $xslt_parser = XML::LibXSLT->new();
 
     # load all enabled-styles' styles
-    our %styles;
     for my $style_id (keys %style::styles) {
-        eval { $styles{$style_id} = $xslt_parser->parse_stylesheet($xml_parser->parse_file("$CONFIG{site_path}styles/$style_id/server_base.xsl")) };
-        log::error("Error parsing style' $CONFIG{site_path}styles/$style_id/server_base.xsl': $@") if ($@ and $CONFIG{'debug'});
+        _parse_server_base($style_id);
     }
 }
 
@@ -103,20 +101,33 @@ sub hook_request_finish {
         return;
     }
 
+    my $style_id = $REQUEST{'style'};
+
+    # reparse server_base.xsl if necessary
+    _parse_server_base($style_id) if ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id});
+
 # TODO: proper errors for the end user if something goes wrong
 # TODO: should be a debugging switch for the evals
 
     # transform xml using the current style
-    my $style = eval { $styles{$REQUEST{'style'}}->transform($source) };
+    my $style = eval { $styles{$style_id}->transform($source) };
     if ($@) {
-        log::error("Error parsing style '$REQUEST{style}' url '$ENV{REQUEST_URI}': $@");
+        log::error("Error parsing style '$style_id' url '$ENV{REQUEST_URI}': $@");
         return;
     }
 
     # print output
     #http::header("Content-Type: $REQUEST{mime_type}", 1);
-    print $styles{$REQUEST{'style'}}->output_string($style);
+    print $styles{$style_id}->output_string($style);
     print "\n<!-- Full Execution Time (with server side XSLT): " . sprintf('%0.5f', Time::HiRes::gettimeofday() - $REQUEST{'start_time'}) . " sec -->\n";
+}
+
+sub _parse_server_base {
+    my $style_id = shift;
+    return unless -e "$CONFIG{site_path}styles/$style_id/server_base.xsl";
+    $style_parse_times{$style_id} = time(); # TODO: if file::mtime is changed to gmt, this will have to be changed to datetime::gmtime()
+    eval { $styles{$style_id} = $xslt_parser->parse_stylesheet($xml_parser->parse_file("$CONFIG{site_path}styles/$style_id/server_base.xsl")) };
+    log::error("Error parsing style' $CONFIG{site_path}styles/$style_id/server_base.xsl': $@") if ($@ and $CONFIG{'debug'});
 }
 
 # ----------------------------------------------------------------------------
