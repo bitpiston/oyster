@@ -44,9 +44,9 @@ sub hook_load {
     $xslt_parser = XML::LibXSLT->new();
 
     # load all enabled-styles' styles
-    for my $style_id (keys %style::styles) {
-        _parse_server_base($style_id);
-    }
+    #for my $style_id (keys %style::styles) {
+    #    _parse_server_base($style_id);
+    #}
 }
 
 # ----------------------------------------------------------------------------
@@ -60,20 +60,18 @@ sub hook_request_init {
 #log::status("UA[$ENV{REMOTE_ADDR}]: $ENV{HTTP_USER_AGENT}") if exists $ENV{REMOTE_ADDR};
 
     $REQUEST{'server_side_xslt'} = 0;
-    if    ($ENV{'HTTP_USER_AGENT'} =~ /MSIE (\d+\.\d+)/ and $1 <= 5.5 and $ENV{'HTTP_USER_AGENT'} !~ /Opera/) { # IE 5.5 or greater (all versions of IE need a diff mime type for xhtml)
+    if    ($ENV{'HTTP_USER_AGENT'} =~ /MSIE (\d+\.\d+)/ and $1 <= 5.5 and $ENV{'HTTP_USER_AGENT'} !~ /Opera/) { # IE 5.5 or less
            $REQUEST{'server_side_xslt'} = 1;
-           $REQUEST{'mime_type'} = 'text/html';
+           $REQUEST{'mime_type'}        = 'text/html'; # all versions of IE need a diff mime type for xhtml
     }
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Firefox/) { return }                     # all versions of firefox
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Opera\/(\d+\.\d+)/) { return }           # opera >= 9
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Firefox/)                     { return } # all versions of firefox
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Opera\/(\d+\.\d+)/)           { return } # opera >= 9
     elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Gecko\/\d+$/) { return } # all versions of the mozilla suite
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Camino/) { return }      # moz camino (crazy mac users)
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Netscape/) { return }                    # Netscape > 6
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /SeaMonkey/) { return }                   # seamonkey suite
-    #elsif ($ENV{'HTTP_USER_AGENT'} =~ /Safari/) { return }                     # safari --- apple says 1.3 and up support xslt -- why is it not working?
-    else {
-        $REQUEST{'server_side_xslt'} = 1;
-    }
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Camino/)      { return } # moz camino (crazy mac users)
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Netscape/)                    { return } # Netscape > 6
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /SeaMonkey/)                   { return } # seamonkey suite
+    #elsif ($ENV{'HTTP_USER_AGENT'} =~ /Safari/)                     { return } # safari --- apple says 1.3 and up support xslt -- why is it not working?
+    else { $REQUEST{'server_side_xslt'} = 1 }
 
     # query string overrides
     #if ($INPUT{'ssxslt'} eq 'on') {
@@ -104,7 +102,7 @@ sub hook_request_finish {
     my $style_id = $REQUEST{'style'};
 
     # reparse server_base.xsl if necessary
-    _parse_server_base($style_id) if ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id});
+    _parse_server_base($style_id) if (!exists $style_parse_times{$style_id} or ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id}));
 
 # TODO: proper errors for the end user if something goes wrong
 # TODO: should be a debugging switch for the evals
