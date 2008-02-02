@@ -99,7 +99,7 @@ sub order_by_dependencies {
             Retreives the latest revision available for a module
         </synopsis>
         <note>
-        	throws a 'perl_error' exception on failure
+            throws a 'perl_error' exception on failure
         </note>
         <prototype>
             int = module::get_latest_revision(string module_id)
@@ -112,11 +112,11 @@ sub get_latest_revision {
     my $filename  = "./modules/$module_id/revisions.pl";
     throw 'perl_error' => "Revision file does not exist '$filename'." unless -e $filename;
     my $ret = do $filename;
-	unless ($ret) {
-	    throw 'perl_error' => "Couldn't parse revision file '$filename': $@" if $@;
-	    throw 'perl_error' => "Couldn't do revision file '$filenamee': $!"    unless defined $ret;
-	    throw 'perl_error' => "Couldn't run revision file '$filename'."      unless $ret;
-	}
+    unless ($ret) {
+        throw 'perl_error' => "Couldn't parse revision file '$filename': $@" if $@;
+        throw 'perl_error' => "Couldn't do revision file '$filenamee': $!"    unless defined $ret;
+        throw 'perl_error' => "Couldn't run revision file '$filename'."      unless $ret;
+    }
     my $latest_rev = $#{ $module_id . '::revisions::revision' };
     undef @{ $module_id . '::revisions::revision' };
     return $latest_rev;
@@ -310,11 +310,11 @@ sub get_meta {
     my $filename = "./modules/${module_id}/meta.pl";
     throw 'perl_error' => "Metafile does not exist for module '$module_id'." unless -e $filename;
     my $meta = do $filename;
-	unless ($meta) {
-	    throw 'perl_error' => "Couldn't parse metadata file '$filename': $@" if $@;
-	    throw 'perl_error' => "Couldn't do metadata file '$filename': $!"    unless defined $meta;
-	    throw 'perl_error' => "Couldn't run metadata file '$filename'."      unless $meta;
-	}
+    unless ($meta) {
+        throw 'perl_error' => "Couldn't parse metadata file '$filename': $@" if $@;
+        throw 'perl_error' => "Couldn't do metadata file '$filename': $!"    unless defined $meta;
+        throw 'perl_error' => "Couldn't run metadata file '$filename'."      unless $meta;
+    }
     return $meta;
 }
 
@@ -327,7 +327,7 @@ sub get_meta {
             Returns undef if no permission information is available
         </note>
         <note>
-        	throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
+            throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
         </note>
         <prototype>
             hashref = module::get_permissions(string module_id)
@@ -340,12 +340,12 @@ sub get_permissions {
     my $filename = "./modules/${module_id}/permissions.pl";
     return unless -e $filename;
     my $permissions = do $filename;
-	unless ($permissions) {
-	    throw 'perl_error' => "Couldn't parse permissions file '$filename': $@" if $@;
-	    throw 'perl_error' => "Couldn't do permissions file '$filenamee': $!"   unless defined $permissions;
-	    throw 'perl_error' => "Couldn't run permissions file '$filename'."      unless $permissions;
-	}
-	return $permissions;
+    unless ($permissions) {
+        throw 'perl_error' => "Couldn't parse permissions file '$filename': $@" if $@;
+        throw 'perl_error' => "Couldn't do permissions file '$filenamee': $!"   unless defined $permissions;
+        throw 'perl_error' => "Couldn't run permissions file '$filename'."      unless $permissions;
+    }
+    return $permissions;
 }
 
 =xml
@@ -357,7 +357,7 @@ sub get_permissions {
             If the module is already loaded, it is unloaded first.
         </note>
         <note>
-        	dies on failure
+            dies on failure
         </note>
         <prototype>
             module::load(string module_id);
@@ -368,7 +368,7 @@ sub get_permissions {
 sub load {
     my $module_id = shift;
 
-	return if $module_id eq 'oyster'; # do nothing if you are trying to load the oyster module
+    return if $module_id eq 'oyster'; # do nothing if you are trying to load the oyster module
 
     # if the module is currently loaded, unload it
     module::unload($module_id) if exists $loaded{$module_id};
@@ -379,11 +379,11 @@ sub load {
     # load module's perl source
     my $filename = "./modules/${module_id}.pm";
     my $ret      = do $filename; # do instead of require since if unload is called, require wouldn't re-include it!
-	unless ($ret) {
-	    die "Couldn't parse module file '$filename': $@" if $@;
-	    die "Couldn't do module file '$filenamee': $!"   unless defined $ret;
-	    die "Couldn't run module file '$filename'."      unless $ret;
-	}
+    unless ($ret) {
+        die "Couldn't parse module file '$filename': $@" if $@;
+        die "Couldn't do module file '$filenamee': $!"   unless defined $ret;
+        die "Couldn't run module file '$filename'."      unless $ret;
+    }
 
     # add to oyster loaded module hash
     $loaded{$module_id} = undef;

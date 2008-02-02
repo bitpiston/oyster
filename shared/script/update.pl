@@ -129,8 +129,13 @@ else {
 
     # load revisions file
     try {
-        #require "./modules/$module/revisions.pl";
-        do "./modules/$module/revisions.pl";
+        my $filename = "./modules/$module/revisions.pl";
+        my $ret = do $filename;
+        unless ($ret) {
+            die "Couldn't parse revisions file '$filename': $@" if $@;
+            die "Couldn't do revisions file '$filenamee': $!"   unless defined $ret;
+            die "Couldn't run revisions file '$filename'."      unless $ret;
+        }
     }
     catch 'perl_error', with {
         die shift();
