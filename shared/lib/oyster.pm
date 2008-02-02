@@ -342,14 +342,7 @@ sub _load_modules {
 
         # if the module needs to be updated
         else {
-
-            # if the skip outdated modules option was set, do nothing
-            if ($skip_outdated) {}
-
-            # otherwise, die until the module is updated
-            else {
-                die "Module '$module' is out of date.  Please run the update utility.";
-            }
+            die "Module '$module' is out of date.  Please run the update utility." unless $skip_outdated
         }
     } continue { $i++ }
 
@@ -420,7 +413,7 @@ sub request_handler {
         # uhhh not sure why this is needed.... the query string env variable isnt being populated properly (fastcgi issue?)
         if ((my $query_begin = index($ENV{'REQUEST_URI'}, '?')) != -1) {
             $ENV{'QUERY_STRING'} = substr($ENV{'REQUEST_URI'}, $query_begin + 1);
-            $ENV{'REQUEST_URI'} = substr($ENV{'REQUEST_URI'}, 0, $query_begin);
+            $ENV{'REQUEST_URI'}  = substr($ENV{'REQUEST_URI'}, 0, $query_begin);
         }
 
         # get url
@@ -430,6 +423,30 @@ sub request_handler {
             $REQUEST{'url'} =~ s!/$!!o; # remove trailing /
         } else {
             $REQUEST{'url'} = $CONFIG{'default_url'};
+        }
+
+        # parse the user agent to get a rendering engine and version
+        # TODO: where should this go?
+        my $ua = $ENV{'HTTP_USER_AGENT'};
+        if    ($ua =~ m!Opera.(\d.\d+)!o) {
+            $REQUEST{'ua_render_engine'}         = 'opera';
+            $REQUEST{'ua_render_engine_version'} = $1;
+        }
+        elsif ($ua =~ m!MSIE (\d\.\d+)!o) {
+            $REQUEST{'ua_render_engine'}         = 'msie';
+            $REQUEST{'ua_render_engine_version'} = $1;
+        }
+        elsif ($ua =~ m!Gecko/(\d+)!o) {
+            $REQUEST{'ua_render_engine'}         = 'gecko';
+            $REQUEST{'ua_render_engine_version'} = $1;
+        }
+        elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)+))?!o) {
+            $REQUEST{'ua_render_engine'}         = 'applewebkit';
+            $REQUEST{'ua_render_engine_version'} = $1;
+        }
+        elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)+))?!o) {
+            $REQUEST{'ua_render_engine'}         = 'konqueror';
+            $REQUEST{'ua_render_engine_version'} = $1;
         }
 
         # process cgi data
@@ -456,7 +473,7 @@ sub request_handler {
                 $found_matching_regex_url = 1;
                 last;
             }
-            throw 'request_404' unless $found_matching_regex_url;
+            throw 'request_404' unless $found_matching_regex_url == 1;
         }
 
         # set the handler if this is an ajax request

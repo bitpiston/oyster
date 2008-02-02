@@ -57,39 +57,26 @@ event::register_hook('request_init', 'hook_request_init', 110);
 sub hook_request_init {
     return if $disable_ssxslt;
 
-#log::status("UA[$ENV{REMOTE_ADDR}]: $ENV{HTTP_USER_AGENT}") if exists $ENV{REMOTE_ADDR};
-
-    $REQUEST{'server_side_xslt'} = 0;
-    if    ($ENV{'HTTP_USER_AGENT'} =~ /MSIE (\d+\.\d+)/ and $1 <= 5.5 and $ENV{'HTTP_USER_AGENT'} !~ /Opera/) { # IE 5.5 or less
-           $REQUEST{'server_side_xslt'} = 1;
-           $REQUEST{'mime_type'}        = 'text/html'; # all versions of IE need a diff mime type for xhtml
-    }
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Firefox/)                     { return } # all versions of firefox
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Opera\/(\d+\.\d+)/)           { return } # opera >= 9
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Gecko\/\d+$/) { return } # all versions of the mozilla suite
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Camino/)      { return } # moz camino (crazy mac users)
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Netscape/)                    { return } # Netscape > 6
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /SeaMonkey/)                   { return } # seamonkey suite
-    #elsif ($ENV{'HTTP_USER_AGENT'} =~ /Safari/)                     { return } # safari --- apple says 1.3 and up support xslt -- why is it not working?
+    # figure out of the user's engine and version can handle xml/xslt
+    my $engine  = $REQUEST{'ua_render_engine'};
+    my $version = $REQUEST{'ua_render_engine_version'};
+    if    ($engine eq 'msie'  and $version > 5.5) { return }
+    elsif ($engine eq 'opera' and $version >= 9)  { return }
+    elsif ($engine eq 'gecko')                    { return }
+    elsif ($engine eq 'applewebkit')              { return }
+    elsif ($engine eq 'khtml')                    { return }
     else { $REQUEST{'server_side_xslt'} = 1 }
 
-    # query string overrides
-    #if ($INPUT{'ssxslt'} eq 'on') {
-    #    $REQUEST{'server_side_xslt'} = 1;
-    #} elsif ($INPUT{'ssxslt'} eq 'off') {
-    #    $REQUEST{'server_side_xslt'} = 0;
-    #}
-
     # capture output
-    if ($REQUEST{'server_side_xslt'} == 1) {
-        $REQUEST{'mime_type'} = 'application/xhtml+xml' unless $REQUEST{'mime_type'};
+    if (exists $REQUEST{'server_side_xslt'}) {
+        $REQUEST{'mime_type'} = $engine eq 'msie' ? 'text/html' : 'application/xhtml+xml'; # IE requires text/html for xhtml
         buffer::start();
     }
 }
 
 event::register_hook('request_finish', 'hook_request_finish', -110);
 sub hook_request_finish {
-    return unless $REQUEST{'server_side_xslt'};
+    return unless exists $REQUEST{'server_side_xslt'};
 
     my $buffer = buffer::end_clean();
     $buffer =~ s/^.+\n.+\n//; # strip first two lines out (xml version and stylesheet)
