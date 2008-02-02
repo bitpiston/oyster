@@ -20,8 +20,9 @@ BEGIN {
     die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
 }
 
-my $shared_path = $config->{'shared_path'};
-my $site_path   = $config->{'site_path'};
+my $shared_path    = $config->{'shared_path'};
+my $site_path      = $config->{'site_path'};
+my $site_file_path = $config->{'site_file_path'};
 
 print "tmp/ to 755\n";
 chmod 0755, "${shared_path}tmp/";
