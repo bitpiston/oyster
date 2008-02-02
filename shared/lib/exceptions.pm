@@ -29,10 +29,6 @@ package exceptions;
     CORE::exit;
 };
 
-# ensure the launcher's temporary die() function is overridden
-# TODO: is this necessary? does it work?
-#*launcher::die = \&CORE::GLOBAL::die;
-
 our @stack; # stores a handlers for try blocks
 
 =xml

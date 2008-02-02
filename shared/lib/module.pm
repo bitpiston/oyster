@@ -98,20 +98,25 @@ sub order_by_dependencies {
         <synopsis>
             Retreives the latest revision available for a module
         </synopsis>
+        <note>
+        	throws a 'perl_error' exception on failure
+        </note>
         <prototype>
             int = module::get_latest_revision(string module_id)
         </prototype>
-        <todo>
-            http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
-        </todo>
     </function>
 =cut
 
 sub get_latest_revision {
     my $module_id = shift;
-    my $rev_file  = "./modules/$module_id/revisions.pl";
-    throw 'perl_error' => "Revision file does not exist '$rev_file'." unless -e $rev_file;
-    do $rev_file;
+    my $filename  = "./modules/$module_id/revisions.pl";
+    throw 'perl_error' => "Revision file does not exist '$filename'." unless -e $filename;
+    my $ret = do $filename;
+	unless ($ret) {
+	    throw 'perl_error' => "Couldn't parse revision file '$filename': $@" if $@;
+	    throw 'perl_error' => "Couldn't do revision file '$filenamee': $!"    unless defined $ret;
+	    throw 'perl_error' => "Couldn't run revision file '$filename'."      unless $ret;
+	}
     my $latest_rev = $#{ $module_id . '::revisions::revision' };
     undef @{ $module_id . '::revisions::revision' };
     return $latest_rev;
@@ -241,12 +246,12 @@ sub unregister {
         <synopsis>
             Sets a module's current revision
         </synopsis>
+        <note>
+            Does nothing if the module is not registered
+        </note>
         <prototype>
             module::set_revision(string module_id, int revision)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
 =cut
 
@@ -260,11 +265,14 @@ sub set_revision {
         <synopsis>
             Gets a module's revision number
         </synopsis>
+        <note>
+            Returns 0 if a module is not registered
+        </note>
         <prototype>
             int revision = module::get_revision(string module_name)
         </prototype>
         <todo>
-            Validate that module exists before attempting this!
+            Should probably throw a perl error or something if a module is not registered
         </todo>
     </function>
 =cut
@@ -289,26 +297,25 @@ sub get_revision {
             Fetches meta information about a module
         </synopsis>
         <note>
-            Returns undef if no meta information is available, although that should
-            never happen unless the module does not exist.
+            throws a 'perl_error' exception on failure
         </note>
         <prototype>
             hashref = module::get_meta(string module_name)
         </prototype>
-        <todo>
-           try {} ?
-        </todo>
-        <todo>
-            http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
-        </todo>
     </function>
 =cut
 
 sub get_meta {
-    my $module_name = shift;
-    my $filename = "$oyster::CONFIG{shared_path}modules/${module_name}/meta.pl";
-    return unless -e $filename;
-    return do $filename;
+    my $module_id = shift;
+    my $filename = "./modules/${module_id}/meta.pl";
+    throw 'perl_error' => "Metafile does not exist for module '$module_id'." unless -e $filename;
+    my $meta = do $filename;
+	unless ($meta) {
+	    throw 'perl_error' => "Couldn't parse metadata file '$filename': $@" if $@;
+	    throw 'perl_error' => "Couldn't do metadata file '$filename': $!"    unless defined $meta;
+	    throw 'perl_error' => "Couldn't run metadata file '$filename'."      unless $meta;
+	}
+    return $meta;
 }
 
 =xml
@@ -319,6 +326,9 @@ sub get_meta {
         <note>
             Returns undef if no permission information is available
         </note>
+        <note>
+        	throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
+        </note>
         <prototype>
             hashref = module::get_permissions(string module_id)
         </prototype>
@@ -327,9 +337,15 @@ sub get_meta {
 
 sub get_permissions {
     my $module_id = shift;
-    my $filename = "$oyster::CONFIG{shared_path}modules/${module_id}/permissions.pl";
+    my $filename = "./modules/${module_id}/permissions.pl";
     return unless -e $filename;
-    return do $filename;
+    my $permissions = do $filename;
+	unless ($permissions) {
+	    throw 'perl_error' => "Couldn't parse permissions file '$filename': $@" if $@;
+	    throw 'perl_error' => "Couldn't do permissions file '$filenamee': $!"   unless defined $permissions;
+	    throw 'perl_error' => "Couldn't run permissions file '$filename'."      unless $permissions;
+	}
+	return $permissions;
 }
 
 =xml
@@ -339,6 +355,9 @@ sub get_permissions {
         </synopsis>
         <note>
             If the module is already loaded, it is unloaded first.
+        </note>
+        <note>
+        	dies on failure
         </note>
         <prototype>
             module::load(string module_id);
@@ -358,9 +377,13 @@ sub load {
     module::load_config($module_id);
 
     # load module's perl source
-    #eval { require "$oyster::CONFIG{shared_path}modules/${module_id}/${module_id}.pm" };
-    eval { require "$oyster::CONFIG{shared_path}modules/${module_id}.pm" };
-    die("Error loading $module_id: $@") if $@;
+    my $filename = "./modules/${module_id}.pm";
+    my $ret      = do $filename; # do instead of require since if unload is called, require wouldn't re-include it!
+	unless ($ret) {
+	    die "Couldn't parse module file '$filename': $@" if $@;
+	    die "Couldn't do module file '$filenamee': $!"   unless defined $ret;
+	    die "Couldn't run module file '$filename'."      unless $ret;
+	}
 
     # add to oyster loaded module hash
     $loaded{$module_id} = undef;
