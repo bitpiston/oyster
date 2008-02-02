@@ -4,11 +4,6 @@
         implementation of several File::* CPAN modules.
     </synopsis>
     <todo>
-        copy and rename need to use exceptions, consider writing a custom version
-        of file::copy that doesn't have so many deps and just include it in this
-        library.
-    </todo>
-    <todo>
         Size and mtime should throw exceptions if the file does not exist.
     </todo>
     <function name="tmp_name">
@@ -39,15 +34,15 @@
         <synopsis>
             Move or rename a file
         </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
         <prototype>
             file::rename(string from_filename, string to_filename)
         </prototype>
         <example>
             file::rename("foo.txt", "bar.txt");
         </example>
-        <todo>
-            use oyster::execute_script()
-        </todo>
     </function>
     
     <function name="move">
@@ -59,15 +54,15 @@
         <synopsis>
             Copy a file or a directory
         </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
         <prototype>
             file::copy(string from_filename, string to_filename)
         </prototype>
         <example>
             file::copy("foo.txt", "bar.txt");
         </example>
-        <todo>
-            use oyster::execute_script()
-        </todo>
     </function>
     <function name="size">
         <synopsis>
@@ -105,10 +100,13 @@
             Quick and dirty file writing
         </synopsis>
         <note>
+            The third optional argument, if true, will attempt to create any directories necessary to create to the file.
+        </note>
+        <note>
             Throws a perl_error exception on failure
         </note>
         <prototype>
-            file::write(string filename, string file_contents)
+            file::write(string filename, string file_contents[, bool autocreate_directories])
         </prototype>
     </function>
     <function name="rmdir">

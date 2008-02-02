@@ -1,0 +1,5 @@
+<document title="Line Counter (aka, epeen measurer)">
+    <synopsis>
+        Counts the total number of lines in pl, pm, and xsl files in the shared directory.
+    </synopsis>
+</document>

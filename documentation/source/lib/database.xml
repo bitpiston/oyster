@@ -19,6 +19,37 @@
             obj = database::connect([, driver => string driver][, host => string hostname][, user => string username][, password => string password][, database => string database])
         </prototype>
     </function>
+    <function name="compress_metadata">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+    <function name="expand_metadata">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+        <todo>
+            
+        </todo>
+    </function>
     <section title="Extensions to Database Handle">
         <function name="insert_id">
             <synopsis>

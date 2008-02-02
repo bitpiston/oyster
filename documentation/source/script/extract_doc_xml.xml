@@ -1,0 +1,8 @@
+<document title="Extract Document XML">
+    <synopsis>
+        Extracts XML documentation from perl files.
+    </synopsis>
+    <section title="Command Line Arguments">
+        This utility requires a single argument, a directory to extract the documentation to.
+    </section>
+</document>

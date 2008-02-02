@@ -2,55 +2,87 @@
     <synopsis>
         Functions associated with module management
     </synopsis>
-    <function name="enable">
+    <function name="get_available">
         <synopsis>
-            Enables and loads a module
+            Retreives a list of all available modules.
+        </synopsis>
+        <prototype>
+            array = module::get_available()
+        </prototype>
+    </function>
+    <function name="get_enabled">
+        <synopsis>
+            Retreives a list of enabled modules
+        </synopsis>
+        <prototype>
+            array = module::get_enabled()
+        </prototype>
+    </function>
+    <function name="order_by_dependencies">
+        <synopsis>
+            Given a list of modules, orders them based on their dependencies
         </synopsis>
         <note>
-            This does nothing if the module is already enabled and loaded.
+            This is susceptible to infinte looping if modules have circular dependencies
+        </note>
+        <prototype>
+            array = module::order_by_dependencies(array)
+        </prototype>
+    </function>
+    <function name="get_latest_revision">
+        <synopsis>
+            Retreives the latest revision available for a module
+        </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
+        <prototype>
+            int = module::get_latest_revision(string module_id)
+        </prototype>
+    </function>
+    <function name="enable">
+        <synopsis>
+            Enables a module
+        </synopsis>
+        <note>
+            This does not load the module
+        </note>
+        <note>
+            This does nothing if passed a non-existant module ID.
         </note>
         <prototype>
             module::enable(string module_id)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
     <function name="disable">
         <synopsis>
-            Disables and unloads a module
+            Disables a module
         </synopsis>
         <note>
-            This does nothing if the module is not enabled.
+            This does not unload the module if it is currently loaded.
+        </note>
+        <note>
+            This does nothing if passed a non-existant module ID.
         </note>
         <prototype>
             module::disable(string module_id)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
-    <function name="set_revision">
+    <function name="is_enabled">
         <synopsis>
-            Sets a module's current revision
+            Checks if a given module is enabled
         </synopsis>
         <prototype>
-            module::set_revision(string module_id, int revision)
+            bool = module::is_enabled(string module_id)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
-    <function name="get_revision">
+    <function name="is_registered">
         <synopsis>
-            Gets a module's revision number
+            Checks if a given module is registered
         </synopsis>
         <prototype>
-            int revision = module::get_revision(string module_name)
+            bool = module::is_registered(string module_id)
         </prototype>
-        <todo>
-            Validate that module exists before attempting this!
-        </todo>
     </function>
     <function name="register">
         <synopsis>
@@ -59,6 +91,9 @@
         <prototype>
             module::register(string module_id[, revision])
         </prototype>
+        <note>
+            This does nothing and returns undef if the given module ID is already registered.
+        </note>
         <todo>
             error if module is already installed? (or just update revision?)
         </todo>
@@ -67,11 +102,36 @@
         <synopsis>
             Removes a module's entry in the modules table
         </synopsis>
+        <note>
+            This does nothing if passed a non-existant module ID.
+        </note>
         <prototype>
             module::unregister(string module_id)
         </prototype>
+    </function>
+    <function name="set_revision">
+        <synopsis>
+            Sets a module's current revision
+        </synopsis>
+        <note>
+            Does nothing if the module is not registered
+        </note>
+        <prototype>
+            module::set_revision(string module_id, int revision)
+        </prototype>
+    </function>
+    <function name="get_revision">
+        <synopsis>
+            Gets a module's revision number
+        </synopsis>
+        <note>
+            Returns 0 if a module is not registered
+        </note>
+        <prototype>
+            int revision = module::get_revision(string module_name)
+        </prototype>
         <todo>
-            rename?
+            Should probably throw a perl error or something if a module is not registered
         </todo>
     </function>
     <function name="get_meta">
@@ -79,15 +139,11 @@
             Fetches meta information about a module
         </synopsis>
         <note>
-            Returns undef if no meta information is available, although that should
-            never happen.
+            throws a 'perl_error' exception on failure
         </note>
         <prototype>
             hashref = module::get_meta(string module_name)
         </prototype>
-        <todo>
-           try {} ?
-        </todo>
     </function>
     <function name="get_permissions">
         <synopsis>
@@ -95,6 +151,9 @@
         </synopsis>
         <note>
             Returns undef if no permission information is available
+        </note>
+        <note>
+            throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
         </note>
         <prototype>
             hashref = module::get_permissions(string module_id)
@@ -107,13 +166,16 @@
         <note>
             If the module is already loaded, it is unloaded first.
         </note>
+        <note>
+            dies on failure
+        </note>
         <prototype>
             module::load(string module_id);
         </prototype>
     </function>
-    <function name="reload_config">
+    <function name="load_config">
         <todo>
-            Documentate this function
+            Document this function
         </todo>
     </function>
     <function name="unload">
@@ -134,8 +196,5 @@
         <prototype>
             print_module_xml()
         </prototype>
-        <todo>
-            Should this be in SIMS?
-        </todo>
     </function>
 </document>

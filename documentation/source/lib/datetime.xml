@@ -38,22 +38,16 @@
             my $num_days = datetime::days_in_month(2006, 5);
         </example>
     </function>
-    <function name="utctime">
+    <function name="gmtime">
         <synopsis>
             Returns the unix epoch time in GMT
         </synopsis>
-        <note>
-            * gmtime is the ideal name for this but it is taken by perl
-        </note>
         <prototype>
-            int = datetime::utctime()
+            int = datetime::gmtime()
         </prototype>
         <example>
-            my $gmtime = datetime::utctime();
+            my $gmtime = datetime::gmtime();
         </example>
-        <todo>
-            deprecate in favor of gm_time() or even datetime::gmtime()
-        </todo>
     </function>
     <function name="is_valid_time_offset">
         <synopsis>
@@ -72,8 +66,8 @@
         </prototype>
         <todo>
             Possibly allow the passing of the time to perform the check at instead
-            #     of just using the return value of time().  This would be useful to test
-            #     cases where days or years may be different.
+            of just using the return value of time().  This would be useful to test
+            cases where days or years may be different.
         </todo>
     </function>
     <function name="from_unixtime">

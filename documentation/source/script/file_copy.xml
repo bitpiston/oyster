@@ -1,0 +1,11 @@
+<document title="File Copy Utility">
+    <synopsis>
+        Moves/renames a file just like the system command, but in an OS-neutral way.
+    </synopsis>
+    <section title="Command Line Arguments">
+        This utility requires two arguments, the file to copy and the destination filename.
+    </section>
+    <todo>
+        This should probably use File::Copy::Recursive
+    </todo>
+</document>

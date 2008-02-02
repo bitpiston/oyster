@@ -13,7 +13,7 @@ use lib './lib';
 use file;
 
 # directories to spider
-my @dirs = ('./lib/', './modules/');
+my @dirs = ('./lib/', './modules/', './script/');
 
 # figure out the destination directory
 my $dest = shift;
@@ -80,16 +80,16 @@ while (@dirs) {
 }
 
 # work function
-# TODO: this should obey __END__ and __DATA__
 sub extract_xml {
     my $filename = shift;
     open(my $fh, '<', $filename) or die "Could not open file for reading: '$filename'.";
     my $xml = '';
     my $in_pod;
     while (my $line = <$fh>) {
-        if ($line =~ /^=xml/ and !$in_pod) {
+        last if ($line =~ /^__END__/o or $line =~ /^__DATA__/o);
+        if ($line =~ /^=xml/o and !$in_pod) {
             $in_pod = 1;
-        } elsif ($line =~ /^=cut/ and $in_pod) {
+        } elsif ($line =~ /^=cut/o and $in_pod) {
             $in_pod = 0;
         } elsif ($in_pod) {
             $xml .= $line;

@@ -30,10 +30,10 @@
             &lt;litera&gt; xml node
         </note>
         <prototype>
-            email::send(string to, string subject, string content[, string header_name => string header_value ...])
+            email::send(to => string, subject => string[, string header_name => string header_value ...], string content)
         </prototype>
         <example>
-            email::send('ShaneCalimlim@gmail.com', 'Hello!', 'You suck!');
+            email::send(to => 'ShaneCalimlim@gmail.com', subject => 'Hello!', 'You suck!');
         </example>
         <todo>
             Add alternatives to sendmail
@@ -55,7 +55,7 @@
     </function>
     <function name="add_template">
         <todo>
-            Documentate this function
+            Document this function
         </todo>
     </function>
 </document>

@@ -1,0 +1,8 @@
+<document title="Oyster Testing Framework">
+    <synopsis>
+        This script runs all test scripts and returns the totalled test results.
+    </synopsis>
+    <todo>
+        A 'how to' doc for creating tests.
+    </todo>
+</document>

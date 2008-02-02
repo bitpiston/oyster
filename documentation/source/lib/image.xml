@@ -1,13 +1,13 @@
 <document title="Image Functions">
+    <warning>
+        This library is considered pre-alpha.  It needs to be updated to prevent shell injection and to use exceptions.
+    </warning>
     <synopsis>
         Inspect and manipulate images using ImageMagick.  This is basically a
         lightweight version of perlmagick that can potentially use other backends.
     </synopsis>
     <todo>
         Allow alternatives to ImageMagick
-    </todo>
-    <todo>
-        shell_escape!
     </todo>
     <function name="identify">
         <synopsis>

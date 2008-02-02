@@ -1,0 +1,11 @@
+<document title="Oyster Update/Installation Utility">
+    <synopsis>
+        This utility runs module installation routines and brings their revisions up to date.
+    </synopsis>
+    <todo>
+        Document how to create revision files.
+    </todo>
+    <todo>
+        Document arguments
+    </todo>
+</document>

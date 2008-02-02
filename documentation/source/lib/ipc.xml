@@ -3,33 +3,35 @@
         Functions that allow daemons to communicate.  These are mainly used to force
         daemons to reload cached data when one of them updates it.
     </synopsis>
-    <todo>
-      Investigate, is there a double-eval going on for the daemon that issues
-      the command? -- possibly just store the value of time() instead of using
-      sql NOW()  
-    </todo>
-    <function name="eval">
+    <function name="do">
         <synopsis>
             Issues a command for all daemons of the current site to execute
         </synopsis>
         <note>
-            The command is executed in the 'ipc' package.  Be sure to use
-            fully-qualified names for functions and variables.
+            'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
         </note>
         <prototype>
-            ipc::eval(string command)
+            ipc::do(string module, string function[, array args])
         </prototype>
         <example>
-            ipc::eval('news::_load_labels()');
+            ipc::do('news', 'load_category', $category_id);
         </example>
-        <example>
-            ipc::eval('user::_load_groups()');
-        </example>
-        <todo>
-            this should throw a perl error
-        </todo>
     </function>
-    <function name="do">
+    <function name="global_do">
+        <synopsis>
+            Issues a command for all daemons to execute
+        </synopsis>
+        <note>
+            'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
+        </note>
+        <prototype>
+            ipc::global_do(string module, string function[, array args])
+        </prototype>
+        <example>
+            ipc::global_do('oyster', '_load_config');
+        </example>
+    </function>
+    <function name="update">
         <synopsis>
             Executes all waiting tasks in the ipc queue
         </synopsis>
@@ -42,7 +44,10 @@
             task automatically.
         </note>
         <prototype>
-            ipc::do()
+            ipc::update()
         </prototype>
+        <todo>
+            try {}
+        </todo>
     </function>
 </document>

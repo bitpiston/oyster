@@ -1,4 +1,7 @@
 <document title="XML Feed Functions">
+    <warning>
+        This library is considered pre-alpha.
+    </warning>
     <synopsis>
         Provides an object to parse and read from rss/atom feeds.
     </synopsis>
