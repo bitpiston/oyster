@@ -659,9 +659,6 @@ sub _bbcode_parse_code {
         <prototype>
             string xml = xml::validate_xhtml(string xhtml[, permission_level => int level, allow_calls => bool, allow_includes => bool])
         </prototype>
-        <todo>
-            uh.. should this be a static search and replace BEFORE this loop starts?
-        </todo>
     </function>
 =cut
 
@@ -682,7 +679,7 @@ sub validate_xhtml {
     ITER_XHTML: while (length $xhtml != 0) {
         my $replace_len = 0;
 
-        # call/include directives
+        # call/include directives -- uh.. should this be a static search and replace BEFORE this loop starts?
         if (
                 ($options{'allow_includes'} or $options{'allow_calls'}) # seems pointless to do this here, but it can short-circuit the regex
                 and

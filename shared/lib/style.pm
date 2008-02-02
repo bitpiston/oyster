@@ -3,9 +3,6 @@
     <synopsis>
         Functions related to styles and templates
     </synopsis>
-    <todo>
-        # TODO: update admin.pm's style management stuff and user.pm's style selection
-    </todo>
 =cut
 package style;
 
@@ -305,32 +302,6 @@ sub is_valid_style {
 }
 
 =xml
-        <function name="is_enabled_style">
-            <synopsis>
-                Returns true if a style is enabled
-            </synopsis>
-            <note>
-            
-            </note>
-            <prototype>
-                bool = style::is_enabled_style(string style_id)
-            </prototype>
-            <todo>
-            
-            </todo>
-            <example>
-            
-            </example>
-        </function>
-=cut
-
-sub is_enabled_style {
-    my $id = shift;
-    return unless $styles{$id};
-    return $styles{$id}->{'status'};
-}
-
-=xml
         <function name="is_reserved_id">
             <synopsis>
                 Returns true if a style id is reserved.
@@ -348,7 +319,7 @@ sub is_reserved_id {
 }
 
 =xml
-        <function name="">
+        <function name="compile">
             <synopsis>
                 Calls xslcompiler.pl on all of the current site's styles, returns the url path to the style for the given stylesheets.
             </synopsis>
@@ -366,7 +337,7 @@ sub compile {
     my $recompile_server_base = 0;
 
     # compile the base layout for this style if necessary
-    if ($oyster::CONFIG{'compile_styles'} and (!-e "${style_path}base.xsl" or file::mtime("${style_path}source/layout.xsl") > file::mtime("${style_path}base.xsl") or file::mtime("$oyster::CONFIG{shared_path}styles/source.xsl") > file::mtime("${style_path}base.xsl"))) {
+    if ($oyster::CONFIG{'compile_styles'} and (!-e "${style_path}base.xsl" or file::mtime("${style_path}source/layout.xsl") > file::mtime("${style_path}base.xsl") or file::mtime("./styles/source.xsl") > file::mtime("${style_path}base.xsl"))) {
         file::write("${style_path}base.xsl", _compile_style($style, "styles/source.xsl"));
         $recompile_server_base = 1;
     }
@@ -423,7 +394,7 @@ sub compile {
 =xml
         <function name="_get_module_stylesheets">
             <todo>
-                Documentate this function
+                Dcoument this function
             </todo>
         </function>
 =cut

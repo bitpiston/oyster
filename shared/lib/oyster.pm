@@ -128,7 +128,7 @@ sub import {
 
         # module-specific variables
         my ($module) = ( $pkg =~ /::/ ? ($pkg =~ /^(.+?)::/) : $pkg );
-        ${ $pkg . '::module_path'           } = "$CONFIG{shared_path}modules/$module/"; # no need to reference, these don't change
+        ${ $pkg . '::module_path'           } = "./modules/$module/"; # no need to reference, these don't change
         ${ $pkg . '::module_admin_base_url' } = "$CONFIG{url}admin/${module}/";
         ${ $pkg . '::module_db_prefix'      } = "$CONFIG{db_prefix}${module}_";
         *{ $pkg . '::config'                } = \%{"${module}::CONFIG"} if $pkg ne $module;
@@ -184,7 +184,7 @@ sub load {
     %options = @_;
 
     # append misc other values to %CONFIG
-    $CONFIG{'tmp_path'}  = $CONFIG{'shared_path'} . 'tmp/';
+    $CONFIG{'tmp_path'}  = './tmp/';
     $CONFIG{'db_prefix'} = $CONFIG{'site_id'} . '_';
     $CONFIG{'daemon_id'} = string::random();
 

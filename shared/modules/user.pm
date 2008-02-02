@@ -198,7 +198,7 @@ sub edit_settings {
             } elsif (length $INPUT{'style'} == 0) {    # the user wants the default style
                 $update{'style'} = '';
             } else {                                   # the user wants to specify a style
-                throw 'validation_error' => 'Invalid style ID.' unless style::is_enabled_style($INPUT{'style'});
+                throw 'validation_error' => 'Invalid style ID.' unless style::is_enabled($INPUT{'style'});
                 $update{'style'} = $INPUT{'style'};
             }
         };

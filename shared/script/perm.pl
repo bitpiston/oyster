@@ -11,9 +11,6 @@
             <dd>Specifies a particular configuration environment to use</dd>
         </dl>
     </section>
-    <todo>
-    	This should use the proper site_file_path configuration setting.
-    </todo>
 =cut
 package oyster::script::perm;
 
@@ -42,7 +39,7 @@ print "styles/ (and all sub-directories) to 755\n";
 chmod_dir("${site_path}styles/", 755);
 
 print "files/ (and all sub-directories) to 755\n";
-chmod_dir("${site_path}files/", 755);
+chmod_dir($site_file_path, 755);
 
 my %chmod_ext = (
     'xsl' => undef,

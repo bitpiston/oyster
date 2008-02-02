@@ -4,15 +4,6 @@
         Functions dealing with Oyster's url handling as well as external url
         utilities.
     </synopsis>
-    <todo>
-        Tons of optimization could be done here as well as how oyster.pm handles
-        urls.
-    </todo>
-    <todo>
-        The regex url system needs to be analyzed, there is little point to
-        storing those in the database and significant usability could be gained by
-        allowing code to just create those at runtime.
-    </todo>
 =cut
 
 package url;
@@ -517,7 +508,6 @@ sub get_parent_by_id {
             </prototype>
             <todo>
                 bugged, this checks if a url exists! not if it has childeren, have it fetch the url then use has_children_by_id
-                #sub has_children {
             </todo>
         </function>
 =cut

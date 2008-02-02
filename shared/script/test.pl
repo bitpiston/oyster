@@ -4,16 +4,6 @@
         This script runs all test scripts and returns the totalled test results.
     </synopsis>
     <todo>
-        Add a way to pack multiple tests into one .test file (test if .test
-        returns an array ref, if so, treat each item like an individual test)
-    </todo>
-    <todo>
-        Add test source to the .test file instead of external .pl files
-    </todo>
-    <todo>
-        http://perldoc.perl.org/functions/do.html -- properly handle 'do' failure
-    </todo>
-    <todo>
         A 'how to' doc for creating tests.
     </todo>
 =cut
