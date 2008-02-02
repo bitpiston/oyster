@@ -12,7 +12,7 @@
 
 		<!-- actions -->
 		<p><small>
-			[ <xsl:if test="@status = '1'"><a href="{/oyster/@base}admin/styles/?disable={@id}">Disable</a></xsl:if><xsl:if test="@status = '0'"><a href="{/oyster/@base}admin/styles/?enable={@id}">Enable</a></xsl:if> ]
+			[ <xsl:if test="@status = '1' and not(../@default_style = @id)"><a href="{/oyster/@base}admin/styles/?disable={@id}">Disable</a></xsl:if><xsl:if test="@status = '0'"><a href="{/oyster/@base}admin/styles/?enable={@id}">Enable</a></xsl:if> ]
 			[ <a href="{/oyster/@base}admin/styles/?preview={@id}">Preview</a> ]
 		</small></p>
 	</xsl:for-each>

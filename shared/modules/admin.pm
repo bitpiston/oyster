@@ -289,13 +289,13 @@ sub styles {
     }
 
     # disable a style
-    elsif (exists $INPUT{'disable'} and style::is_registered($INPUT{'disable'})) {
+    elsif (exists $INPUT{'disable'} and style::is_registered($INPUT{'disable'}) and $INPUT{'disable'} ne $CONFIG{'default_style'}) {
         style::disable($INPUT{'disable'}); # TODO: also change users who have this style selected?
         ipc::do('style', '_load');
         confirmation('The selected style has been disabled.');
     }
 
-    print qq~\t<admin action="styles">\n~;
+    print qq~\t<admin action="styles" default_style="$CONFIG{default_style}">\n~;
     style::print_styles_xml();
     print "\t</admin>\n";
 }

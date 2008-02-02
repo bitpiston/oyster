@@ -57,30 +57,30 @@ event::register_hook('request_init', 'hook_request_init', 110);
 sub hook_request_init {
     return if $disable_ssxslt;
 
-log::status("UA[$ENV{REMOTE_ADDR}]: $ENV{HTTP_USER_AGENT}") if exists $ENV{REMOTE_ADDR};
+#log::status("UA[$ENV{REMOTE_ADDR}]: $ENV{HTTP_USER_AGENT}") if exists $ENV{REMOTE_ADDR};
 
     $REQUEST{'server_side_xslt'} = 0;
-    if    ($ENV{'HTTP_USER_AGENT'} =~ /MSIE (\d+\.\d+)/) {              # IE 5.5 or greater (all versions of IE need a diff mime type for xhtml)
-           $REQUEST{'server_side_xslt'} = 1 unless ($1 >= 5.5 and $ENV{'HTTP_USER_AGENT'} !~ /Opera/);
+    if    ($ENV{'HTTP_USER_AGENT'} =~ /MSIE (\d+\.\d+)/ and $1 <= 5.5 and $ENV{'HTTP_USER_AGENT'} !~ /Opera/) { # IE 5.5 or greater (all versions of IE need a diff mime type for xhtml)
+           $REQUEST{'server_side_xslt'} = 1;
            $REQUEST{'mime_type'} = 'text/html';
     }
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Firefox/) {}                     # all versions of firefox
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Opera\/(\d+\.\d+)/) {}           # opera >= 9
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Gecko\/\d+$/) {} # all versions of the mozilla suite
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Camino/) {}      # moz camino (crazy mac users)
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Netscape/) {}                    # Netscape > 6
-    elsif ($ENV{'HTTP_USER_AGENT'} =~ /SeaMonkey/) {}                   # seamonkey suite
-    #elsif ($ENV{'HTTP_USER_AGENT'} =~ /Safari/) {}                     # safari --- apple says 1.3 and up support xslt -- why is it not working?
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Firefox/) { return }                     # all versions of firefox
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Opera\/(\d+\.\d+)/) { return }           # opera >= 9
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Gecko\/\d+$/) { return } # all versions of the mozilla suite
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /^Mozilla\/5\.0.+Camino/) { return }      # moz camino (crazy mac users)
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /Netscape/) { return }                    # Netscape > 6
+    elsif ($ENV{'HTTP_USER_AGENT'} =~ /SeaMonkey/) { return }                   # seamonkey suite
+    #elsif ($ENV{'HTTP_USER_AGENT'} =~ /Safari/) { return }                     # safari --- apple says 1.3 and up support xslt -- why is it not working?
     else {
         $REQUEST{'server_side_xslt'} = 1;
     }
 
     # query string overrides
-    if ($INPUT{'ssxslt'} eq 'on') {
-        $REQUEST{'server_side_xslt'} = 1;
-    } elsif ($INPUT{'ssxslt'} eq 'off') {
-        $REQUEST{'server_side_xslt'} = 0;
-    }
+    #if ($INPUT{'ssxslt'} eq 'on') {
+    #    $REQUEST{'server_side_xslt'} = 1;
+    #} elsif ($INPUT{'ssxslt'} eq 'off') {
+    #    $REQUEST{'server_side_xslt'} = 0;
+    #}
 
     # capture output
     if ($REQUEST{'server_side_xslt'} == 1) {
