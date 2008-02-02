@@ -309,6 +309,7 @@ sub styles {
 # called after the module controller/action
 event::register_hook('request_end', 'hook_request_end', 100);
 sub hook_request_end {
+    return if $USER{'id'} == 0;
 
     # call the current module's admin menu hook
     event::execute_by_module('module_admin_menu', $REQUEST{'module'});
