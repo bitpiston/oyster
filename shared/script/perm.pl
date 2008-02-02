@@ -20,6 +20,8 @@ BEGIN {
     die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
 }
 
+die "There is no need to run this script on Windows." if $config->{'os'} eq 'windows';
+
 my $shared_path    = $config->{'shared_path'};
 my $site_path      = $config->{'site_path'};
 my $site_file_path = $config->{'site_file_path'};
