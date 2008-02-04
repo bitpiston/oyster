@@ -93,6 +93,7 @@ COMPLETED
 	* sql compatability
 * certain libs (paypal, xml::parser, image, etc) should probably be removed until beta or later alpha
 	* left them in, but added a <warning> that they are pre-alpha
+* probably shouldnt REQUIRE revisions.pl files for every module
 
 Finished but need testing
 
@@ -110,4 +111,4 @@ TODO
 & Spec out the new admin module and begin writing it
 - better logic for getting content-type
 	- maybe build user rendering engine/version number detection into oyster instead of putting it into ssxslt.pm
-- probably shouldnt REQUIRE revisions.pl files for every module
+- move module::*permissions* stuff to user.pm

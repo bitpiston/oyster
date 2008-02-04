@@ -1,26 +1,30 @@
-##############################################################################
-# User Module
-# ----------------------------------------------------------------------------
-# This module encapsulates the current user's data/permissions and all
-# user-related actions.
-# ----------------------------------------------------------------------------
-
-# declare module name
+=xml
+<document title="User Module">
+    <synopsis>
+        This module encapsulates the current user's data/permissions and all user-related actions.
+    </synopsis>
+=cut
 package user;
 
-# import oyster globals
+# import libraries
 use oyster 'module';
-
-# load oyster libraries
 use exceptions;
 
-our (%USER, %PERMISSIONS);
+our (%USER, %PERMISSIONS, %groups);
 
-#
-# Initialization
-#
+=xml
+    <section title="Initialization">
 
-# load module
+        <function name="hook_load">
+            <synopsis>
+                Loads user group data and prepares queries to be used later.
+            </synopsis>
+            <note>
+                This uses event::register_hook() to execute at the right times.
+            </note>
+        </function>
+=cut
+
 event::register_hook('load', 'hook_load', 90);
 sub hook_load {
 
@@ -31,9 +35,16 @@ sub hook_load {
     our $select_permissions_count = $DB->server_prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions, users WHERE users.session = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
 
     # load user groups
-    our %groups;       # site user groups
     _load_groups();
 }
+
+=xml
+        <function name="import">
+            <synopsis>
+                Called by other modules to export %USER and %PERMISSIONS
+            </synopsis>
+        </function>
+=cut
 
 sub import {
     my $pkg = caller();
@@ -42,16 +53,21 @@ sub import {
     *{"${pkg}::PERMISSIONS"} = *PERMISSIONS;
 }
 
-# ----------------------------------------------------------------------------
-# Actions
-# ----------------------------------------------------------------------------
+=xml
+    </section>
 
-#
-# Recover a Lost Account
-#
+    <section title="Actions">
 
-# Description:
-#   Sends an email to a user to reset their password.
+        <function name="recover">
+            <synopsis>
+                Recovers a lost account by sending an email to a user that allows them to reset their password.
+            </synopsis>
+            <note>
+                This is registered to the url 'user/recover'.
+            </note>
+        </function>
+=cut
+
 sub recover {
 
     # if they passed a confirmation code
@@ -131,15 +147,22 @@ sub recover {
     }
 }
 
-#
-# Edit A User's Settings
-#
+=xml
+        <function name="edit_settings">
+            <synopsis>
+                Edits a user's settings
+            </synopsis>
+            <note>
+                This is registered to the url 'user/settings'.
+            </note>
+        </function>
+=cut
 
 sub edit_settings {
-    throw 'permission_error' unless $USER{'id'};
+    throw 'permission_error' if $USER{'id'} == 0;
 
     # select the id of the user to edit
-    my $user_id = (exists $INPUT{'id'} and $permissions{'user_admin_find'}) ? $INPUT{'id'} : $USER{'id'} ;
+    my $user_id = (exists $INPUT{'id'} and $PERMISSIONS{'user_admin_manage'}) ? $INPUT{'id'} : $USER{'id'} ;
 
     # the input source for the edit form
     my $input_source;
@@ -156,9 +179,9 @@ sub edit_settings {
         my $success = try {
 
             # if an admin is changing their user group
-            if ($permissions{'user_admin_find'}) {
+            if ($PERMISSIONS{'user_admin_manage'}) {
                 my $query = $DB->query("SELECT group_id FROM ${module_db_prefix}permissions WHERE user_id = ? LIMIT 1", $edit_user->{'id'});
-                my $group_id = $query->rows() ? $query->fetchrow_arrayref()->[0] : $config{'default_group'};
+                my $group_id = $query->rows() ? $query->fetchrow_arrayref()->[0] : $config{'default_group'} ;
                 if ($INPUT{'group_id'} != $group_id) {
                     throw 'validation_error' => 'Invalid group ID.' unless $groups{$INPUT{'group_id'}};
                     $update{'group_id'} = $INPUT{'group_id'};
@@ -177,8 +200,12 @@ sub edit_settings {
                 _validate_email($edit_user->{'id'});
 
                 # make sure one of these hasn't been sent out in the last hour
-                my $spam_query = $DB->query('SELECT COUNT(*) FROM user_email_changes WHERE new_email = ? and ctime > UTC_TIMESTAMP() - INTERVAL 1 HOUR LIMIT 1', $INPUT{'email'});
-                throw 'validation_error' => 'A change email request has already been sent to this email address within the last hour.  If you just attempted this, wait a few minutes for the email to arrive.  If you still have not received it in one hour, try again.' if $spam_query->fetchrow_arrayref()->[0];
+                unless ($PERMISSIONS{'user_admin_manage'}) {
+                    my $spam_query = $DB->query('SELECT COUNT(*) FROM user_email_changes WHERE new_email = ? and ctime > UTC_TIMESTAMP() - INTERVAL 1 HOUR LIMIT 1', $INPUT{'email'});
+                    throw 'validation_error' => 'A change email request has already been sent to this email address within the last hour.  If you just attempted this, wait a few minutes for the email to arrive.  If you still have not received it in one hour, try again.' if $spam_query->fetchrow_arrayref()->[0];
+                }
+
+                $update{'email'} = $INPUT{'email'};
             }
 
             # if they are trying to change their date format
@@ -207,7 +234,7 @@ sub edit_settings {
         if ($success) {
 
             # if they are trying to update their email, set up a confirmation thing
-            if ($update{'email'} and !$permissions{'admin_find'}) {
+            if ($update{'email'} and !$PERMISSIONS{'user_admin_manage'}) {
                 my $confirmation_hash = string::random(32);
 
                 # add the change to the pending-verification database
@@ -261,7 +288,7 @@ sub edit_settings {
         $input_source                  = $edit_user;
         $input_source->{'name'}        = $edit_user->{'name'};
         $input_source->{'date_format'} = $datetime::formats[0] unless length $edit_user->{'date_format'};
-        if ($permissions{'user_admin_find'}) {
+        if ($PERMISSIONS{'user_admin_manage'}) {
             my $query = $DB->query("SELECT group_id FROM ${module_db_prefix}permissions WHERE user_id = ? LIMIT 1", $edit_user->{'id'});
             my $group_id = $query->rows() ? $query->fetchrow_arrayref()->[0] : $config{'default_group'};
             $input_source->{'group_id'} = $group_id;
@@ -273,28 +300,27 @@ sub edit_settings {
     my $attrs;
     $attrs .= qq~ customizable_styles="1" style="$input_source->{style}"~ if $config{'customizable_styles'};
     $attrs .= qq~ id="$input_source->{id}" name="$input_source->{name}"~  if $user_id != $USER{'id'};
-    $attrs .= qq~ group_id="$input_source->{group_id}"~                   if $permissions{'user_admin_find'};
+    $attrs .= qq~ group_id="$input_source->{group_id}"~                   if $PERMISSIONS{'user_admin_manage'};
     $attrs .=' email="' . xml::entities($input_source->{'email'}) . '"';
     $attrs .=' time_offset="' . xml::entities($input_source->{'time_offset'}) . '"';
     $attrs .=' date_format="' . xml::entities($input_source->{'date_format'}) . '"';
     print qq~\t<user action="edit_settings"$attrs>\n~;
-    _print_groups() if $permissions{'user_admin_find'};
+    _print_groups() if $PERMISSIONS{'user_admin_manage'};
     datetime::print_date_formats_xml();
     style::print_enabled_styles_xml() if $config{'customizable_styles'};
     print "\t</user>\n";
 }
 
-#
-# Edit a User's Profile
-#
-
-sub edit_profile {
-
-}
-
-#
-# Confirm an Email Address Update
-#
+=xml
+        <function name="confirm_email">
+            <synopsis>
+                Confirms an email address update
+            </synopsis>
+            <note>
+                This is registered to the url 'user/confirm_email'.
+            </note>
+        </function>
+=cut
 
 sub confirm_email {
     my $confirmation_hash = $INPUT{'confirm'};
@@ -317,12 +343,20 @@ sub confirm_email {
     confirmation('Your email address has been updated.');
 }
 
-#
-# Confirm a Newly Registered Account
-#
+=xml
+        <function name="confirm_account">
+            <synopsis>
+                Confirms a newly registered account
+            </synopsis>
+            <note>
+                This is registered to the url 'user/confirm'.
+            </note>
+            <todo>
+                Automatic login
+            </todo>
+        </function>
+=cut
 
-# TODO:
-#   * Automatic login
 sub confirm_account {
     my $confirmation_hash = $INPUT{'confirm'};
 
@@ -331,7 +365,7 @@ sub confirm_account {
 
     # validate user awaiting confirmation
     my $query = $DB->query('SELECT name, password, email FROM user_new WHERE confirmation_hash = ? LIMIT 1', $confirmation_hash);
-    throw 'validation_error' => 'No accounts pending verification matched the provided confirmation code.  Are you sure you haven\'t already confirmed your account?' unless $query->rows();
+    throw 'validation_error' => 'No accounts pending verification matched the provided confirmation code.  Are you sure you haven\'t already confirmed your account?' unless $query->rows() == 1;
     my ($name, $password, $email) = @{$query->fetchrow_arrayref()};
     
     # copy their information to the real users table
@@ -349,14 +383,21 @@ sub confirm_account {
     );
 }
 
-#
-# Register a New Account
-#
+=xml
+        <function name="register">
+            <synopsis>
+                Registers a new account
+            </synopsis>
+            <note>
+                This is registered to the url 'register'.
+            </note>
+        </function>
+=cut
 
 sub register {
 
     # make sure the user is not logged in
-    throw 'permission_error' if $USER{'id'};
+    throw 'permission_error' unless $USER{'id'} == 0;
 
     # make sure that registration is enabled
     throw 'validation_error' => 'User registration is currently disabled.' unless $config{'enable_registration'};
@@ -426,9 +467,16 @@ sub register {
     }
 }
 
-#
-# Administration menu
-#
+=xml
+        <function name="admin">
+            <synopsis>
+                The administration menu
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user'.
+            </note>
+        </function>
+=cut
 
 sub admin {
 
@@ -438,20 +486,28 @@ sub admin {
     menu::description($menu, 'Some description...');
 
     # populate the admin menu
-    menu::add_item('menu' => $menu, 'label' => 'Configuration', 'url' => "${module_admin_base_url}config/") if $PERMISSIONS{'user_admin_config'};
-    menu::add_item('menu' => $menu, 'label' => 'Manage Users',  'url' => "${module_admin_base_url}manage/") if $PERMISSIONS{'user_admin_manage'};
-    menu::add_item('menu' => $menu, 'label' => 'Manage Groups', 'url' => "${module_admin_base_url}groups/") if $PERMISSIONS{'user_admin_groups'};
+    menu::add_item('menu' => $menu, 'label' => 'Configuration', 'url' => $module_admin_base_url . 'config/') if $PERMISSIONS{'user_admin_config'};
+    menu::add_item('menu' => $menu, 'label' => 'Manage Users',  'url' => $module_admin_base_url . 'manage/') if $PERMISSIONS{'user_admin_manage'};
+    menu::add_item('menu' => $menu, 'label' => 'Manage Groups', 'url' => $module_admin_base_url . 'groups/') if $PERMISSIONS{'user_admin_groups'};
 
     # print the admin center menu
     throw 'permission_error' unless menu::print_xml($menu);
 }
 
-#
-# User Module Configuration
-#
+=xml
+        <function name="admin_config">
+            <synopsis>
+                Manages the user module's configuration
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user/config'.
+            </note>
+        </function>
+=cut
 
 sub admin_config {
     require_permission('user_admin_config');
+    style::include_template('admin_config');
 
     # configuration variables
     my @global_fields = qw(avatar_max_size avatar_max_height avatar_max_width name_min_length name_max_length pass_min_length enable_registration);
@@ -491,16 +547,22 @@ sub admin_config {
     } if $ENV{'REQUEST_METHOD'} eq 'POST';
 
     # print the edit config form
-    style::include_template('admin_config');
     my $fields = join '', map { " $_=\"" . xml::entities($input_source->{$_}) . '"' } @site_fields, @global_fields;
-    print "\t<user action=\"admin_config\"$fields>\n";
+    print qq~\t<user action="admin_config"$fields>\n~;
     _print_groups();
     print "\t</user>\n";
 }
 
-#
-# Delete a User Group
-#
+=xml
+        <function name="admin_delete_group">
+            <synopsis>
+                Deletes a user group
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user/groups/delete'.
+            </note>
+        </function>
+=cut
 
 sub admin_delete_group {
     require_permission('user_admin_groups');
@@ -514,7 +576,7 @@ sub admin_delete_group {
     my $success = try {
 
         # validate destination group
-        throw 'validation_error' => 'Invalid destination group ID' unless exists $groups{$INPUT{'dest_group'}};
+        throw 'validation_error' => 'Invalid destination group ID' unless (exists $groups{$INPUT{'dest_group'}} and $INPUT{'dest_group'} != $group_id);
 
         # destination group was good, move users and delete the group
         $DB->do("UPDATE ${module_db_prefix}permissions SET group_id = $INPUT{dest_group} WHERE group_id = $group_id");
@@ -539,9 +601,16 @@ sub admin_delete_group {
     }
 }
 
-#
-# Edit a User Group
-#
+=xml
+        <function name="admin_edit_group">
+            <synopsis>
+                Modifies a user group
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user/groups/edit'.
+            </note>
+        </function>
+=cut
 
 sub admin_edit_group {
     require_permission('user_admin_groups');
@@ -592,9 +661,16 @@ sub admin_edit_group {
     }
 }
 
-#
-# Create a User Group
-#
+=xml
+        <function name="admin_create_group">
+            <synopsis>
+                Creates a user group
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user/groups/create'.
+            </note>
+        </function>
+=cut
 
 sub admin_create_group {
     require_permission('user_admin_groups');
@@ -613,8 +689,8 @@ sub admin_create_group {
         # add the database entry
         my (@update_fields, @update_values);
         for my $module_id (keys %module::loaded) {
-            my $perms;
-            next unless $perms = module::get_permissions($module_id);
+            my $perms = module::get_permissions($module_id);
+            next unless $perms;
             for my $perm (keys %{$perms}) {
                 push(@update_fields, $perm);
                 push(@update_values, $INPUT{$perm});
@@ -643,22 +719,36 @@ sub admin_create_group {
     }
 }
 
-#
-# Manage User Groups
-#
+=xml
+        <function name="admin_groups">
+            <synopsis>
+                The manage user groups menu
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user/groups'.
+            </note>
+        </function>
+=cut
 
 sub admin_groups {
     require_permission('user_admin_groups');
-
     style::include_template('admin_groups');
-    print "\t<user action=\"admin_groups\">\n";
+
+    print qq~\t<user action="admin_groups">\n~;
     _print_groups();
     print "\t</user>\n";
 }
 
-#
-# Find/Modify Users
-#
+=xml
+        <function name="admin_manage">
+            <synopsis>
+                Manage individual users
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/user/manage'.
+            </note>
+        </function>
+=cut
 
 sub admin_manage {
     require_permission('user_admin_manage');
@@ -727,9 +817,16 @@ sub admin_manage {
     }
 }
 
-#
-# Log In
-#
+=xml
+        <function name="login">
+            <synopsis>
+                Logs a user into the web site
+            </synopsis>
+            <note>
+                This is registered to the url 'login'.
+            </note>
+        </function>
+=cut
 
 sub login {
 
@@ -783,9 +880,16 @@ sub login {
     }
 }
 
-#
-# Log Out
-#
+=xml
+        <function name="logout">
+            <synopsis>
+                Logs a user out of the web site
+            </synopsis>
+            <note>
+                This is registered to the url 'logout'.
+            </note>
+        </function>
+=cut
 
 sub logout {
     #throw 'permission_error' unless $USER{'id'}; # no harm in removing this, it would only be confusing if people accidentally visited this page while logged out
@@ -805,17 +909,11 @@ sub logout {
     }
 }
 
-#
-# View a Profile
-#
+=xml
+    </section>
 
-sub view_profile {
-
-}
-
-# ----------------------------------------------------------------------------
-# Hooks
-# ----------------------------------------------------------------------------
+    <section title="Event Hooks">
+=cut
 
 #
 # Request
@@ -867,10 +965,12 @@ sub hook_request_init {
 
     # set default user data
     %USER = (
-        'id'      => 0,
-        'group'   => $config{'guest_group'},
-        'name'    => $config{'default_name'},
-        'session' => '',
+        'id'          => 0,
+        'group'       => $config{'guest_group'},
+        'name'        => $config{'default_name'},
+        'session'     => '',
+        'date_format' => $datetime::formats[0],
+        'time_offset' => 0,
     ) unless $USER{'id'};
 
     # alias user permissions to an easier-to-reach place
@@ -880,20 +980,12 @@ sub hook_request_init {
 # called before the footer is printed
 event::register_hook('request_end', 'hook_request_end', 0);
 sub hook_request_end {
-
-    # set some defaults
-    $USER{'date_format'} = $datetime::formats[0] unless $USER{'date_format'};
-    $USER{'time_offset'} = 0                     unless $USER{'time_offset'};
-
-    # dump user data to the xml
     print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}" />\n~;
 }
 
 # called after the request is finished
 event::register_hook('request_cleanup', 'hook_request_cleanup', 0);
 sub hook_request_cleanup {
-
-    # clear user data so it doesnt pollute the next request
     %USER = ();
 }
 
@@ -905,9 +997,9 @@ sub hook_request_cleanup {
 event::register_hook('module_admin_menu', 'hook_module_admin_menu');
 sub hook_module_admin_menu {
     my $item = menu::add_item('menu' => 'admin', 'label' => 'Users', 'url' => $module_admin_base_url, 'require_children' => 1);
-    menu::add_item('parent' => $item, 'label' => 'Configuration', 'url' => "${module_admin_base_url}config/") if $PERMISSIONS{'user_admin_config'};
-    menu::add_item('parent' => $item, 'label' => 'Manage Users',  'url' => "${module_admin_base_url}manage/") if $PERMISSIONS{'user_admin_manage'};
-    menu::add_item('parent' => $item, 'label' => 'Manage Groups', 'url' => "${module_admin_base_url}groups/") if $PERMISSIONS{'user_admin_groups'};
+    menu::add_item('parent' => $item, 'label' => 'Configuration', 'url' => $module_admin_base_url . 'config/') if $PERMISSIONS{'user_admin_config'};
+    menu::add_item('parent' => $item, 'label' => 'Manage Users',  'url' => $module_admin_base_url . 'manage/') if $PERMISSIONS{'user_admin_manage'};
+    menu::add_item('parent' => $item, 'label' => 'Manage Groups', 'url' => $module_admin_base_url . 'groups/') if $PERMISSIONS{'user_admin_groups'};
 }
 
 # called when the admin menu is printed (after the module admin menu)
@@ -915,7 +1007,7 @@ event::register_hook('admin_menu', 'hook_admin_menu');
 sub hook_admin_menu {
     menu::add_item('parent' => $_[0], 'label' => 'Users', 'url' => $module_admin_base_url)
         if ($REQUEST{'module'} ne 'user' and
-            ($PERMISSIONS{'user_admin_config'} or $PERMISSIONS{'user_admin_groups'} or $PERMISSIONS{'user_admin_find'}));
+            ($PERMISSIONS{'user_admin_config'} or $PERMISSIONS{'user_admin_groups'} or $PERMISSIONS{'user_admin_manage'}));
 }
 
 #
@@ -935,9 +1027,11 @@ sub hook_admin_center_modules_menu {
         $PERMISSIONS{'user_admin_config'} or $PERMISSIONS{'user_admin_manage'} or $PERMISSIONS{'user_admin_groups'} );
 }
 
-# ----------------------------------------------------------------------------
-# Helpers
-# ----------------------------------------------------------------------------
+=xml
+    </section>
+
+    <section title="Helper Functions">
+=cut
 
 sub _validate_email {
     throw 'validation_error' => 'Invalid email address.' unless email::is_valid_email($INPUT{'email'});
@@ -967,7 +1061,7 @@ sub _load_groups {
 sub _print_groups {
     print "\t\t<groups>\n";
     for my $group_id (keys %groups) {
-        print "\t\t\t<group id=\"$group_id\">$groups{$group_id}->{name}</group>\n";
+        print qq~\t\t\t<group id="$group_id">$groups{$group_id}->{name}</group>\n~;
     }
     print "\t\t</groups>\n";
 }
@@ -980,14 +1074,14 @@ sub _print_permissions {
         my $perms;
         next unless $perms = module::get_permissions($module_name);
         my $meta = module::get_meta($module_name);
-        print "\t\t\t<module id=\"$module_name\" name=\"$meta->{name}\">\n";
+        print qq~\t\t\t<module id="$module_name" name="$meta->{name}">\n~;
         for my $perm (keys %{$perms}) {
-            print "\t\t\t\t<permission id=\"$perm\" name=\"$perms->{$perm}->{name}\">\n";
+            print qq~\t\t\t\t<permission id="$perm" name="$perms->{$perm}->{name}">\n~;
             my $levels = $perms->{$perm}->{'levels'};
             my $id = 0;
             for my $level (@{$levels}) {
                 my $selected = (($group_id and $groups{$group_id}->{$perm} eq $id) or (defined $INPUT{$perm} and $INPUT{$perm} == $id)) ? ' selected="selected"' : '';
-                print "\t\t\t\t\t<level id=\"$id\"$selected>$level</level>\n";
+                print qq~\t\t\t\t\t<level id="$id"$selected>$level</level>\n~;
                 $id++;
             }
             print "\t\t\t\t</permission>\n";
@@ -997,9 +1091,23 @@ sub _print_permissions {
     print "\t\t</permissions>\n";
 }
 
-# ----------------------------------------------------------------------------
-# Public API
-# ----------------------------------------------------------------------------
+=xml
+    </section>
+
+    <section title="Public API">
+
+        <function name="require_permission">
+            <synopsis>
+                Throws a 'permission_error' exception if a user does not meet a certain permission requirement
+            </synopsis>
+            <note>
+                'minimum_level' defaults to 1.
+            </note>
+            <prototype>
+                user::require_permission(string permission_id[, int minimum_level])
+            </prototype>
+        </function>
+=cut
 
 sub require_permission {
     my $id    = shift;
@@ -1008,13 +1116,20 @@ sub require_permission {
     throw 'permission_error' unless $PERMISSIONS{$id} >= $level;
 }
 
-# Description:
-#   Adds a permission to the current site's user groups table
-# TODO:
-#   * Add a second, optional, parameter to set all current user groups to
-#     a particular level for this permissin (instead of zero).
-# Prototype:
-#   user::add_permission(string permission_id[, int default_permission_level])
+=xml
+        <function name="add_permission">
+            <synopsis>
+                Adds a permission to the current site's user groups table
+            </synopsis>
+            <note>
+                'default_permission_level' defaults to 0.
+            </note>
+            <prototype>
+                user::add_permission(string permission_id[, int default_permission_level])
+            </prototype>
+        </function>
+=cut
+
 sub add_permission {
     my $permission_id = shift;
     $DB->do("ALTER TABLE ${module_db_prefix}groups ADD `$permission_id` TINYINT(1) NOT NULL DEFAULT '0'");
@@ -1024,24 +1139,37 @@ sub add_permission {
     }
 }
 
-# Description:
-#   Deletes a permission from the current site's user groups table
-# Prototype:
-#   user::delete_permission(string permission_id)
+
+=xml
+        <function name="delete_permission">
+            <synopsis>
+                Deletes a permission from the current site's user groups table
+            </synopsis>
+            <prototype>
+                user::delete_permission(string permission_id)
+            </prototype>
+        </function>
+=cut
+
 sub delete_permission {
     my $permission = shift;
     $DB->do("ALTER TABLE ${module_db_prefix}groups DROP `$permission`");
 }
 
-# Description:
-#   Retreives a user's email address based on their ID.
-# Notes:
-#   * If no ID is specified, or the current user's ID is specified, the result
-#     is stored in $user::data{'email'} (as well as being returned);  if
-#     $user::data{'email'} is already defined, the query is skipped and it is
-#     simply returned.
-# Prototype:
-#   string = user::get_email([int user_id])
+=xml
+        <function name="get_email">
+            <synopsis>
+                Retreives a user's email address based on their ID.
+            </synopsis>
+            <note>
+                user_id defaults to the current user ID (if any), and if fetching the current user's email, adds it to the %USER hash.
+            </note>
+            <prototype>
+                string = user::get_email([int user_id])
+            </prototype>
+        </function>
+=cut
+
 sub get_email {
 
     # fetch a particular user's email
@@ -1059,6 +1187,17 @@ sub get_email {
     }
 }
 
+=xml
+        <function name="get_name">
+            <synopsis>
+                Retreives a user's name based on their ID.
+            </synopsis>
+            <prototype>
+                string = user::get_name(int user_id)
+            </prototype>
+        </function>
+=cut
+
 sub get_name {
     my $user_id = shift;
     my $query = $DB->query('SELECT name FROM users WHERE id = ? LIMIT 1', $user_id);
@@ -1066,10 +1205,17 @@ sub get_name {
     return $query->fetchrow_arrayref()->[0];
 }
 
-# Description:
-#   Returns an entry from the user table by id, email, or username
-# Prototype:
-#   hashref = user::find(int user_id or string username or string email)
+=xml
+        <function name="find">
+            <synopsis>
+                Returns an entry from the user table by id, email, or username
+            </synopsis>
+            <prototype>
+                hashref = user::find(int user_id or string username or string email)
+            </prototype>
+        </function>
+=cut
+
 sub find {
     my $find = shift;
 
@@ -1090,12 +1236,27 @@ sub find {
     return $query->fetchrow_hashref();
 }
 
+=xml
+        <function name="is_username_taken">
+            <synopsis>
+                Checks if a given username is taken
+            </synopsis>
+            <prototype>
+                bool = user::is_username_taken(string username)
+            </prototype>
+        </function>
+=cut
+
 sub is_username_taken {
     my $username = lc(shift());
     return $DB->query("SELECT COUNT(*) FROM users WHERE name_hash = ? LIMIT 1", hash::fast(lc $username))->fetchrow_arrayref()->[0];
 }
 
-# ----------------------------------------------------------------------------
-# Copyright Synthetic Designs 2006
-##############################################################################
+=xml
+    </section>
+</document>
+=cut
+
 1;
+
+# Copyright BitPiston 2008

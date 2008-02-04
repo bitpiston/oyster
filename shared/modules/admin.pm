@@ -48,8 +48,8 @@ sub menu {
     # configuration
     my $config_item;
     if ($PERMISSIONS{'admin_config'}) {
-        $config_item = menu::add_item('menu' => $menu, 'label' => 'Configuration', 'url' => "${ADMIN_BASE_URL}config/");
-        menu::add_item('parent' => $config_item, 'label' => 'Navigation', 'url' => "${ADMIN_BASE_URL}config/navigation/");
+        $config_item = menu::add_item('menu' => $menu, 'label' => 'Configuration', 'url' => $ADMIN_BASE_URL . 'config/');
+        menu::add_item('parent' => $config_item, 'label' => 'Navigation', 'url' => $ADMIN_BASE_URL . 'config/navigation/');
     } else {
         $config_item = menu::add_item('menu' => $menu, 'label' => 'Configuration', 'require_children' => 1);
     }
@@ -58,17 +58,17 @@ sub menu {
     # modules
     my $module_item;
     if ($PERMISSIONS{'admin_modules'}) {
-        $modules_item = menu::add_item('menu' => $menu, 'label' => 'Modules', 'url' => "${ADMIN_BASE_URL}modules/");
+        $modules_item = menu::add_item('menu' => $menu, 'label' => 'Modules', 'url' => $ADMIN_BASE_URL . 'modules/');
     } else {
         $modules_item = menu::add_item('menu' => $menu, 'label' => 'Modules', 'require_children' => 1);
     }
     event::execute('admin_center_modules_menu', $modules_item);
 
     # styles
-    menu::add_item('menu' => $menu, 'label' => 'Styles', 'url' => "${ADMIN_BASE_URL}styles/") if $PERMISSIONS{'admin_styles'};
+    menu::add_item('menu' => $menu, 'label' => 'Styles', 'url' => $ADMIN_BASE_URL . 'styles/') if $PERMISSIONS{'admin_styles'};
 
     # logs
-    menu::add_item('menu' => $menu, 'label' => 'Logs',   'url' => "${ADMIN_BASE_URL}logs/")   if $PERMISSIONS{'admin_logs'};
+    menu::add_item('menu' => $menu, 'label' => 'Logs',   'url' => $ADMIN_BASE_URL . 'logs/')   if $PERMISSIONS{'admin_logs'};
 
     # print the admin center menu
     throw 'permission_error' unless menu::print_xml($menu);
@@ -219,9 +219,9 @@ sub logs {
     user::require_permission('admin_logs');
 
     # contextual admin menu
-    my $item = menu::add_item('menu' => 'admin', 'label' => 'Logs', 'url' => "${ADMIN_BASE_URL}logs/");
-    menu::add_item('parent' => $item, 'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
-    menu::add_item('parent' => $item, 'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
+    my $item = menu::add_item('menu' => 'admin', 'label' => 'Logs', 'url' => $ADMIN_BASE_URL . 'logs/');
+    menu::add_item('parent' => $item, 'label' => 'Error',  'url' => $ADMIN_BASE_URL . 'logs/?view=error');
+    menu::add_item('parent' => $item, 'label' => 'Status', 'url' => $ADMIN_BASE_URL . 'logs/?view=status');
 
     # clear a log
     if ($INPUT{'clear'} eq 'error' or $INPUT{'clear'} eq 'status') {
@@ -260,8 +260,8 @@ sub logs {
         my $menu = 'admin_logs';
         menu::label($menu, 'Logs');
         menu::description($menu, 'Logs can contain useful information about your site including simple status messages or fatal errors.');
-        menu::add_item('menu' => $menu, 'label' => 'Error',  'url' => "${ADMIN_BASE_URL}logs/?view=error");
-        menu::add_item('menu' => $menu, 'label' => 'Status', 'url' => "${ADMIN_BASE_URL}logs/?view=status");
+        menu::add_item('menu' => $menu, 'label' => 'Error',  'url' => $ADMIN_BASE_URL . 'logs/?view=error');
+        menu::add_item('menu' => $menu, 'label' => 'Status', 'url' => $ADMIN_BASE_URL . 'logs/?view=status');
         menu::print_xml($menu);
     }
 }
@@ -326,10 +326,10 @@ sub hook_request_end {
 event::register_hook('module_admin_menu', 'hook_module_admin_menu');
 sub hook_module_admin_menu {
     my $item = menu::add_item('menu' => 'admin', 'label' => 'Admin', 'url' => $ADMIN_BASE_URL, 'require_children' => 1);
-    menu::add_item('parent' => $item, 'label' => 'Configuration',    'url' => "${ADMIN_BASE_URL}config/")  if $PERMISSIONS{'admin_config'};
-    menu::add_item('parent' => $item, 'label' => 'Modules',          'url' => "${ADMIN_BASE_URL}modules/") if $PERMISSIONS{'admin_modules'};
-    menu::add_item('parent' => $item, 'label' => 'Styles',           'url' => "${ADMIN_BASE_URL}styles/")  if $PERMISSIONS{'admin_styles'};
-    menu::add_item('parent' => $item, 'label' => 'Logs',             'url' => "${ADMIN_BASE_URL}logs/")    if $PERMISSIONS{'admin_logs'};
+    menu::add_item('parent' => $item, 'label' => 'Configuration',    'url' => $ADMIN_BASE_URL . 'config/')  if $PERMISSIONS{'admin_config'};
+    menu::add_item('parent' => $item, 'label' => 'Modules',          'url' => $ADMIN_BASE_URL . 'modules/') if $PERMISSIONS{'admin_modules'};
+    menu::add_item('parent' => $item, 'label' => 'Styles',           'url' => $ADMIN_BASE_URL . 'styles/')  if $PERMISSIONS{'admin_styles'};
+    menu::add_item('parent' => $item, 'label' => 'Logs',             'url' => $ADMIN_BASE_URL . 'logs/')    if $PERMISSIONS{'admin_logs'};
 }
 
 # called when the admin menu is printed (after the module admin menu)

@@ -37,7 +37,9 @@ Setting Up an Oyster Development Environment
     Oyster requires the following perl modules: DBI, DBD::mysql, Digest::JHash,
     Time::HiRes, and Digest::SHA.  XML::LibXML and XML::LibXSLT are also
     also recommended (they are used for server-side XSLT), but the ssxslt module
-    will automatically disable itself if they are not found.
+    will automatically disable itself if they are not found.  Digest::SHA and
+    Digest::JHash are not required, but recommended for high traffic sites.
+    Time::HiRes usually comes with Perl.
 
     To check if you have these modules installed, type:
     `perl -Mmodulenamehere -e "print qq{success\n}"`
@@ -54,13 +56,6 @@ Setting Up an Oyster Development Environment
     `pkg_add -r p5-DBD-mysql`
     `pkg_add -r p5-Digest-JHash`
     `pkg_add -r p5-Digest-SHA`
-
-    Notes: Digest::JHash is optional; if it is not present, Digest::SHA will
-    be used.  Digest::JHash is highly recommended for production environments.
-    Digest::SHA is optional; if it is not present, Oyster has a backup bundled
-    with it -- however, the pure-perl version of Digest::SHA that Oyster uses
-    as a fallback is quite slow, it is not recommended for use in production
-    environments.  Time::HiRes usually comes with Perl.
 * Get a fresh SVN checkout:
   `svn co svn://bitpiston.com/oyster oyster`
 * Navigate to the shared directory:

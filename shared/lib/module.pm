@@ -99,6 +99,9 @@ sub order_by_dependencies {
             Retreives the latest revision available for a module
         </synopsis>
         <note>
+            returns 0 if no revisions.pl file is available
+        </note>
+        <note>
             throws a 'perl_error' exception on failure
         </note>
         <prototype>
@@ -110,7 +113,8 @@ sub order_by_dependencies {
 sub get_latest_revision {
     my $module_id = shift;
     my $filename  = "./modules/$module_id/revisions.pl";
-    throw 'perl_error' => "Revision file does not exist '$filename'." unless -e $filename;
+    #throw 'perl_error' => "Revision file does not exist '$filename'." unless -e $filename;
+    return 0 unless -e $filename;
     my $ret = do $filename;
     unless ($ret) {
         throw 'perl_error' => "Couldn't parse revision file '$filename': $@" if $@;

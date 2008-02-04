@@ -1,0 +1,157 @@
+Module Creation Walkthrough
+
+This document outlines the steps I used to create a real Oyster module.  It
+is by no means a comprehensive module guide, but it does show the basics to
+getting a module up and running.
+
+The Essentials
+
+Each module has several files that provide meta data to Oyster.  These
+files reside in 'shared/modules/your_module_id/'.
+
+meta.pl
+    This is the only required file, its job is to provide Oyster with basic
+    meta data about your module.  It does one thing, returns a hash reference
+    containing that data.
+
+    The basic prototype for meta.pl is:
+
+    {
+        'name' => string your_module's_proper_name,
+        ['description' => string some_description_of_your_module,]
+        ['required' => bool true_if_this_module_cannot_be_disabled,] # assumed false
+        # a list of modules required by this one, be careful not to create circular dependencies;
+        # 'oyster' is implicit, there's no need to list that under required modules.
+        ['requires' => arrayref required_module_ids,]
+    }
+
+permissions.pl
+    This file closely integrates with the user module to describe a module's
+    permissions.  Like meta.pl, this file does one thing, returns a hash
+    reference containing that data.
+
+    Each key in that has is the id of a permission, it should be prefixed
+    with 'your_module_id_'.  The value of each key is a hash reference
+    containing information about that particular permission;  primarily the
+    name and various levels for it.
+
+    The basic prototype for permissions.pl is:
+
+    {
+        'mymoduleid_permission_id' => {
+            'name' => string proper_name_of_this_permission,
+            # the levels arrayref should contain strings describing each level
+            # the array index is the numerical id for that level
+            'levels' => arrayref levels,
+        },
+    }
+
+revisions.pl
+    This file is significantly different than the previous two;
+    rather than simply providing meta data, it provides code to
+    install and update a module.
+
+    It is not mandatory, and for quick and dirty modules that
+    you do not intend to distribute, there is little reason to
+    creative a revisions file.
+
+    The basic prototype for revisions.pl is:
+
+    package mymoduleid::revisions;
+
+    $revision[int revision_id]{'up'}{'shared'} = sub {
+        # code that should be executed once per oyster installation
+    };
+
+    $revision[int revision_id]{'up'}{'site'} = sub {
+        # code that should be executed for each site
+    };
+
+    1;
+
+The Meat of Your Module
+
+    Besides the basic meta data and revisions files, each module also has
+    a .pm file that stores the actual code associated with that module.
+    This file resides at 'shared/modules/your_module_id.pm'.
+
+    Beyond the standard perl requirement that this file return a true
+    value, there is no Oyster-imposed requirements on this file.
+
+My Module
+
+    Now that we've briefly covered the basics, I'm going to walk you
+    through the process of creating a real module.  The first step is
+    deciding what it will do.
+
+    I initially planned on launching the Oyster alpha site as a simple
+    static xhtml web site, but this tutorial provided the perfect
+    opportunity to write a simple module to run the alpha web site. So,
+    I'm going to create a very quick and dirty content module.  It will  
+
+    My meta.pl:
+    {
+        'name'     => 'Quick and Dirty Content',
+        'requires' => ['user'],
+    }
+
+    I'll be using some basic user permissions, so I should put 'user' as a
+    required module.
+
+    My permissions.pl:
+    {
+        'qdcontent_admin' => {
+            'name'   => 'Can create, edit, and delete pages.',
+            'levels' => ['No', 'Yes'],
+        },
+    }
+
+    My revisions.pl:
+    package qdcontent::revisions;
+
+    $revisions[1]{'up'}{'shared'} = sub {
+        module::register('qdcontent');
+    };
+
+    $revisions[1]{'up'}{'site'} = sub {
+        module::enable('qdcontent');
+        user::add_permission('qdcontent_admin');
+        url::register('url' => '(.+)', 'module' => 'qdcontent', 'function' => 'view_page', 'regex' => 1);
+    };
+
+    1;
+
+    All of the commands used above are documented in their respective
+    libraries: <link to module/user documentation>, <link to lib/module documentation>
+    A more comprehensive guide on the update utility and revisions can be
+    found at <link to script/update documentation>.
+
+    Next comes my module's .pm file.  Quick and Dirty Content will be using a
+    regular expression url, instead of the standard exact-match url.  Regex
+    urls are lower in priority, so exact matches will take precedence.  Regex
+    urls also pass anything caught by ()'s as arguments to their function.
+
+    package qdcontent;
+    
+    # use oyster libraries
+    use oyster 'library';
+    use exceptions
+    
+    # use modules
+    use user;
+    
+    sub view_page {
+        my $url = shift;
+
+        # if an xsl file exists for this url, use it!
+        if (-e $module_path . $url . '.xsl') {
+            style::include_template($url);
+        }
+
+        # otherwise, throw a 404
+        else {
+            throw 'request_404';
+        }
+    }
+
+    1;
