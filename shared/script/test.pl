@@ -24,6 +24,8 @@ test_dir('');
 # print totals
 print_totals();
 
+print $stderr;
+
 # functions
 
 # prints a summary of test results
@@ -116,11 +118,29 @@ sub run_test {
     if ($test->{'skip'}) {
         print "    [ Skipped ]\n";
     } else {
-        my $test_file = './tmp/test.tmp';
+        my $test_file  = './tmp/test.tmp';
+        my $error_file = './tmp/test.error';
         open my $fh, '>', $test_file or die "Error creating temporary test file: $!";
         print $fh $test->{'source'};
-        my $output = `perl $test_file$test->{'args'}`;
-        $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
+        my $output = `perl $test_file$test->{'args'} 2>$error_file`;
+        if (-e $error_file) {
+            local $/ = 1;
+            open my $errfh, '<', $error_file or die "Error reading test error file: $!";
+            my $error = <$errfh>;
+            chomp($error);
+            if (length $error) {
+                print "    An error occured while running the test:\n";
+                print $error . "\n";
+                $test->{'result'} = 0;
+            }
+            else {
+                $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
+            }
+            close $errfh;
+            unlink $error_file;
+        } else {
+            $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
+        }
         print $test->{'result'} ? "    [ Success ]\n" : "    ! Failure !\n" ;
         close $fh;
         unlink $test_file;
