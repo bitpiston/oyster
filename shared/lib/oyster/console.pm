@@ -49,7 +49,7 @@ sub start {
         catch 'db_error', with {
             my $error = shift;
             chomp($error);
-            print "Database Error:\n$error\n" . exceptions::trace() . "\n";
+            print "Database Error:\n$error\n".  exceptions::trace() . "\n";
             abort();
         }
         catch 'permission_error', with {
@@ -137,8 +137,10 @@ sub help {
     print "  login               Log in instead of being a Guest\n";
     print "  request(string url) Emulate a request to a given url\n";
     print "  restart             Restarts the console\n";
-    print "  search(string)      Searches the code base for a given string,\n";
-    print "                      this is interpretted as a regular expression.\n";
+    print "  search(string)      Searches the code base for a given string, this\n";
+    print "                      is interpretted as a regular expression.\n";
+    print "  module_urls(string) Returns the perl code necessary to register all\n";
+    print "                      urls currently registered to a given module.";
     print "Note:\n";
     print "  Multi-line commands can be created by appending \\ to the end of any line.\n";
     print "\n";
@@ -162,6 +164,7 @@ sub module_urls {
     while (my $url = $query->fetchrow_hashref()) {
         print qq~url::register('url' => '$url->{url}', 'module' => '$url->{module}', 'function' => '$url->{function}', 'title' => '$url->{title}');\n~;
     }
+    return;
 }
 
 1;

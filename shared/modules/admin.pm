@@ -21,6 +21,9 @@ use user;
             <synopsis>
                 The main administration center menu
             </synopsis>
+            <note>
+                This is registered to the url 'admin'.
+            </note>
             <section title="Events">
                 <dl>
                     <dt>admin_center_config_menu</dt>
@@ -79,6 +82,9 @@ sub menu {
             <synopsis>
                 General site/global configuration options
             </synopsis>
+            <note>
+                This is registered to the url 'admin/config'.
+            </note>
         </function>
 =cut
 
@@ -127,10 +133,80 @@ sub config {
 }
 
 =xml
+        <function name="config_navigation">
+            <synopsis>
+                Manages the order of navigation items
+            </synopsis>
+            <note>
+                This is registered to the url 'admin/config/navigation'.
+            </note>
+        </function>
+=cut
+
+sub config_navigation {
+    user::require_permission('admin_config');
+    style::include_template('config_navigation');
+
+    # validate parent url ID
+    my $parent = 0;
+    if ($INPUT{'parent'}) {
+       throw 'validation_error' => 'Invalid parent ID.' unless $DB->query("SELECT COUNT(*) FROM ${DB_PREFIX}urls WHERE id = ? and show_nav_link = '1' LIMIT 1", $INPUT{'parent'})->fetchrow_arrayref()->[0] == 1;
+       $parent = $INPUT{'parent'};
+    }
+
+    # move a url
+    if (exists $INPUT{'move'}) {
+        throw 'validation_error' => 'Invalid direction.' unless ($INPUT{'dir'} eq 'up' or $INPUT{'dir'} eq 'down');
+
+        # fetch urls to manipulate and validate the move url ID
+        my $query = $DB->query("SELECT id FROM ${DB_PREFIX}urls WHERE parent_id = ? and show_nav_link = '1' ORDER BY nav_priority DESC", $parent);
+        my @urls;
+        my $url_index;
+        while (my $url = $query->fetchrow_arrayref()) {
+            push @urls, $url->[0];
+            $url_index = $#urls if $url->[0] == $INPUT{'move'};
+        }
+        throw 'validation_error' => 'Invalid url ID.'                                 unless grep /^\Q$INPUT{move}\E$/, @urls;
+        throw 'validation_error' => 'The selected URL cannot be moved down any more.' if ($INPUT{'dir'} eq 'down' and $url_index == $#urls);
+        throw 'validation_error' => 'The selected URL cannot be moved up any more.'   if ($INPUT{'dir'} eq 'up'   and $url_index == 0);
+
+        # move the url
+        if ($INPUT{'dir'} eq 'down') {
+            splice(@urls, $url_index, 2, $urls[ $url_index + 1 ], $urls[ $url_index ]);
+        } else {
+            splice(@urls, $url_index - 1, 2, $urls[ $url_index ], $urls[ $url_index - 1 ]);
+        }
+
+        # update the urls with their new priorities
+        my $update_query = $DB->prepare("UPDATE ${DB_PREFIX}urls SET nav_priority = ? WHERE id = ?");
+        my $priority = @urls * 10;
+        for my $url_id (@urls) {
+            $update_query->execute($priority, $url_id);
+            $priority -= 10;
+        }
+
+        # print a confirmation
+        # Should this print anything or should the page update be enough?
+    }
+
+    # fetch urls to manage
+    my $query = $DB->query("SELECT id, title, url FROM ${DB_PREFIX}urls WHERE parent_id = ? and show_nav_link = '1' ORDER BY nav_priority DESC", $parent);
+
+    print qq~\t<admin action="config_navigation" parent="$parent">\n~;
+    while (my $url = $query->fetchrow_hashref()) {
+        print qq~\t\t<url id="$url->{id}" title="$url->{title}" url="$url->{url}" />\n~;
+    }
+    print "\t</admin>\n";
+}
+
+=xml
         <function name="modules">
             <synopsis>
                 Allows you to manage installed modules
             </synopsis>
+            <note>
+                This is registered to the url 'admin/modules'.
+            </note>
             <todo>
                 Either explicitely require the restarting of Oyster for changes to take effect or at least warn the user that dynamic module unloading may not work.
             </todo>
@@ -212,6 +288,9 @@ sub modules {
             <synopsis>
                 Allows you to view the error and status logs
             </synopsis>
+            <note>
+                This is registered to the url 'admin/logs'.
+            </note>
         </function>
 =cut
 
@@ -271,6 +350,9 @@ sub logs {
             <synopsis>
                 Allows you to manage installed styles
             </synopsis>
+            <note>
+                This is registered to the url 'admin/styles'.
+            </note>
         </function>
 =cut
 
