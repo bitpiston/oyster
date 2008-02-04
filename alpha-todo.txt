@@ -110,5 +110,5 @@ TODO
 
 - docs:
 	& xml/xslt conventions
-	- module creation walkthrough
+	& module creation walkthrough
 & Spec out the new admin module and begin writing it

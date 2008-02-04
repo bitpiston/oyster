@@ -14,6 +14,11 @@ package oyster::script::test;
 
 # this purposefully does NOT use the oyster environment! otherwise, we couldn't test it.
 
+# parse command line args
+# TODO: something better than this
+our %args;
+$args{'d'} = $ARGV[1] if $ARGV[0] eq '-d';
+
 # variables
 our @tests; # hashref with meta data of each test with some extra variables
             # added
@@ -25,7 +30,7 @@ print "Beginning Test Suite...\n";
 test_dir('');
 
 # print totals
-print_totals();
+print_totals() unless exists $args{'d'};
 
 # functions
 
@@ -73,7 +78,7 @@ sub test_dir {
     my $tests_path = "${full_path}tests/";
     if (-d $tests_path) {
         opendir(my $tests_dir, $tests_path) or die "Error reading test directory '$tests_path':\n$!\n";
-        print "\nTesting Directory: $path\n\n";
+        print "\nTesting Directory: $path\n\n" unless exists $args{'d'};
         while (my $file = readdir($tests_dir)) {
             next unless $file =~ /\.test$/o;
 
@@ -113,8 +118,27 @@ sub test_dir {
 
 sub run_test {
     my $test = shift;
+    if (exists $args{'d'}) {
+        if ($args{'d'} == scalar @tests + 1) {
+            print "### SOURCE ########################\n";
+            chomp($test->{'source'});
+            print $test->{'source'} . "\n";
+            print "### EXPECTED OUTPUT ###############\n";
+            print $test->{'output'} . "\n";
+            print "### OUTPUT ########################\n";
+            my $test_file  = './tmp/test.tmp';
+            open my $fh, '>', $test_file or die "Error creating temporary test file: $!";
+            print $fh $test->{'source'};
+            close $fh;
+            print `perl $test_file$test->{'args'}`;
+            unlink $test_file;
+            exit;
+        }
+        push(@tests, $test);
+        return;
+    }
 
-    print "  Running '$test->{name}'...\n";
+    print "  Running '$test->{name}' (#" . scalar @tests + 1 .")...\n";
     print "    $test->{description}\n" if length $test->{'description'};
     if ($test->{'skip'}) {
         print "    [ Skipped ]\n";
