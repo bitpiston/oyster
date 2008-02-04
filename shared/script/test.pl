@@ -24,7 +24,7 @@ our @tests; # hashref with meta data of each test with some extra variables
             # added
 
 # introduction
-print "Beginning Test Suite...\n";
+print "Beginning Test Suite...\n" unless exists $args{'d'};
 
 # iterate through directories and populate test data
 test_dir('');
@@ -120,6 +120,8 @@ sub run_test {
     my $test = shift;
     if (exists $args{'d'}) {
         if ($args{'d'} == scalar @tests + 1) {
+            print "Diagnosing '$test->{name}' (#" . scalar @tests + 1 .")...\n";
+            print "  $test->{description}\n" if length $test->{'description'};
             print "### SOURCE ########################\n";
             chomp($test->{'source'});
             print $test->{'source'} . "\n";
