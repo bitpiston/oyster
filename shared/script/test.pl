@@ -6,6 +6,9 @@
     <todo>
         A 'how to' doc for creating tests.
     </todo>
+    <todo>
+        Use IPC::Open3 instead of `` to run tests and redirect STDERR.
+    </todo>
 =cut
 package oyster::script::test;
 
@@ -23,8 +26,6 @@ test_dir('');
 
 # print totals
 print_totals();
-
-print $stderr;
 
 # functions
 
@@ -122,6 +123,7 @@ sub run_test {
         my $error_file = './tmp/test.error';
         open my $fh, '>', $test_file or die "Error creating temporary test file: $!";
         print $fh $test->{'source'};
+        close $fh;
         my $output = `perl $test_file$test->{'args'} 2>$error_file`;
         if (-e $error_file) {
             local $/ = 1;
@@ -142,7 +144,6 @@ sub run_test {
             $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
         }
         print $test->{'result'} ? "    [ Success ]\n" : "    ! Failure !\n" ;
-        close $fh;
         unlink $test_file;
     }
     push(@tests, $test);
