@@ -23,7 +23,7 @@ sub start {
     my $buffer = '';
     while (print "#>" and my $line = <STDIN>) {
         chomp($line);
-        if ($line =~ s!/$!!) {
+        if ($line =~ s!\\$!!) {
             $buffer .= "$line\n";
             next;
         }
