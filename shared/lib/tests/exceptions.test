@@ -4,11 +4,7 @@
         'description' => 'Testing basic exception handling.',
         'output'      => '1',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use exceptions;
@@ -23,11 +19,7 @@ END_SOURCE
         'description' => 'Testing exception catching.',
         'output'      => '1',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use exceptions;
@@ -45,13 +37,7 @@ END_SOURCE
         'description' => 'Testing all features of exceptions and throws all kinds of weird cases in.',
         'output'      => '1ac',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
-
-            use oyster 'test';
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use exceptions;

@@ -118,6 +118,7 @@ sub test_dir {
 
 sub run_test {
     my $test = shift;
+    $test->{'source'} = preprocess_test_source($test->{'source'});
     if (exists $args{'d'}) {
         if ($args{'d'} == scalar @tests + 1) {
             print "Diagnosing '$test->{name}' (#" . scalar @tests + 1 .")...\n";
@@ -173,6 +174,17 @@ sub run_test {
         unlink $test_file;
     }
     push(@tests, $test);
+}
+
+sub preprocess_test_source {
+    my $source = shift;
+
+    $source =~ s~^#!CONFIG_PREAMBLE~BEGIN {
+    our \$config = eval { require './config.pl' };
+    die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: \$@" if \$@;
+}~o;
+
+    return $source;
 }
 
 =xml
