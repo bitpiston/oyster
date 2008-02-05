@@ -17,11 +17,10 @@ use exceptions;
 # Initialization
 #
 
-our ($disable_ssxslt, $xml_parser, $xslt_parser, %styles, %style_parse_times);
+our ($disable_ssxslt, $xml_parser, $xslt_parser, %styles, %style_parse_times, $loaded);
 
 # load module
-event::register_hook('load', 'hook_load');
-sub hook_load {
+sub load {
 
     # server side xml/xslt libraries
     eval {
@@ -38,10 +37,7 @@ sub hook_load {
     $xml_parser  = XML::LibXML->new();
     $xslt_parser = XML::LibXSLT->new();
 
-    # load all enabled-styles' styles
-    #for my $style_id (keys %style::styles) {
-    #    _parse_server_base($style_id);
-    #}
+    $loaded = 1;
 }
 
 # ----------------------------------------------------------------------------
@@ -72,6 +68,8 @@ sub hook_request_init {
 event::register_hook('request_finish', 'hook_request_finish', -110);
 sub hook_request_finish {
     return unless exists $REQUEST{'server_side_xslt'};
+
+    load() unless $loaded;
 
     my $buffer = buffer::end_clean();
     $buffer =~ s/^.+\n.+\n//; # strip first two lines out (xml version and stylesheet)
