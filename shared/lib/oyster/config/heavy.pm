@@ -58,6 +58,8 @@ sub end {
         $combined_config->{'site_id'}     = $ENV{'oyster_site_id'};
         $combined_config->{'shared_path'} = $oyster::config::shared_path;
         $combined_config->{'site_path'}   = $oyster::config::sites_path . $combined_config->{'site_id'} . '/';
+        $combined_config->{'tmp_path'}    = $combined_config->{'shared_path'} . 'tmp/';
+        $combined_config->{'db_prefix'}   = $combined_config->{'site_id'} . '_';
         # possible values: MSWin32, MSWin64, linux, hpux, solaris, darwin, freebsd, openbsd, otherwise should either die or issue a warning
         if ($^O eq 'MSWin32' or $^O eq 'MSWin64') { # TODO: this is a pretty basic test... add more possiblities
             $combined_config->{'os'}      = 'windows';

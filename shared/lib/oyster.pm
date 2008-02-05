@@ -181,7 +181,7 @@ sub import {
 
 sub load {
     *CONFIG = shift; # alias %CONFIG to the configuration hash passed in, so that the program calling load() gets the full config
-    %options = @_;
+    my %options = @_;
 
     # append misc other values to %CONFIG
     $CONFIG{'tmp_path'}  = './tmp/';

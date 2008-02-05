@@ -634,8 +634,8 @@ sub admin_edit_group {
         # add the database entry
         my @set;
         for my $module_id (keys %module::loaded) {
-            my $perms;
-            next unless $perms = module::get_permissions($module_id);
+            my $perms = get_module_permissions($module_id);
+            next unless $perms;
             for my $perm (keys %{$perms}) { push @set, "$perm = $INPUT{$perm}" }
         }
         push @set, 'name = ' . $DB->quote($name);
@@ -689,7 +689,7 @@ sub admin_create_group {
         # add the database entry
         my (@update_fields, @update_values);
         for my $module_id (keys %module::loaded) {
-            my $perms = module::get_permissions($module_id);
+            my $perms = get_module_permissions($module_id);
             next unless $perms;
             for my $perm (keys %{$perms}) {
                 push(@update_fields, $perm);
@@ -1071,8 +1071,8 @@ sub _print_permissions {
     my $group_id = shift;
     print "\t\t<permissions>\n";
     for my $module_name (keys %module::loaded) {
-        my $perms;
-        next unless $perms = module::get_permissions($module_name);
+        my $perms = get_module_permissions($module_name);
+        next unless $perms;
         my $meta = module::get_meta($module_name);
         print qq~\t\t\t<module id="$module_name" name="$meta->{name}">\n~;
         for my $perm (keys %{$perms}) {
@@ -1129,6 +1129,19 @@ sub require_permission {
             </prototype>
         </function>
 =cut
+
+sub add_permission_once {
+    my $permission_id = $_[0];
+    my $success = 1;
+    try {
+        $oyster::DB->query("SELECT $permission_id");
+    }
+    catch 'db_error', with {
+        $success = 0;
+        abort(1);
+    };
+    add_permission($permission_id, @_);
+}
 
 sub add_permission {
     my $permission_id = shift;
@@ -1251,6 +1264,37 @@ sub is_username_taken {
     my $username = lc(shift());
     return $DB->query("SELECT COUNT(*) FROM users WHERE name_hash = ? LIMIT 1", hash::fast(lc $username))->fetchrow_arrayref()->[0];
 }
+
+=xml
+        <function name="get_module_permissions">
+            <synopsis>
+                Fetches permissions information about a module
+            </synopsis>
+            <note>
+                Returns undef if no permission information is available
+            </note>
+            <note>
+                throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
+            </note>
+            <prototype>
+                hashref = user::get_module_permissions(string module_id)
+            </prototype>
+        </function>
+=cut
+
+sub get_module_permissions {
+    my $module_id = shift;
+    my $filename = "./modules/${module_id}/permissions.pl";
+    return unless -e $filename;
+    my $permissions = do $filename;
+    unless ($permissions) {
+        throw 'perl_error' => "Couldn't parse permissions file '$filename': $@" if $@;
+        throw 'perl_error' => "Couldn't do permissions file '$filenamee': $!"   unless defined $permissions;
+        throw 'perl_error' => "Couldn't run permissions file '$filename'."      unless $permissions;
+    }
+    return $permissions;
+}
+
 
 =xml
     </section>

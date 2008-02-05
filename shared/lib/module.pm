@@ -118,7 +118,7 @@ sub get_latest_revision {
     my $ret = do $filename;
     unless ($ret) {
         throw 'perl_error' => "Couldn't parse revision file '$filename': $@" if $@;
-        throw 'perl_error' => "Couldn't do revision file '$filenamee': $!"    unless defined $ret;
+        throw 'perl_error' => "Couldn't do revision file '$filenamee': $!"   unless defined $ret;
         throw 'perl_error' => "Couldn't run revision file '$filename'."      unless $ret;
     }
     my $latest_rev = $#{ $module_id . '::revisions::revision' };
@@ -320,36 +320,6 @@ sub get_meta {
         throw 'perl_error' => "Couldn't run metadata file '$filename'."      unless $meta;
     }
     return $meta;
-}
-
-=xml
-    <function name="get_permissions">
-        <synopsis>
-            Fetches permissions information about a module
-        </synopsis>
-        <note>
-            Returns undef if no permission information is available
-        </note>
-        <note>
-            throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
-        </note>
-        <prototype>
-            hashref = module::get_permissions(string module_id)
-        </prototype>
-    </function>
-=cut
-
-sub get_permissions {
-    my $module_id = shift;
-    my $filename = "./modules/${module_id}/permissions.pl";
-    return unless -e $filename;
-    my $permissions = do $filename;
-    unless ($permissions) {
-        throw 'perl_error' => "Couldn't parse permissions file '$filename': $@" if $@;
-        throw 'perl_error' => "Couldn't do permissions file '$filenamee': $!"   unless defined $permissions;
-        throw 'perl_error' => "Couldn't run permissions file '$filename'."      unless $permissions;
-    }
-    return $permissions;
 }
 
 =xml

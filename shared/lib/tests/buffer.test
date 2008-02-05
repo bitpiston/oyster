@@ -12,12 +12,12 @@
 
             # use oyster libraries
             use buffer;
-			
+
             buffer::start();
-		print "Rails --";
-		print " crippling";
-		print " hobos and";
-		print " programmers.";
+                print "Rails --";
+                print " crippling";
+                print " hobos and";
+                print " programmers.";
             buffer::end();
 END_SOURCE
     },
@@ -34,10 +34,10 @@ END_SOURCE
 
             # use oyster libraries
             use buffer;
-			
+
             buffer::start();
-		print "Rails --";
-		print " crippling";
+                print "Rails --";
+                print " crippling";
                 buffer::start();
                     print " hobos and";
                     print " programmers.";
@@ -57,13 +57,13 @@ END_SOURCE
 
             # use oyster libraries
             use buffer;
-			
+
             buffer::start();
-		print "Rails --";
+                print "Rails --";
                 buffer::start();
-		print " crippling";
-		print " hobos and";
-		print " programmers.";
+                    print " crippling";
+                    print " hobos and";
+                    print " programmers.";
             buffer::end_all();
 END_SOURCE
     },
