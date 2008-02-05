@@ -1,0 +1,70 @@
+[
+    {
+        'name'        => 'Buffer Start and End',
+        'description' => 'Testing buffer start and end',
+        'output'      => 'Rails -- crippling hobos and programmers.',
+        'source'      => <<'END_SOURCE'
+            # configuration
+            BEGIN {
+                our $config = eval { require './config.pl' };
+                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+            }
+
+            # use oyster libraries
+            use buffer;
+			
+            buffer::start();
+		print "Rails --";
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
+            buffer::end();
+END_SOURCE
+    },
+    {
+        'name'        => 'Buffer Start With Stack and End Clean',
+        'description' => 'Testing buffer start and end clean',
+        'output'      => ' hobos and programmers.',
+        'source'      => <<'END_SOURCE'
+            # configuration
+            BEGIN {
+                our $config = eval { require './config.pl' };
+                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+            }
+
+            # use oyster libraries
+            use buffer;
+			
+            buffer::start();
+		print "Rails --";
+		print " crippling";
+                buffer::start();
+                    print " hobos and";
+                    print " programmers.";
+            print STDOUT (buffer::end_clean());
+END_SOURCE
+    },
+    {
+        'name'        => 'Buffer Start With Stack and End All',
+        'description' => 'Testing buffer start and end all',
+        'output'      => 'Rails -- crippling hobos and programmers.',
+        'source'      => <<'END_SOURCE'
+            # configuration
+            BEGIN {
+                our $config = eval { require './config.pl' };
+                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+            }
+
+            # use oyster libraries
+            use buffer;
+			
+            buffer::start();
+		print "Rails --";
+                buffer::start();
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
+            buffer::end_all();
+END_SOURCE
+    },
+]
