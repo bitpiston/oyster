@@ -32,12 +32,12 @@ $revision[2]{'up'}{'shared'} = sub {
 $revision[2]{'up'}{'site'} = sub {
 
     # Register URLs
-    url::register('url' => 'admin',                    'module' => 'admin', 'function' => 'menu',               'title' => 'Administration Center');
-    url::register('url' => 'admin/modules',            'module' => 'admin', 'function' => 'modules',            'title' => 'Manage Modules');
-    url::register('url' => 'admin/config',             'module' => 'admin', 'function' => 'config',             'title' => 'Configuration');
-    url::register('url' => 'admin/config/navigation',  'module' => 'admin', 'function' => 'config_navigation',  'title' => 'Configure Navigation');
-    url::register('url' => 'admin/logs',               'module' => 'admin', 'function' => 'logs',               'title' => 'Logs');
-    url::register('url' => 'admin/styles',             'module' => 'admin', 'function' => 'styles',             'title' => 'Manage Styles');
+    url::register('url' => 'admin',                   'module' => 'admin', 'function' => 'menu',               'title' => 'Administration Center');
+    url::register('url' => 'admin/modules',           'module' => 'admin', 'function' => 'modules',            'title' => 'Manage Modules');
+    url::register('url' => 'admin/config',            'module' => 'admin', 'function' => 'config',             'title' => 'Configuration');
+    url::register('url' => 'admin/config/navigation', 'module' => 'admin', 'function' => 'config_navigation',  'title' => 'Configure Navigation');
+    url::register('url' => 'admin/logs',              'module' => 'admin', 'function' => 'logs',               'title' => 'Logs');
+    url::register('url' => 'admin/styles',            'module' => 'admin', 'function' => 'styles',             'title' => 'Manage Styles');
 };
 
 1;

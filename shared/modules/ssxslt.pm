@@ -6,6 +6,9 @@
     <todo>
         Add alternatives to Gnome LibXSLT/XML
     </todo>
+    <todo>
+       Drop cached styles after a given time period, to prevent rarely-used styles from permanentally hogging memory.
+    </todo>
 =cut
 package ssxslt;
 

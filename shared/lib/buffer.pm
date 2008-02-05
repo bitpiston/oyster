@@ -57,6 +57,9 @@ sub start {
         <note>
             Does nothing if no buffers are active
         </note>
+        <warning>
+            If you call buffer::end() while another buffer is active, the result is printed to that buffer; to circumvent this behavior use print STDOUT buffer::end_clean();
+        </warning>
         <prototype>
             buffer::end()
         </prototype>

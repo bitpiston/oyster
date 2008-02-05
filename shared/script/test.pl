@@ -9,6 +9,12 @@
     <todo>
         Use IPC::Open3 instead of `` to run tests and redirect STDERR.
     </todo>
+    <todo>
+       Print success/failure on -d for convenience
+    </todo>
+    <todo>
+       Change success/failure to pass/fail
+    </todo>
 =cut
 package oyster::script::test;
 
@@ -128,12 +134,14 @@ sub run_test {
             print $test->{'source'} . "\n";
             print "### EXPECTED OUTPUT ###############\n";
             print $test->{'output'} . "\n";
-            print "### OUTPUT ########################\n";
+            print "### ACTUAL OUTPUT #################\n";
             my $test_file  = './tmp/test.tmp';
             open my $fh, '>', $test_file or die "Error creating temporary test file: $!";
             print $fh $test->{'source'};
             close $fh;
-            print `perl $test_file$test->{'args'}`;
+            my $output = `perl $test_file$test->{'args'}`;
+            chomp($output);
+            print $output . "\n";
             unlink $test_file;
             exit;
         }

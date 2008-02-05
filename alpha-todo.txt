@@ -112,3 +112,4 @@ TODO
 	& xml/xslt conventions
 	& module creation walkthrough
 & Spec out the new admin module and begin writing it
+- console should print to STDOUT explicitely in case buffers are active
