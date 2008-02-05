@@ -1,21 +1,16 @@
-##############################################################################
-# Server Side XSLT Module
-# ----------------------------------------------------------------------------
-# Does XSL processing using the Gnome LibXSLT libraries
-#
-# TODO:
-# * Update to new url mechanics
-# * Only parse styles if they are requested, will save memory on styles
-#   that are rarely used.
-# ----------------------------------------------------------------------------
-
-# declare module name
+=xml
+<document title="Server Side XSLT Module">
+    <synopsis>
+        Does XSL processing using the Gnome LibXSLT libraries
+    </synopsis>
+    <todo>
+        Add alternatives to Gnome LibXSLT/XML
+    </todo>
+=cut
 package ssxslt;
 
-# import oyster globals
+# import oyster libraries
 use oyster 'module';
-
-# load oyster libraries
 use exceptions;
 
 #
@@ -115,7 +110,10 @@ sub _parse_server_base {
     log::error("Error parsing style' $CONFIG{site_path}styles/$style_id/server_base.xsl': $@") if ($@ and $CONFIG{'debug'});
 }
 
-# ----------------------------------------------------------------------------
-# Copyright Synthetic Designs 2006
-##############################################################################
+=xml
+</document>
+=cut
+
 1;
+
+# Copyright BitPiston 2008
