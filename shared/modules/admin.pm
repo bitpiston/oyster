@@ -178,12 +178,16 @@ sub config_navigation {
         }
 
         # update the urls with their new priorities
+        # note: this re-assigns priorities even to unaffected navigation items -- there is no gaurantee they had a non-zero priority in the first place, so lets just be safe and assign them one
         my $update_query = $DB->prepare("UPDATE ${DB_PREFIX}urls SET nav_priority = ? WHERE id = ?");
         my $priority = @urls * 10;
         for my $url_id (@urls) {
             $update_query->execute($priority, $url_id);
             $priority -= 10;
         }
+
+        # reload navigation in all daemons
+        ipc::do('url', 'load_navigation');
 
         # print a confirmation
         # Should this print anything or should the page update be enough?
