@@ -131,7 +131,7 @@ sub unique {
 sub register_once {
     my %args = @_;
     my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
-    return if $oyster::DB->query("SELECT COUNT(*) FROM $url_table where url_hash = ?", hash::fast($args{'url'}))->fetchrow_arrayref()->[0] == 1;
+    return if $oyster::DB->query("SELECT COUNT(*) FROM $url_table where url_hash = ? LIMIT 1", hash::fast($args{'url'}))->fetchrow_arrayref()->[0] == 1;
     register(%args);
 }
 

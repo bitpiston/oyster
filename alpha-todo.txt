@@ -95,6 +95,8 @@ COMPLETED
 	* left them in, but added a <warning> that they are pre-alpha
 * probably shouldnt REQUIRE revisions.pl files for every module
 * move module::*permissions* stuff to user.pm
+* console should print to STDOUT explicitely in case buffers are active
+* bug with user::add_permission_once -- shouldn't that be 'unless $perm_exists' ?
 
 Finished but need testing
 
@@ -105,16 +107,15 @@ Finished but need testing
 * look over libraries (again) to ensure consistent naming conventions
 * better logic for getting content-type
 	* maybe build user rendering engine/version number detection into oyster instead of putting it into ssxslt.pm
+* bug with ssxslt, $disable_ssxslt is not set soon enough when lazily loading the libs
+* Spec out the new admin module and begin writing it
 
 TODO
 
 - docs:
 	& xml/xslt conventions
 	& module creation walkthrough
-& Spec out the new admin module and begin writing it
-- console should print to STDOUT explicitely in case buffers are active
+- make sure admin center contextual menus are consistent
+- possibly add user list to user admin
 - qdcontent (rename static_content?)
-- bug with ssxslt, $disable_ssxslt is not set soon enough when lazily loading the libs
-- bug with user::add_permission_once -- shouldn't that be 'unless $perm_exists' ?
-
-
+- ssxslt needs version checks for various rendering engines

@@ -440,11 +440,13 @@ sub request_handler {
             $REQUEST{'ua_render_engine'}         = 'gecko';
             $REQUEST{'ua_render_engine_version'} = $1;
         }
-        elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)+))?!o) {
+        #elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)+))?!o) {
+        elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)?))?!o) {
             $REQUEST{'ua_render_engine'}         = 'applewebkit';
             $REQUEST{'ua_render_engine_version'} = $1;
         }
-        elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)+))?!o) {
+        #elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)+))?!o) {
+        elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)?))?!o) {
             $REQUEST{'ua_render_engine'}         = 'konqueror';
             $REQUEST{'ua_render_engine_version'} = $1;
         }

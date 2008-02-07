@@ -63,6 +63,17 @@ sub hook_request_init {
 
     # capture output
     if (exists $REQUEST{'server_side_xslt'}) {
+
+        # if this is the first ssxslt request, load gnome's xml libs
+        unless ($loaded) {
+            load();
+            if ($disable_ssxslt) {
+                delete $REQUEST{'server_side_xslt'};
+                return;
+            }
+        }
+
+        # start an output buffer
         $REQUEST{'mime_type'} = $engine eq 'msie' ? 'text/html' : 'application/xhtml+xml'; # IE requires text/html for xhtml
         buffer::start();
     }
@@ -71,8 +82,6 @@ sub hook_request_init {
 event::register_hook('request_finish', 'hook_request_finish', -110);
 sub hook_request_finish {
     return unless exists $REQUEST{'server_side_xslt'};
-
-    load() unless $loaded;
 
     my $buffer = buffer::end_clean();
     $buffer =~ s/^.+\n.+\n//; # strip first two lines out (xml version and stylesheet)
@@ -98,7 +107,6 @@ sub hook_request_finish {
     }
 
     # print output
-    #http::header("Content-Type: $REQUEST{mime_type}", 1);
     print $styles{$style_id}->output_string($style);
     print "\n<!-- Full Execution Time (with server side XSLT): " . sprintf('%0.5f', Time::HiRes::gettimeofday() - $REQUEST{'start_time'}) . " sec -->\n";
 }

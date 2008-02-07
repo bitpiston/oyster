@@ -1134,13 +1134,13 @@ sub add_permission_once {
     my $permission_id = $_[0];
     my $perm_exists = 1;
     try {
-        $oyster::DB->query("SELECT $permission_id");
+        $oyster::DB->query("SELECT $permission_id FROM ${module_db_prefix}groups");
     }
     catch 'db_error', with {
         $perm_exists = 0;
         abort(1);
     };
-    add_permission($permission_id, @_) if $perm_exists;
+    add_permission($permission_id, @_) unless $perm_exists;
 }
 
 sub add_permission {
@@ -1151,7 +1151,6 @@ sub add_permission {
         $DB->query("UPDATE ${module_db_prefix}groups SET `$permission_id` = ?", $default_level);
     }
 }
-
 
 =xml
         <function name="delete_permission">

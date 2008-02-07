@@ -43,8 +43,10 @@ sub connect {
             'HandleError' =>
                 sub {
                     my $error = $DBI::errstr;
-                    $error .= "\nQuery [$database::current_query]\n" if defined $database::current_query;
-                    #throw 'db_error' => $DBI::errstr;
+                    if (defined $database::current_query) {
+                        $error .= "\nQuery [$database::current_query]\n";
+                        undef $database::current_query;
+                    }
                     throw 'db_error' => $error;
                 }
         }
