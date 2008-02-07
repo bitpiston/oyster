@@ -114,3 +114,7 @@ TODO
 & Spec out the new admin module and begin writing it
 - console should print to STDOUT explicitely in case buffers are active
 - qdcontent (rename static_content?)
+- bug with ssxslt, $disable_ssxslt is not set soon enough when lazily loading the libs
+- bug with user::add_permission_once -- shouldn't that be 'unless $perm_exists' ?
+
+
