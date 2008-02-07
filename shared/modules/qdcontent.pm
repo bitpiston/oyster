@@ -2,7 +2,7 @@ package qdcontent;
 
 # use oyster libraries
 use oyster 'library';
-use exceptions
+use exceptions;
 
 # use modules
 use user;
@@ -29,12 +29,12 @@ sub admin {
     
 }
 
-url::register_once('url' => 'admin/dqcontent/create', 'module' => 'qdcontent', 'function' => 'create');
+url::register_once('url' => 'admin/dqcontent/create', 'function' => 'create');
 sub create {
     
 }
 
-url::register_once('url' => 'admin/dqcontent/edit', 'module' => 'qdcontent', 'function' => 'edit');
+url::register_once('url' => 'admin/dqcontent/edit', 'function' => 'edit');
 sub edit {
     
 }

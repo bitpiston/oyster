@@ -1,6 +1,6 @@
 {
     'qdcontent_admin' => {
-        'name'   => 'Can create, edit, and delete pages.',
+        'name'   => 'Manage Pages',
         'levels' => ['No', 'Yes'],
     },
 }

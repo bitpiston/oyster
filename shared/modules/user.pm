@@ -1132,15 +1132,15 @@ sub require_permission {
 
 sub add_permission_once {
     my $permission_id = $_[0];
-    my $success = 1;
+    my $perm_exists = 1;
     try {
         $oyster::DB->query("SELECT $permission_id");
     }
     catch 'db_error', with {
-        $success = 0;
+        $perm_exists = 0;
         abort(1);
     };
-    add_permission($permission_id, @_);
+    add_permission($permission_id, @_) if $perm_exists;
 }
 
 sub add_permission {

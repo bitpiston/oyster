@@ -22,25 +22,27 @@
 				<dd><input type="text" id="name" name="name" value="{@name}" /></dd>
 			</dl>
 			<xsl:for-each select="permissions/module">
-				<fieldset>
-					<legend onclick="oyster.toggle_visibility('permissions_{@id}')"><xsl:value-of select="@name" /></legend>
-					<dl id="permissions_{@id}">
-						<xsl:for-each select="permission">
-							<dt><xsl:value-of select="@name" />:</dt>
-							<dd>
-								<select id="perm-{@id}" name="{@id}">
-									<xsl:for-each select="level">
-										<option>
-											<xsl:if test="@selected = 'selected'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>
-											<xsl:attribute name="value"><xsl:value-of select="@id" /></xsl:attribute>
-											<xsl:apply-templates />
-										</option>
-									</xsl:for-each>
-								</select>
-							</dd>
-						</xsl:for-each>
-					</dl>
-				</fieldset>
+				<xsl:if test="count(permission) &gt; 0">
+					<fieldset>
+						<legend onclick="oyster.toggle_visibility('permissions_{@id}')"><xsl:value-of select="@name" /></legend>
+						<dl id="permissions_{@id}">
+							<xsl:for-each select="permission">
+								<dt><xsl:value-of select="@name" />:</dt>
+								<dd>	
+									<select id="perm-{@id}" name="{@id}">
+										<xsl:for-each select="level">
+											<option>
+												<xsl:if test="@selected = 'selected'"><xsl:attribute name="selected">selected</xsl:attribute></xsl:if>
+												<xsl:attribute name="value"><xsl:value-of select="@id" /></xsl:attribute>
+												<xsl:apply-templates />
+											</option>
+										</xsl:for-each>	
+									</select>	
+								</dd>
+							</xsl:for-each>
+						</dl>
+					</fieldset>
+				</xsl:if>
 			</xsl:for-each>
 			<input type="submit" value="Save" /><br />
 		</div>
