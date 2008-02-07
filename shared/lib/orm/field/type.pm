@@ -1,8 +1,15 @@
 package orm::field::type;
 
 sub new {
-    my $class = shift;
-    return bless {}, $class;
+    my $class       = shift;
+    my %args        = @_;
+    my $obj         = bless {}, $class;
+
+    # set default value, if any
+    $obj->value($args{'default'}) if exists $args{'default'};
+
+    # return the object
+    return $obj;
 }
 
 sub value {
