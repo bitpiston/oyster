@@ -411,7 +411,7 @@ sub hook_request_end {
 # called when this module's admin menu is printed
 event::register_hook('module_admin_menu', 'hook_module_admin_menu');
 sub hook_module_admin_menu {
-    my $item = menu::add_item('menu' => 'admin', 'label' => 'Admin', 'url' => $ADMIN_BASE_URL, 'require_children' => 1);
+    my $item = menu::add_item('menu' => 'admin', 'label' => 'Admin Center', 'url' => $ADMIN_BASE_URL, 'require_children' => 1);
     menu::add_item('parent' => $item, 'label' => 'Configuration',    'url' => $ADMIN_BASE_URL . 'config/')  if $PERMISSIONS{'admin_config'};
     menu::add_item('parent' => $item, 'label' => 'Modules',          'url' => $ADMIN_BASE_URL . 'modules/') if $PERMISSIONS{'admin_modules'};
     menu::add_item('parent' => $item, 'label' => 'Styles',           'url' => $ADMIN_BASE_URL . 'styles/')  if $PERMISSIONS{'admin_styles'};
@@ -421,7 +421,7 @@ sub hook_module_admin_menu {
 # called when the admin menu is printed (after the module admin menu)
 event::register_hook('admin_menu', 'hook_admin_menu');
 sub hook_admin_menu {
-    menu::add_item('parent' => $_[0], 'label' => 'Admin', 'url' => $ADMIN_BASE_URL)
+    menu::add_item('parent' => $_[0], 'label' => 'Admin Center', 'url' => $ADMIN_BASE_URL)
         if ($REQUEST{'module'} ne 'admin' and
             ($PERMISSIONS{'admin_config'} or $PERMISSIONS{'admin_modules'} or $PERMISSIONS{'admin_styles'} or $PERMISSIONS{'admin_logs'}));
 }

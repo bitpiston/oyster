@@ -199,7 +199,7 @@ sub is_enabled {
 
 sub is_registered {
     my $module_id = shift;
-    return if $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $module_id)->fetchrow_arrayref()->[0];
+    return $oyster::DB->query("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $module_id)->fetchrow_arrayref()->[0];
 }
 
 =xml

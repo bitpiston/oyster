@@ -1017,7 +1017,7 @@ sub hook_admin_menu {
 # config menu
 event::register_hook('admin_center_config_menu', 'hook_admin_center_config_menu');
 sub hook_admin_center_config_menu {
-    menu::add_item('parent' => $_[0], 'label' => 'Users', 'url' => "${module_admin_base_url}config/") if $PERMISSIONS{'user_admin_config'};
+    menu::add_item('parent' => $_[0], 'label' => 'Users', 'url' => $module_admin_base_url . 'config/') if $PERMISSIONS{'user_admin_config'};
 }
 
 # modules menu

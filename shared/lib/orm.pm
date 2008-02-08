@@ -1,4 +1,16 @@
 
+package orm;
+
+use orm::model;
+use orm::field::type;
+use orm::field::type::sql::bool;
+use orm::field::type::sql::int;
+use orm::field::type::sql::varchar;
+
+1;
+
+__END__
+
 #
 # Base ORM Class
 #
