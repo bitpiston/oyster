@@ -165,7 +165,7 @@ sub import {
                 'load_config' determines whether additional configuration data should be loaded from the database.
             </note>
             <note>
-                'load_libs' does not actually determine whether libraries are loaded or not, but whether their load event routines are called.
+                'load_libs' does not determine whether libraries are imported or not, but whether their load event routines are called.
             </note>
             <note>
                 'load_request' determines whether Oyster should be prepared to serve page requests.

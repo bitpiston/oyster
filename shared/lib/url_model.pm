@@ -47,6 +47,14 @@ our $model = {
             'type' => 'orm::field::type::sql::bool',
         },
     },
+    'relationships' => {
+        'has_many' => {
+            'url' => {
+                # map of url fields to this ones
+                'parent_id' => {'this'  => 'id'},
+            },
+        },
+    },
 };
 
 1;

@@ -132,7 +132,7 @@ sub register_once {
     my %args = @_;
     my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
     return if $oyster::DB->query("SELECT COUNT(*) FROM $url_table where url_hash = ? LIMIT 1", hash::fast($args{'url'}))->fetchrow_arrayref()->[0] == 1;
-    register(%args);
+    goto &register;
 }
 
 sub register {
@@ -148,10 +148,10 @@ sub register {
         $update{$field} = $args{$field} if exists $args{$field};
     }
     $update{'show_nav_link'} .= '' if exists $update{'show_nav_link'}; # Pg requires strings for bools
-    #$update{'params'} = _parse_params_arg($args{'params'}) if exists $args{'params'}; # params doesn't have a default allow? have to allow null?
-    $update{'params'} = _parse_params_arg($args{'params'});
+    $update{'params'}         = _parse_params_arg($args{'params'});
 
     # required arguments
+    $args{'module'} = caller() unless exists $args{'module'};
     @update{ 'module', 'function' } = @args{ 'module', 'function' };
     $update{'url'}      = url::unique($args{'url'});
     $update{'url_hash'} = hash::fast($update{'url'});
@@ -162,7 +162,7 @@ sub register {
         delete $update{'show_nav_link'};
         delete $update{'nav_priority'};
         delete $update{'params'};
-        $args{'parent_id'} = 0;
+        $args{'parent_id'} = 0; # should regex urls be -1?
         $update{'regex'} = '1';
     }
 

@@ -94,7 +94,7 @@ sub hook_request_finish {
     my $style_id = $REQUEST{'style'};
 
     # reparse server_base.xsl if necessary
-    _parse_server_base($style_id) if (!exists $style_parse_times{$style_id} or ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id}));
+    _parse_server_base($style_id) if (!exists $styles{$style_id} or ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id}));
 
 # TODO: proper errors for the end user if something goes wrong
 # TODO: should be a debugging switch for the evals
