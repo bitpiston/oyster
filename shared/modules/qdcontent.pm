@@ -40,13 +40,11 @@ sub admin {
 url::register_once('url' => 'admin/dqcontent/create', 'function' => 'create');
 sub create {
     user::require_permission('qdcontent_admin');
-    
 }
 
 url::register_once('url' => 'admin/dqcontent/edit', 'function' => 'edit');
 sub edit {
     user::require_permission('qdcontent_admin');
-    
 }
 
 1;
