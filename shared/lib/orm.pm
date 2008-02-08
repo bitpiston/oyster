@@ -3,6 +3,9 @@ package orm;
 
 use orm::model;
 use orm::field::type;
+use orm::field::type::hash_fast;
+use orm::field::type::metadata;
+use orm::field::type::url;
 use orm::field::type::sql::bool;
 use orm::field::type::sql::int;
 use orm::field::type::sql::varchar;

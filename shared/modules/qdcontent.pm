@@ -7,6 +7,14 @@ use exceptions;
 # use modules
 use user;
 
+# use ORM models
+use url_model;
+
+#my $url = url->new('url' => 'foo');
+#use Data::Dumper;
+#print Dumper($url);
+#print Dumper($url->{'fields'}->{'url_hash'}->value());
+
 user::add_permission_once('qdcontent_admin');
 
 sub view_page {

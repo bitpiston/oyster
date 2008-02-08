@@ -338,7 +338,7 @@ sub _parse_params_arg {
 }
 
 =xml
-        <function name="delete">
+        <function name="unregister ">
             <synopsis>
                 Deletes a URL
             </synopsis>
@@ -346,7 +346,7 @@ sub _parse_params_arg {
                 This doesn't care if the url has any children!
             </note>
             <prototype>
-                bool = url::delete(string url)
+                bool = url::unregister(string url)
             </prototype>
             <todo>
                 his should return success/failure -- does Pg allow ->rows() on a delete query?
@@ -354,13 +354,13 @@ sub _parse_params_arg {
         </function>
 =cut
 
-sub delete {
+sub unregister {
     my $url = shift;
     $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ?", hash::fast($url));
 }
 
 =xml
-        <function name="delete_by_id">
+        <function name="unregister_by_id">
             <synopsis>
                 Deletes a URL, by id
             </synopsis>
@@ -368,7 +368,7 @@ sub delete {
                 This doesn't care if the url has any children!
             </note>
             <prototype>
-                bool = url::delete_by_id(int url_id)
+                bool = url::unregister_by_id(int url_id)
             </prototype>
             <todo>
                 This should return success/failure -- does Pg allow ->rows() on a delete query?
@@ -376,7 +376,7 @@ sub delete {
         </function>
 =cut
 
-sub delete_by_id {
+sub unregister_by_id {
     my $id = shift;
     $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE id = ?", $id);
 }

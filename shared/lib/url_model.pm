@@ -1,5 +1,6 @@
 package url;
 
+use orm;
 use base 'orm::model';
 
 our $model = {
@@ -42,6 +43,7 @@ our $model = {
             'type'     => 'orm::field::type::sql::int',
             'length'   => 8, # bits
             'unsigned' => 1,
+            'default'  => 0,
         },
         'show_nav_link' => {
             'type' => 'orm::field::type::sql::bool',

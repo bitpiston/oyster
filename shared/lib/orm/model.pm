@@ -1,5 +1,7 @@
 package orm::model;
 
+use exceptions;
+
 sub new {
     my $class = shift;
     my $model = ${ $class . '::model' };
@@ -7,9 +9,9 @@ sub new {
 
     # create fields
     my $model_fields = $model->{'fields'};
-    for my $field_id (keys %($model_fields}) {
+    for my $field_id (keys %{$model_fields}) {
         my $model_field = $model_fields->{$field_id};
-        $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($model_field);
+        $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
     }
 
     # set field values if any were specified
@@ -17,7 +19,7 @@ sub new {
         my %values     = @_;
         my $obj_fields = $obj->{'fields'};
         for my $field_id (keys %values) {
-            $obj_fields->{$field_id'}->value($values{$field_id});
+            $obj_fields->{$field_id}->value($values{$field_id});
         }
     }
 
@@ -52,7 +54,22 @@ sub delete {
     $DB->query("DELETE FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'}) if exists $obj->{'id'};
 
     # destroy the object
-    undef ${$obj};
+    undef %{$obj};
+}
+
+sub AUTOLOAD {
+    my $obj      = shift;
+    my ($method) = ($AUTOLOAD =~ /::(.+?)$/o);
+
+    # field objects
+    return $obj->{'fields'}->{$method} if exists $obj->{'fields'}->{$method};
+
+    # dynamic select
+    
+    # dynamic update
+
+    # nothing matched...
+    throw 'perl_error' => "Invalid dynamic method '$method' called on ORM object '" . ref($obj) . "'.";
 }
 
 1;
