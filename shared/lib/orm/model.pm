@@ -72,4 +72,8 @@ sub AUTOLOAD {
     throw 'perl_error' => "Invalid dynamic method '$method' called on ORM object '" . ref($obj) . "'.";
 }
 
+sub DESTROY {
+
+}
+
 1;
