@@ -386,12 +386,42 @@ sub request_pre {
             <prototype>
                 oyster::request_handler()
             </prototype>
+            <note>
+                <p>
+                    The output buffer used here is a necessary evil (the header
+                    must know which .xsl file to include, but that is not known
+                    until the action is executed). However, it is a
+                    vulnerability.  Perl cannot free memory back to the operating
+                    system once it has claimed it, so if the buffer becomes
+                    excessively large, the process will hog memory even after the
+                    buffer is cleared.
+                </p>
+                <p>
+                    This is possible to work around by wrapping your action in the
+                    following code:
+                    <example>
+                        # style::include() all necessary styles before doing this...
+                        buffer::end();
+                        print::header();
+                        # code here that may potentially print lots of xml
+                        buffer::start();
+                    </example>
+                </p>
+                <p>
+                    However, this will NOT help if the request requires SSXSLT.
+                    There is currently no way to work around this.
+                </p>
+            </note>
+            <todo>
+                Possibly make an option that will buffer to a file instead of
+                to memory.
+            </todo>
         </function>
 =cut
 
 sub request_handler {
 
-    # remember the time this request started (for some reason putting this with the rest of %REQUEST's declaration completely random times are spat out)
+    # remember the time this request started (for some reason putting this with the rest of %REQUEST's declaration causes completely random times to be spat out)
     my $start = Time::HiRes::gettimeofday();
 
     # handle the request
@@ -401,8 +431,8 @@ sub request_handler {
         %REQUEST = (
             'style'       => $CONFIG{'default_style'},  # the style to display this page with
             'templates'   => [],                        # a list of templates to use
-            'url'         => '',                        # join('/', @{$REQUEST{'path'})
-            'current_url' => {},                        # hashref of current url's data
+            'url'         => '',                        # the current url, without leading or trailing slashes
+            'current_url' => {},                        # hashref of current url's meta data
             'module'      => '',                        # the module that is being executed this request
             'action'      => '',                        # the action to execute in the selected module
             'params'      => [],                        # any parameters to pass to that action

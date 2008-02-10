@@ -27,6 +27,41 @@ sub new {
     return $obj;
 }
 
+sub get {
+    my $where;
+    my @where_values;
+    my @columns;
+    my $offset = 0;
+
+    # parse arguments
+    while (@_) {
+        my $arg = shift;
+
+        # where clauses
+        if ($arg eq 'where') {
+            #my $arg = shift;
+            #$where = shift @{$arg};
+            #@where_values = @{$arg};
+            @where_values = @{ shift() };
+            $where        = shift @where_values;
+        }
+
+        # offset
+        elsif ($arg eq 'offset') {
+            $offset = shift;
+        }
+
+        # the argument is a column name
+        else {
+            push @columns, $arg;
+        }
+    }
+
+    # prepare and execute the query
+    my $columns = @columns ? join(', ', @columns) : '*' ;
+    $oyster::DB->query("SELECT $columns FROM");
+}
+
 sub save {
     my $obj = shift;
 

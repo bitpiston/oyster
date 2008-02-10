@@ -57,7 +57,6 @@ sub edit {
     user::require_permission('qdcontent_admin');
 }
 
-
 #
 # Contextual Admin Menu
 #

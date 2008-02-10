@@ -7,11 +7,14 @@
     <todo>
         Rename to ob_?  There is more than one kind of buffer.
     </todo>
-    <section title="Implementation Details">
-        This actually only uses one buffer, but allows for multiple buffers
-        by keeping a stack of the length of that buffer each time a new one
-        is started.
-    </section>
+    <note>
+        This only captures output that is print'ed without a specific
+        filehandle.  For example
+        <example>print STDOUT "Hello World";</example>
+        would bypass any output buffer, but
+        <example>print "Hello World";</example>
+        would not.
+    </note>
 =cut
 
 package buffer;
@@ -155,6 +158,7 @@ sub end_all_clean {
     seek($buffer_fh, 0, 0);
 
     select $prev_select;
+    undef $prev_select;
 
     return $return;
 }

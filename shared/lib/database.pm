@@ -4,6 +4,9 @@
         Extensions to DBI functionality (mostly driver neutral access to insert_ids
         and prepared statements)
     </synopsis>
+    <todo>
+        BUG! All of the Pg/mysql conditionals in here use the oyster config, not the driver of the db connection they are operating on!
+    </todo>
 =cut
 
 package database;
@@ -15,21 +18,22 @@ our $current_query;
 push(@DBI::db::ISA, 'oyster::database::dbi::db');
 push(@DBI::st::ISA, 'oyster::database::dbi::st');
 
+sub handle_error {
+    my $error = $DBI::errstr;
+    if (defined $database::current_query) {
+        $error .= "\nQuery [$database::current_query]\n";
+        undef $database::current_query;
+    }
+    throw 'db_error' => $error;
+}
+
 =xml
     <function name="connect">
         <synopsis>
             Establishes a database connection and tells it to use Oyster exceptions.
         </synopsis>
-        <note>
-            If any arguments are undefined, they will be assumed from the Oyster
-            configuration.
-        </note>
-        <note>
-            If a ref is passed, will use that as the $DB object instead of creating
-            a new one.
-        </note>
         <prototype>
-            obj = database::connect([, driver => string driver][, host => string hostname][, user => string username][, password => string password][, database => string database])
+            obj = database::connect(, driver => string driver, host => string hostname, user => string username, password => string password, database => string database)
         </prototype>
     </function>
 =cut
@@ -37,18 +41,10 @@ push(@DBI::st::ISA, 'oyster::database::dbi::st');
 sub connect {
     my %args = @_;
     my $DB = DBI->connect(
-           "dbi:$args{driver}:dbname=$args{database};host=$args{host};port=$args{port}", $args{'user'}, $args{'password'}, {
-            'AutoCommit'  => 1,
+        "dbi:$args{driver}:dbname=$args{database};host=$args{host};port=$args{port}", $args{'user'}, $args{'password'},
+        {
             'RaiseError'  => 0,
-            'HandleError' =>
-                sub {
-                    my $error = $DBI::errstr;
-                    if (defined $database::current_query) {
-                        $error .= "\nQuery [$database::current_query]\n";
-                        undef $database::current_query;
-                    }
-                    throw 'db_error' => $error;
-                }
+            'HandleError' => \&database::handle_error,
         }
     ) or throw 'db_error' => "Could not establish database connection: $DBI::errstr";
     return $DB;
