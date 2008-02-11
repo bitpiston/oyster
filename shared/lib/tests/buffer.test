@@ -12,12 +12,12 @@
 
             # use oyster libraries
             use buffer;
-
+			
             buffer::start();
-                print "Rails --";
-                print " crippling";
-                print " hobos and";
-                print " programmers.";
+		print "Rails --";
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
             buffer::end();
 END_SOURCE
     },
@@ -34,10 +34,10 @@ END_SOURCE
 
             # use oyster libraries
             use buffer;
-
+			
             buffer::start();
-                print "Rails --";
-                print " crippling";
+		print "Rails --";
+		print " crippling";
                 buffer::start();
                     print " hobos and";
                     print " programmers.";
@@ -45,7 +45,7 @@ END_SOURCE
 END_SOURCE
     },
     {
-        'name'        => 'Buffer Start With Stack and End All',
+        'name'        => 'Two Buffer Stacks followed by Two End Alls',
         'description' => 'Testing buffer start and end all',
         'output'      => 'Rails -- crippling hobos and programmers.',
         'source'      => <<'END_SOURCE'
@@ -57,14 +57,85 @@ END_SOURCE
 
             # use oyster libraries
             use buffer;
-
+			
             buffer::start();
-                print "Rails --";
+		print "Rails --";
                 buffer::start();
-                    print " crippling";
-                    print " hobos and";
-                    print " programmers.";
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
             buffer::end_all();
+            buffer::end_all();           
+END_SOURCE
+    },
+        {
+        'name'        => 'Two Buffer Stacks followed by End Clean and End All',
+        'description' => 'Testing buffer start and end all',
+        'output'      => 'Rails -- crippling hobos and programmers.',
+        'source'      => <<'END_SOURCE'
+            # configuration
+            BEGIN {
+                our $config = eval { require './config.pl' };
+                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+            }
+
+            # use oyster libraries
+            use buffer;
+			
+            buffer::start();
+		print "Rails --";
+                buffer::start();
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
+            print buffer::end_clean();
+            buffer::end_all();           
+END_SOURCE
+    },
+    {
+        'name'        => 'Two Buffer Stacks followed by End All Clean',
+        'description' => 'Testing buffer start and end all',
+        'output'      => 'Rails -- crippling hobos and programmers.',
+        'source'      => <<'END_SOURCE'
+            # configuration
+            BEGIN {
+                our $config = eval { require './config.pl' };
+                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+            }
+
+            # use oyster libraries
+            use buffer;
+			
+            buffer::start();
+		print "Rails --";
+                buffer::start();
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
+            print buffer::end_all_clean();   
+END_SOURCE
+    },
+        {
+        'name'        => 'Two Buffer Stacks followed by End All',
+        'description' => 'Testing buffer start and end all',
+        'output'      => 'Rails -- crippling hobos and programmers.',
+        'source'      => <<'END_SOURCE'
+            # configuration
+            BEGIN {
+                our $config = eval { require './config.pl' };
+                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
+            }
+
+            # use oyster libraries
+            use buffer;
+			
+            buffer::start();
+		print "Rails --";
+                buffer::start();
+		print " crippling";
+		print " hobos and";
+		print " programmers.";
+            buffer::end_all;   
 END_SOURCE
     },
 ]
