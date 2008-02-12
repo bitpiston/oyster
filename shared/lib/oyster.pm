@@ -486,26 +486,36 @@ sub request_handler {
 
         # match the current url to an action
 
-        # fetch action from the database
-        $url::fetch_by_hash->execute(hash::fast($REQUEST{'url'}));
-        if ($url::fetch_by_hash->rows() == 1) {
-            my $params;
-            $REQUEST{'current_url'} = $url::fetch_by_hash->fetchrow_hashref();
+        # if the url is cached
+        if (exists $url::cache{ $REQUEST{'url'} }) {
+            $REQUEST{'current_url'} = $url::url_cache{ $REQUEST{'url'} };
             $REQUEST{'module'}      = $REQUEST{'current_url'}->{'module'};
             $REQUEST{'action'}      = $REQUEST{'current_url'}->{'function'};
             push @{$REQUEST{'params'}}, split(/\0/, $REQUEST{'current_url'}->{'params'}) if length $REQUEST{'current_url'}->{'params'}; # TODO: is this if necessary?
-        } else {
-            my $found_matching_regex_url = 0; # could remove this and just check for $REQUEST{'current_url'}
-            for my $url_regex (keys %url::regex_urls) {
-                next unless $REQUEST{'url'} =~ /$url_regex/; # should cache these
-                $REQUEST{'current_url'} = $url::regex_urls{$url_regex};
+        }
+
+        # fetch action from the database
+        else {
+            $url::fetch_by_hash->execute(hash::fast($REQUEST{'url'}));
+            if ($url::fetch_by_hash->rows() == 1) {
+                my $params;
+                $REQUEST{'current_url'} = $url::fetch_by_hash->fetchrow_hashref();
                 $REQUEST{'module'}      = $REQUEST{'current_url'}->{'module'};
                 $REQUEST{'action'}      = $REQUEST{'current_url'}->{'function'};
-                push @{$REQUEST{'params'}}, $1, $2, $3, $4, $5, $6, $7, $8, $9;
-                $found_matching_regex_url = 1;
-                last;
+                push @{$REQUEST{'params'}}, split(/\0/, $REQUEST{'current_url'}->{'params'}) if length $REQUEST{'current_url'}->{'params'}; # TODO: is this if necessary?
+            } else {
+                my $found_matching_regex_url = 0; # could remove this and just check for $REQUEST{'current_url'}
+                for my $url_regex (keys %url::regex_urls) {
+                    next unless $REQUEST{'url'} =~ /$url_regex/; # should cache these
+                    $REQUEST{'current_url'} = $url::regex_urls{$url_regex};
+                    $REQUEST{'module'}      = $REQUEST{'current_url'}->{'module'};
+                    $REQUEST{'action'}      = $REQUEST{'current_url'}->{'function'};
+                    push @{$REQUEST{'params'}}, $1, $2, $3, $4, $5, $6, $7, $8, $9;
+                    $found_matching_regex_url = 1;
+                    last;
+                }
+                throw 'request_404' unless $found_matching_regex_url == 1;
             }
-            throw 'request_404' unless $found_matching_regex_url == 1;
         }
 
         # set the handler if this is an ajax request
@@ -570,8 +580,13 @@ sub request_handler {
 
 sub request_cleanup {
 
+    url::update_cache() if $CONFIG{'mode'} eq 'fastcgi';
+
     # signal the request_cleanup hook
     event::execute('request_cleanup');
+
+    # clean up after any cgi stuff
+    cgi::end();
 
     # clear the request hash
     %REQUEST = ();

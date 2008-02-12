@@ -30,6 +30,27 @@ sub _load {
     load_navigation();
 }
 
+our (%cache, %cache_last_hit_time);
+
+sub update_cache {
+    my $url = $oyster::REQUEST{'url'};
+
+    # if the current url is not cached, cache it
+    $cache{ $url } = $oyster::REQUEST{'current_url'} unless exists $cache{ $url };
+
+    # update the url's last hit time
+    $cache_last_hit_time{ $url } = time();
+
+    # if the cache list is at it's limit, remove the last-used item
+    if (keys %cache == 15) {
+        my @sorted_urls = sort {
+            $cache_last_hit_time{ $a } <=> $cache_last_hit_time{ $b }
+        } keys %cache_last_hit_time;
+        delete $cache{ $sorted_urls[0] };
+        delete $cache_last_hit_time{ $sorted_urls[0] };
+    }
+}
+
 =xml
     <section title="General URL Functions">
 

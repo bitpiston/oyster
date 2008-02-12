@@ -80,8 +80,6 @@ sub start {
     </function>
 =cut
 
-event::register_hook('request_cleanup', 'end', 100);
-
 sub end {
 
     # delete temporary files
