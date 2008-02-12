@@ -4,11 +4,7 @@
         'description' => 'Testing buffer start and end',
         'output'      => 'Rails -- crippling hobos and programmers.',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use buffer;
@@ -26,11 +22,7 @@ END_SOURCE
         'description' => 'Testing buffer start and end clean',
         'output'      => ' hobos and programmers.',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use buffer;
@@ -49,11 +41,7 @@ END_SOURCE
         'description' => 'Testing buffer start and end all',
         'output'      => 'Rails -- crippling hobos and programmers.',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use buffer;
@@ -73,11 +61,7 @@ END_SOURCE
         'description' => 'Testing buffer start and end all',
         'output'      => 'Rails -- crippling hobos and programmers.',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use buffer;
@@ -97,11 +81,7 @@ END_SOURCE
         'description' => 'Testing buffer start and end all',
         'output'      => 'Rails -- crippling hobos and programmers.',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use buffer;
@@ -120,11 +100,7 @@ END_SOURCE
         'description' => 'Testing buffer start and end all',
         'output'      => 'Rails -- crippling hobos and programmers.',
         'source'      => <<'END_SOURCE'
-            # configuration
-            BEGIN {
-                our $config = eval { require './config.pl' };
-                die "Could not read ./config.pl, are you sure you are executing this script from your shared directory: $@" if $@;
-            }
+#!CONFIG_PREAMBLE
 
             # use oyster libraries
             use buffer;
