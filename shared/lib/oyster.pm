@@ -488,7 +488,7 @@ sub request_handler {
 
         # if the url is cached
         if (exists $url::cache{ $REQUEST{'url'} }) {
-            $REQUEST{'current_url'} = $url::url_cache{ $REQUEST{'url'} };
+            $REQUEST{'current_url'} = $url::cache{ $REQUEST{'url'} };
             $REQUEST{'module'}      = $REQUEST{'current_url'}->{'module'};
             $REQUEST{'action'}      = $REQUEST{'current_url'}->{'function'};
             push @{$REQUEST{'params'}}, split(/\0/, $REQUEST{'current_url'}->{'params'}) if length $REQUEST{'current_url'}->{'params'}; # TODO: is this if necessary?
