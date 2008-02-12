@@ -12,8 +12,7 @@
 
 package event;
 
-my %events;
-my %hooks;
+my (%events, %hooks);
 
 =xml
     <function name="register_hook">
@@ -32,15 +31,10 @@ my %hooks;
         </prototype>
         <example>
             event::register_hook('load', 'do_some_stuff', 64);
-        </example>
-        <example>
             sub do_some_stuff {
                 log::status('Did some stuff...');
             }
         </example>
-        <todo>
-            Rename register_hook
-        </todo>
     </function>
 =cut
 
