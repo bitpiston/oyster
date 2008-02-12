@@ -55,16 +55,16 @@ sub print_totals {
         push(@failures, $i) unless $test->{'result'};
         $i++;
     }
-    my $num_skipped   = $num_tests - $num_tested;
-    my $num_failures  = scalar @failures;
-    my $num_successes = $num_tested - $num_failures;
+    my $num_skipped = $num_tests - $num_tested;
+    my $num_failed  = scalar @failures;
+    my $num_passed  = $num_tested - $num_failed;
 
     # print results
     print "  $num_tests total tests\n\n";
     print "  $num_tested (" . (sprintf('%.2f', $num_tested / $num_tests) * 100) . "\%) tests run\n";
     print "  $num_skipped (" . (sprintf('%.2f', $num_skipped / $num_tests) * 100) . "\%) tests skipped \n";
-    print "  $num_successes (" . (sprintf('%.2f', $num_successes / $num_tested) * 100) . "\%) successes\n";
-    print "  $num_failures (" . (sprintf('%.2f', $num_failures / $num_tested) * 100) . "\%) failures\n";
+    print "  $num_passed (" . (sprintf('%.2f', $num_passed / $num_tested) * 100) . "\%) passed\n";
+    print "  $num_failed (" . (sprintf('%.2f', $num_failed / $num_tested) * 100) . "\%) failed\n";
     for my $i (@failures) {
         my $test = $tests[$i];
         print "    $test->{name}\n";
@@ -125,6 +125,7 @@ sub test_dir {
 sub run_test {
     my $test = shift;
     $test->{'source'} = preprocess_test_source($test->{'source'});
+
     if (exists $args{'d'}) {
         if ($args{'d'} == scalar @tests + 1) {
             print "Diagnosing '$test->{name}' (#" . scalar @tests + 1 .")...\n";
@@ -152,7 +153,7 @@ sub run_test {
     print "  Running '$test->{name}' (#" . scalar @tests + 1 .")...\n";
     print "    $test->{description}\n" if length $test->{'description'};
     if ($test->{'skip'}) {
-        print "    [ Skipped ]\n";
+        print "    - Skipped -\n";
     } else {
         my $test_file  = './tmp/test.tmp';
         my $error_file = './tmp/test.error';
@@ -178,7 +179,7 @@ sub run_test {
         } else {
             $test->{'result'} = $output eq $test->{'output'} ? 1 : 0 ;
         }
-        print $test->{'result'} ? "    [ Success ]\n" : "    ! Failure !\n" ;
+        print $test->{'result'} ? "    [ Pass ]\n" : "    ! Failure !\n" ;
         unlink $test_file;
     }
     push(@tests, $test);
