@@ -10,12 +10,7 @@ use exceptions;
 
 our %styles;
 
-event::register_hook('load_lib', '_style_load');
-sub _style_load {
-
-    # load style data
-    _load();
-}
+event::register_hook('load_lib', '_load');
 
 =xml
     <section tile="Public API">
@@ -58,7 +53,7 @@ sub include_template {
                 style::register(string style_id, string style_name)
             </prototype>
             <note>
-                THis does nothing (and returns undef) if the given style ID is already registered.
+                This does nothing (and returns undef) if the given style ID is already registered.
             </note>
         </function>
 =cut
@@ -181,10 +176,10 @@ sub is_registered {
 =cut
 
 sub print_header {
-    return if $oyster::REQUEST{'printed_header'};
+    return if exists $oyster::REQUEST{'printed_header'};
 
     # get the stylesheet's url and compile it if necessary
-    my $stylesheet = (style::compile($oyster::REQUEST{'style'}, @{$oyster::REQUEST{'templates'}}))[0];
+    my $stylesheet = (compile($oyster::REQUEST{'style'}, @{$oyster::REQUEST{'templates'}}))[0];
 
     # set the default mime type
     $oyster::REQUEST{'mime_type'} = 'application/xml' unless length $oyster::REQUEST{'mime_type'};
@@ -212,7 +207,7 @@ sub print_header {
 
     print "<oyster$attrs>\n";
 
-    $oyster::REQUEST{'printed_header'} = 1;
+    $oyster::REQUEST{'printed_header'} = undef;
 }
 
 =xml
@@ -231,10 +226,10 @@ sub print_header {
 =cut
 
 sub print_footer {
-    return if $oyster::REQUEST{'printed_footer'};
+    return if exists $oyster::REQUEST{'printed_footer'};
     print "\t<benchmark>" . sprintf('%.5f', Time::HiRes::gettimeofday() - $oyster::REQUEST{'start_time'}) . "</benchmark>\n" if $oyster::CONFIG{'debug'};
     print "</oyster>\n";
-    $oyster::REQUEST{'printed_footer'} = 1;
+    $oyster::REQUEST{'printed_footer'} = undef;
 }
 
 =xml
@@ -346,6 +341,7 @@ sub compile {
     return "${style_url}base.xsl", "${style_path}base.xsl" unless @stylesheets;
 
     # ensure that all of the stylesheets passed are compiled
+    # TODO: a lot of this code is only needed if the dynamic style must be generated, make it conditional
     my (@dyn_style_name, $includes);
     for my $file (@stylesheets) {
         $includes .= "<xsl:include href=\"${style_url}modules/$file\" />\n";

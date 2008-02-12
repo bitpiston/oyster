@@ -447,7 +447,7 @@ sub request_handler {
         }
 
         # get url
-        if (length($ENV{'REQUEST_URI'}) > 1) { # 1 because it's always at least a /
+        if (length $ENV{'REQUEST_URI'} > 1) { # 1 because it's always at least a /
             $REQUEST{'url'} = $ENV{'REQUEST_URI'};
             $REQUEST{'url'} =~ s!^/!!o; # remove leading /
             $REQUEST{'url'} =~ s!/$!!o; # remove trailing /

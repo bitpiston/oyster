@@ -3,6 +3,11 @@
     <synopsis>
         These functions allow the creation of events that modules can hook into.
     </synopsis>
+    <todo>
+        The execute* functions are called a lot! Could possibly gain significant speed
+        if we used AUTOLOAD and generated a function to run each event dynamically
+        with only the code necessary for that event.
+    </todo>
 =cut
 
 package event;
@@ -138,13 +143,13 @@ sub destroy {
 
 sub execute {
     my $event = shift;
-    return if ($oyster::REQUEST{"events_$event"} and $event =~ /^request_/); # dont execute the same event twice in the same request
+    return if (exists $oyster::REQUEST{"events_$event"} and $event =~ /^request_/); # dont execute the same event twice in the same request
     my @args  = @_;
     my @return_values;
     for my $func (@{$events{$event}}) {
         push @return_values, &{$func}(@args);
     }
-    $oyster::REQUEST{"events_$event"} = 1;
+    $oyster::REQUEST{"events_$event"} = undef;
     return @return_values;
 }
 

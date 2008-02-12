@@ -797,6 +797,20 @@ sub validate_xhtml {
     }
 }
 
+sub print_module_start {
+    my $module = @_ ? shift : caller() ;
+    print "\t<$module>\n";
+}
+
+sub print_var {
+
+}
+
+sub print_module_end {
+    my $module = @_ ? shift : caller() ;
+    print "\t</$module>\n";
+}
+
 # Copyright BitPiston 2008
 1;
 =xml
