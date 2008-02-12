@@ -12,6 +12,62 @@ use exceptions;
 our %loaded; # currently loaded modules
 
 =xml
+    <function name="print_start_xml">
+        <synopsis>
+            A convenience function to print "\t<module_id>\n"
+        </synopsis>
+        <note>
+            If the optional 'module_id' argument is not defined, the calling package will be assumed.
+        </note>
+        <note>
+            If the optional 'action_id' argument is not defined, the calling sub routine will be assumed.
+        </note>
+        <note>
+            If only one optional argument is present, it is assumed to be the module name
+        </note>
+        <prototype>
+            module::print_start_xml([string module_id][, string action_id]);
+        </prototype>
+    </function>
+    <function name="print_end_xml">
+        <synopsis>
+            A convenience function to print "\t</module_id>\n"
+        </synopsis>
+        <note>
+            This uses the module name of the last call to module::print_start_xml()
+        </note>
+        <prototype>
+            module::print_end_xml();
+        </prototype>
+    </function>
+=cut
+
+{
+my $module;
+sub print_start_xml {
+    my $action;
+    if (@_ == 1) {
+        $module = shift;
+        $action = (caller(1))[3];
+        substr($action, 0, rindex($action, ':') + 1, '');
+    } elsif (@_ == 2) {
+        $module = shift;
+        $action = shift;
+    } else {
+        $module = (caller(0))[0];
+        $action = (caller(1))[3];
+        substr($action, 0, rindex($action, ':') + 1, '');
+    }
+    print qq~\t<$module action="$action">\n~;
+}
+
+sub print_end_xml {
+    print "\t</$module>\n";
+    undef $module;
+}
+}
+
+=xml
     <function name="get_available">
         <synopsis>
             Retreives a list of all available modules.

@@ -797,18 +797,29 @@ sub validate_xhtml {
     }
 }
 
-sub print_module_start {
-    my $module = @_ ? shift : caller() ;
-    print "\t<$module>\n";
-}
-
 sub print_var {
-
-}
-
-sub print_module_end {
-    my $module = @_ ? shift : caller() ;
-    print "\t</$module>\n";
+    my $name   = shift;
+    my $value  = shift;
+    my $depth  = shift || 2;
+    my $indent = "\t" x $depth;
+    my $type   = ref $value;
+    if ($type eq '') {
+        print "$indent<$name>" . entities($value) . "</$name>\n";
+    }
+    elsif ($type eq 'HASH') {
+        print "$indent<$name>\n";
+        for my $key (keys %{$value}) {
+            print_var($key, $value->{$key}, $depth + 1);
+        }
+        print "$indent</$name>\n";
+    }
+    elsif ($type eq 'ARRAY') {
+        print "$indent<$name>\n";
+        for my $item (@{$value}) {
+            print_var("item", $item, $depth + 1);
+        }
+        print "$indent</$name>\n";
+    }
 }
 
 # Copyright BitPiston 2008

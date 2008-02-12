@@ -43,13 +43,20 @@ sub admin {
 
     # populate the admin menu
     menu::add_item('menu' => $menu, 'label' => 'Create a Page', 'url' => $module_admin_base_url . 'create/');
-    
+
     menu::print_xml($menu);
 }
 
 url::register_once('url' => 'admin/qdcontent/create', 'function' => 'create');
 sub create {
     user::require_permission('qdcontent_admin');
+    style::include_template('create');
+
+    module::print_start_xml();
+    xml::print_var('url',     $INPUT{'url'});
+    xml::print_var('title',   $INPUT{'title'});
+    xml::print_var('content', $INPUT{'content'});
+    module::print_end_xml();
 }
 
 url::register_once('url' => 'admin/qdcontent/edit', 'function' => 'edit');
