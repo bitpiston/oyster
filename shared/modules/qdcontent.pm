@@ -8,7 +8,7 @@ use exceptions;
 use user;
 
 # use ORM models
-use url_model;
+#use url_model;
 
 #my $url = url->new('url' => 'foo');
 #use Data::Dumper;
@@ -18,11 +18,11 @@ use url_model;
 user::add_permission_once('qdcontent_admin');
 
 sub view_page {
-    my $url = shift;
+    my $filename = shift;
 
     # if an xsl file exists for this url, use it!
-    if (-e $module_path . $url . '.xsl') {
-        style::include_template($url);
+    if (-e $module_path . $filename . '-page.xsl') {
+        style::include_template($filename . '-page');
         print qq~\t<qdcontent />\n~;
     }
 
@@ -52,11 +52,48 @@ sub create {
     user::require_permission('qdcontent_admin');
     style::include_template('create');
 
-    module::print_start_xml();
-    xml::print_var('url',     $INPUT{'url'});
-    xml::print_var('title',   $INPUT{'title'});
-    xml::print_var('content', $INPUT{'content'});
-    module::print_end_xml();
+    # if the form was submitted, validate and save the page
+    my $success = try {
+
+        # validate url
+        $INPUT{'url'} =~ s!^/!!; # trim leading/trailing slashes
+        $INPUT{'url'} =~ s!/$!!;
+        throw 'validation_error' => 'A url is required.' unless length $INPUT{'url'};
+        my $filename = $INPUT{'url'};
+        $filename =~ s!/!-!g;
+
+        # validate title
+        throw 'validation_error' => 'A title is required.' unless length $INPUT{'title'};
+
+        # everything validated, save it
+        file::write($module_path . $filename . '-page.xsl', $INPUT{'template'});
+
+        # register the url to view it
+        my ($url_id, $url) = url::register(
+            'url'           => $INPUT{'url'},
+            'title'         => xml::entities($INPUT{'title'}),
+            'show_nav_link' => $INPUT{'show_nav_link'},
+            'module'        => 'qdcontent',
+            'function'      => 'view_page',
+            'params'        => $filename
+        );
+
+        # print a confirmation
+        confirmation('A new page was successfully created.',
+            'View the Page'       => $BASE_URL . $url . '/',
+            'Create Another Page' => $module_admin_base_url . 'create/',
+        );
+    } if $ENV{'REQUEST_METHOD'} eq 'POST';
+
+    # print the create page form
+    unless ($success) {
+        module::print_start_xml();
+        xml::print_var('url',           $INPUT{'url'});
+        xml::print_var('show_nav_link', $INPUT{'show_nav_link'});
+        xml::print_var('title',         $INPUT{'title'});
+        xml::print_var('template',      $INPUT{'template'});
+        module::print_end_xml();
+    }
 }
 
 url::register_once('url' => 'admin/qdcontent/edit', 'function' => 'edit');

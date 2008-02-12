@@ -16,8 +16,8 @@ event::register_hook('load_lib', '_ipc_load');
 sub _ipc_load {
     my $query = $oyster::DB->query("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
     $last_fetch_id = $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
-    $insert_ipc    = $oyster::DB->prepare("INSERT INTO ipc (module, function, args, daemon, site) VALUES (?, ?, ?, '$oyster::daemon_id', ?)");
-    $fetch_ipc     = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::daemon_id'");
+    $insert_ipc    = $oyster::DB->prepare("INSERT INTO ipc (module, function, args, daemon, site) VALUES (?, ?, ?, '$oyster::CONFIG{daemon_id}', ?)");
+    $fetch_ipc     = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::CONFIG{daemon_id}'");
 }
 
 =xml
@@ -111,21 +111,3 @@ sub update {
 =xml
 </document>
 =cut
-
-__END__
-
-ipc
-    id
-    module
-    function
-    args
-    daemon
-    site
-
-#sub _parse_message_args {
-#    local $" = "\0"; # use tricky string interpolation instead of join
-#
-#    return "@{$_[0]}"      if ref $_[0] eq 'ARRAY';
-#    return "@{[%{$_[0]}]}" if ref $_[0] eq 'HASH';
-#    return "@_";
-#}

@@ -934,7 +934,7 @@ sub hook_request_init {
     }
 
     # if a session id is set
-    if ($USER{'session'}) {
+    if (length $USER{'session'}) {
 
         # fetch user data from the db
         $select_user_by_session->execute($USER{'session'});
@@ -957,11 +957,11 @@ sub hook_request_init {
         }
 
         # if the user has a session id, but it's invalid, delete the cookie so this session is not checked again
-        cgi::set_cookie('session', '', 0, $config{'cookie_path'}, $config{'cookie_domain'}) unless $USER{'id'};
+        cgi::set_cookie('session', '', 0, $config{'cookie_path'}, $config{'cookie_domain'}) unless exists $USER{'id'};
     }
 
     # if the user is trying to log out
-    _logout_init() if ($REQUEST{'module'} eq 'user' and $REQUEST{'action'} eq 'logout' and $USER{'id'});
+    _logout_init() if ($REQUEST{'module'} eq 'user' and $REQUEST{'action'} eq 'logout' and exists $USER{'id'});
 
     # set default user data
     %USER = (
@@ -971,7 +971,7 @@ sub hook_request_init {
         'session'     => '',
         'date_format' => $datetime::formats[0],
         'time_offset' => 0,
-    ) unless $USER{'id'};
+    ) unless exists $USER{'id'};
 
     # alias user permissions to an easier-to-reach place
     *PERMISSIONS = \%{$groups{$USER{'group'}}};

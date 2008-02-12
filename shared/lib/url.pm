@@ -168,8 +168,9 @@ sub register {
     for my $field (qw(title show_nav_link nav_priority parent_id)) {
         $update{$field} = $args{$field} if exists $args{$field};
     }
-    $update{'show_nav_link'} .= '' if exists $update{'show_nav_link'}; # Pg requires strings for bools
-    $update{'params'}         = _parse_params_arg($args{'params'});
+    #$update{'show_nav_link'} .= '' if exists $update{'show_nav_link'}; # Pg requires strings for bools
+    $update{'show_nav_link'} = '1' if $update{'show_nav_link'}; # Pg requires strings for bools
+    $update{'params'}        = _parse_params_arg($args{'params'});
 
     # required arguments
     $args{'module'} = caller() unless exists $args{'module'};
@@ -286,7 +287,7 @@ sub update {
     for my $field (qw(title module function show_nav_link nav_priority)) {
         $update{$field} = $args{$field} if exists $args{$field} and $args{$field} ne $url{$field};
     }
-    $update{'show_nav_link'} .= '' if exists $update{'show_nav_link'}; # Pg requires strings for bools
+    $update{'show_nav_link'} = '1' if $update{'show_nav_link'}; # Pg requires strings for bools
     if (exists $args{'params'}) {
         $update{'params'} = _parse_params_arg($args{'params'});
         delete $update{'params'} if $update{'params'} eq $url{'params'};
