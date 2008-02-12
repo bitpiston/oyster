@@ -364,11 +364,11 @@ sub compile {
         $dyn_name =~ s/\//_/og;
         push @dyn_style_name, $dyn_name;
         if (_needs_compilation($style, $file)) {
-            my $template;
-            $template .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
-            $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
-            $template .= _compile_style($style, "modules/$file") . "\n";
-            $template .= "</xsl:stylesheet>\n";
+            my $template =
+                "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
+              . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
+              .  _compile_style($style, "modules/$file") . "\n"
+              .  "</xsl:stylesheet>\n";
             my ($module_id) = ($file =~ m!^(.+?)/!);
             file::mkdir("${style_path}modules/$module_id/");
             file::write("${style_path}modules/$file", $template);
@@ -379,12 +379,12 @@ sub compile {
     # create a dynamic style to combine all of the passed styles (if necessary)
     my $dyn_name = join('-', @dyn_style_name) . '.xsl';
     if (!-e "${style_path}dynamic/$dyn_name") {
-        my $dyn_style;
-        $dyn_style .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
-        $dyn_style .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
-        $dyn_style .= "<xsl:include href=\"${style_url}base.xsl\" />\n\n";
-        $dyn_style .= "$includes\n";
-        $dyn_style .= "</xsl:stylesheet>\n";
+        my $dyn_style =
+            "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
+          . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
+          . "<xsl:include href=\"${style_url}base.xsl\" />\n\n"
+          . "$includes\n"
+          . "</xsl:stylesheet>\n";
         mkdir("${style_path}dynamic/") unless -d "${style_path}dynamic/";
         file::write("${style_path}dynamic/$dyn_name", $dyn_style);
     }
