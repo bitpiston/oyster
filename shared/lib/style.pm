@@ -329,19 +329,33 @@ sub compile {
     my @stylesheets = @_;
     my $style_path  = "$oyster::CONFIG{site_path}styles/$style/";
     my $style_url   = "$oyster::CONFIG{styles_url}$style/";
+
+    # if dynamic style compilation is disabled
+    unless ($oyster::CONFIG{'compile_styles'}) {
+
+        # return the url/path to the base layout if no stylesheets were specified
+        return "${style_url}base.xsl", "${style_path}base.xsl" unless @stylesheets;
+
+        # otherwise return the url to the dynamic style
+        my $dyn_name = join('-', map { s!\.xsl$!!og; s!/!_!og } @stylesheets) . '.xsl';
+        return "${style_url}dynamic/$dyn_name", "${style_path}dynamic/$dyn_name";
+    }
+
     my $recompile_server_base = 0;
 
     # compile the base layout for this style if necessary
-    if ($oyster::CONFIG{'compile_styles'} and (!-e "${style_path}base.xsl" or file::mtime("${style_path}source/layout.xsl") > file::mtime("${style_path}base.xsl") or file::mtime("./styles/source.xsl") > file::mtime("${style_path}base.xsl"))) {
+    if (!-e "${style_path}base.xsl" or file::mtime("${style_path}source/layout.xsl") > file::mtime("${style_path}base.xsl") or file::mtime("./styles/source.xsl") > file::mtime("${style_path}base.xsl")) {
         file::write("${style_path}base.xsl", _compile_style($style, "styles/source.xsl"));
         $recompile_server_base = 1;
     }
 
     # return the url/path to the base layout if no stylesheets were specified
-    return "${style_url}base.xsl", "${style_path}base.xsl" unless @stylesheets;
+    unless (@stylesheets) {
+        file::write("${style_path}server_base.xsl", style::_compile_style($style, "styles/source.xsl", 1)) if $recompile_server_base == 1;
+        return "${style_url}base.xsl", "${style_path}base.xsl";
+    }
 
     # ensure that all of the stylesheets passed are compiled
-    # TODO: a lot of this code is only needed if the dynamic style must be generated, make it conditional
     my (@dyn_style_name, $includes);
     for my $file (@stylesheets) {
         $includes .= "<xsl:include href=\"${style_url}modules/$file\" />\n";
@@ -349,7 +363,7 @@ sub compile {
         $dyn_name =~ s/\.xsl$//og;
         $dyn_name =~ s/\//_/og;
         push @dyn_style_name, $dyn_name;
-        if ($oyster::CONFIG{'compile_styles'} and _needs_compilation($style, $file)) {
+        if (_needs_compilation($style, $file)) {
             my $template;
             $template .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
             $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
@@ -364,7 +378,7 @@ sub compile {
 
     # create a dynamic style to combine all of the passed styles (if necessary)
     my $dyn_name = join('-', @dyn_style_name) . '.xsl';
-    if ($oyster::CONFIG{'compile_styles'} and !-e "${style_path}dynamic/$dyn_name") {
+    if (!-e "${style_path}dynamic/$dyn_name") {
         my $dyn_style;
         $dyn_style .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
         $dyn_style .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
