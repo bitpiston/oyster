@@ -52,18 +52,18 @@ sub start {
 
     # process form data
     if ($ENV{'REQUEST_METHOD'} eq 'POST') { # give POST priority over get
-        _process_form_get();
-        _process_form_post();
+        _process_form_get() if length $ENV{'QUERY_STRING'} != 0;
+        _process_form_post() if $ENV{'CONTENT_LENGTH'} != 0;
     } else {
-        _process_form_post();
-        _process_form_get();
+        _process_form_post() if $ENV{'CONTENT_LENGTH'} != 0;
+        _process_form_get() if length $ENV{'QUERY_STRING'} != 0;
     }
 
     # process namespaces
     #_process_namespaces();
 
     # process cookies
-    _process_cookies();
+    _process_cookies() if length $ENV{'HTTP_COOKIE'} != 0;
 }
 
 =xml
@@ -145,7 +145,6 @@ sub end {
 sub _process_form_post {
 
     # process post data if there is any
-    return unless $ENV{'CONTENT_LENGTH'};
     my $buffer;
     my $len = 0;
     binmode(STDIN);
@@ -261,7 +260,6 @@ sub _process_form_post {
 sub _process_form_get {
 
     # process the query string (if necessary)
-    return unless length $ENV{'QUERY_STRING'};
     my @pairs = split(/&/, $ENV{'QUERY_STRING'});
     for (@pairs) {
         my ($name, $value) = split /=/;
@@ -286,7 +284,6 @@ sub _process_form_get {
 =cut
 
 sub _process_cookies {
-    return unless length $ENV{'HTTP_COOKIE'};
     my @pairs = split(/\; /o, $ENV{'HTTP_COOKIE'});
     my $pair;
     foreach $pair (@pairs) {
