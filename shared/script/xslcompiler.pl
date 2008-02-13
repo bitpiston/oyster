@@ -73,7 +73,7 @@ for my $style (keys %style::styles) {
                 "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
               . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
               . "<xsl:include href=\"${style_url}base.xsl\" />\n\n"
-              . "<xsl:include href=\"${style_url}modules/$stylesheet\" />\n"
+              . "<xsl:include href=\"${style_url}modules/$module_id/$stylesheet\" />\n"
               . "</xsl:stylesheet>\n";
             mkdir("${style_path}dynamic/") unless -d "${style_path}dynamic/";
             file::write("${style_path}dynamic/${module_id}_$dyn_name", $dyn_style);
