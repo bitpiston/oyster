@@ -3,6 +3,19 @@
 		This document gives a brief outline of what Oyster and is not, how it is
 		designed, and why.
 	</synopsis>
+	<section title="What is Oyster?">
+		<p>
+			Oyster is a web application framework, it provides a foundation to build
+			rich, dynamic web applications upon.
+		</p>
+		<p>
+			Oyster is not a content-management-system.  It does not come with all of
+			the functionality out-of-the-box to run a web site.  However, unlike
+			most frameworks Oyster does include pre-made modules to handle common
+			tasks such as user management/permissions and a unified administration
+			interface.
+		</p>
+	</section>
 	<section title="Goals">
 		<ol>
 			<li>Performance/Scalability</li>
