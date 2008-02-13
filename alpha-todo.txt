@@ -97,6 +97,7 @@ COMPLETED
 * move module::*permissions* stuff to user.pm
 * console should print to STDOUT explicitely in case buffers are active
 * bug with user::add_permission_once -- shouldn't that be 'unless $perm_exists' ?
+* xsl compiler creates barebones dynamic styles
 
 Finished but need testing
 

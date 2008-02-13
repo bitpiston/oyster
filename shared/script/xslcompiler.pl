@@ -57,12 +57,27 @@ for my $style (keys %style::styles) {
         file::mkdir("${style_path}modules/$module_id/");
         for my $stylesheet (@{$module_stylesheets->{$module_id}}) {
             print "\t\t$stylesheet... ";
+
+            # compile style
             my $template;
             $template .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
             $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
             $template .= style::_compile_style($style, "modules/$module_id/$stylesheet") . "\n";
             $template .= "</xsl:stylesheet>\n";
             file::write("${style_path}modules/$module_id/$stylesheet", $template);
+
+            # create dynamic style
+            my $style_url = "$oyster::CONFIG{styles_url}$style/";
+            my $dyn_name  = $stylesheet;
+            my $dyn_style =
+                "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
+              . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
+              . "<xsl:include href=\"${style_url}base.xsl\" />\n\n"
+              . "<xsl:include href=\"${style_url}modules/$stylesheet\" />\n"
+              . "</xsl:stylesheet>\n";
+            mkdir("${style_path}dynamic/") unless -d "${style_path}dynamic/";
+            file::write("${style_path}dynamic/${module_id}_$dyn_name", $dyn_style);
+
             print "Done.\n";
         }
         print "\tDone.\n";

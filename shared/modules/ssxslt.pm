@@ -12,6 +12,9 @@
 =cut
 package ssxslt;
 
+#1;
+#__END__
+
 # import oyster libraries
 use oyster 'module';
 use exceptions;
@@ -50,6 +53,9 @@ sub load {
 event::register_hook('request_init', 'hook_request_init', 110);
 sub hook_request_init {
     return if $disable_ssxslt;
+
+    # parse the user agent to get a rendering engine and version
+    oyster::parse_user_agent();
 
     # figure out of the user's engine and version can handle xml/xslt
     my $engine  = $REQUEST{'ua_render_engine'};

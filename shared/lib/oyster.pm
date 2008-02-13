@@ -554,6 +554,7 @@ sub request_handler {
 
 sub request_cleanup {
 
+    # update the url cache
     url::update_cache() if $CONFIG{'mode'} eq 'fastcgi';
 
     # signal the request_cleanup hook
