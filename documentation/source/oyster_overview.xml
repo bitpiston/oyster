@@ -72,16 +72,15 @@
 			common tasks instead of using CPAN alternatives.  Doing this allows us to
 			gain consistency: all of the Oyster libraries follow the same coding
 			style, aim for the same goals as Oyster itself, can be well integrated
-			with Oyster, and don't include extra bloat.  That said, we do realize
-			when certain tasks are simply too complex for us to dedicate enough time
-			to create a good library for them, and we do use CPAN modules in those
-			cases.
+			with Oyster, and don't include extra bloat.  We do realize when certain
+			tasks are simply too complex for us to dedicate enough time to create a
+			good library for them, and we do use CPAN modules in those cases.
 		</p>
 		<p>
 			Oyster's design and architecture is very simple.  Unlike many frameworks,
 			we decided to avoid a complex class/object heirarchy and take a simpler
 			namespace approach.  This is faster, requires less memory, and makes
-			understanding the framework as a whole simpler.  That said, we do use
+			understanding the framework as a whole simpler.  However, we do use
 			object-orientation where it makes sense.
 		</p>
 	</section>
