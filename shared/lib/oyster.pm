@@ -455,32 +455,6 @@ sub request_handler {
             $REQUEST{'url'} = $CONFIG{'default_url'};
         }
 
-        # parse the user agent to get a rendering engine and version
-        # TODO: where should this go?
-        my $ua = $ENV{'HTTP_USER_AGENT'};
-        if    ($ua =~ m!Opera.(\d.\d+)!o) {
-            $REQUEST{'ua_render_engine'}         = 'opera';
-            $REQUEST{'ua_render_engine_version'} = $1;
-        }
-        elsif ($ua =~ m!MSIE (\d\.\d+)!o) {
-            $REQUEST{'ua_render_engine'}         = 'msie';
-            $REQUEST{'ua_render_engine_version'} = $1;
-        }
-        elsif ($ua =~ m!Gecko/(\d+)!o) {
-            $REQUEST{'ua_render_engine'}         = 'gecko';
-            $REQUEST{'ua_render_engine_version'} = $1;
-        }
-        #elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)+))?!o) {
-        elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)?))?!o) {
-            $REQUEST{'ua_render_engine'}         = 'applewebkit';
-            $REQUEST{'ua_render_engine_version'} = $1;
-        }
-        #elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)+))?!o) {
-        elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)?))?!o) {
-            $REQUEST{'ua_render_engine'}         = 'konqueror';
-            $REQUEST{'ua_render_engine_version'} = $1;
-        }
-
         # process cgi data
         cgi::start();
 
@@ -902,6 +876,34 @@ sub confirmation {
     } else {
         print "\t<confirmation>$message</confirmation>\n";
     }
+}
+
+sub parse_user_agent {
+    return if exists $REQUEST{'parsed_user_agent'};
+    my $ua = $ENV{'HTTP_USER_AGENT'};
+    if    ($ua =~ m!Opera.(\d.\d+)!o) {
+        $REQUEST{'ua_render_engine'}         = 'opera';
+        $REQUEST{'ua_render_engine_version'} = $1;
+    }
+    elsif ($ua =~ m!MSIE (\d\.\d+)!o) {
+        $REQUEST{'ua_render_engine'}         = 'msie';
+        $REQUEST{'ua_render_engine_version'} = $1;
+    }
+    elsif ($ua =~ m!Gecko/(\d+)!o) {
+        $REQUEST{'ua_render_engine'}         = 'gecko';
+        $REQUEST{'ua_render_engine_version'} = $1;
+    }
+    #elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)+))?!o) {
+    elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)?))?!o) {
+        $REQUEST{'ua_render_engine'}         = 'applewebkit';
+        $REQUEST{'ua_render_engine_version'} = $1;
+    }
+    #elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)+))?!o) {
+    elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)?))?!o) {
+        $REQUEST{'ua_render_engine'}         = 'konqueror';
+        $REQUEST{'ua_render_engine_version'} = $1;
+    }
+    $REQUEST{'parsed_user_agent'} = undef;
 }
 
 =xml
