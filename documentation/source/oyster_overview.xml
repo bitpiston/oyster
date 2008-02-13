@@ -1,0 +1,75 @@
+<document title="Oyster Overview">
+	<synopsis>
+		This document gives a brief outline of what Oyster and is not, how it is
+		designed, and why.
+	</synopsis>
+	<section title="Goals">
+		<ol>
+			<li>Performance/Scalability</li>
+			<li>Flexibility</li>
+			<li>Extensibility</li>
+			<li>Ease of Development</li>
+			<!--<li>Portability</li>-->
+		</ol>
+		<p>
+			Oyster was created because members of the Oyster team felt that none of
+			the existing perl web frameworks met all of the above criteria,
+			particularly in performance and scalability.
+		</p>
+		<p>
+			While ease-of-development (for both core developers and module authors),
+			is a high priority for us, performance is our top goal.  Performance is
+			a very low priority for most frameworks, and our goal is to make one
+			capable of scaling to even the largest web sites.
+		</p>
+		<p>
+			By flexibility we mean that there should be nothing that the framework
+			prevents you from doing.  The architecture is very simple, making
+			understanding how even the most core things work relatively easy; and
+			the simple architecture makes it easy to change those core behaviors if
+			you need to.
+		</p>
+		<p>
+			Flexibility also encompasses 'TIMTOWTDI' (there is more than one way to do
+			it).  By providing multiple ways to do common tasks we can make
+			development easy for quick & dirty scripts as well as provide ways to
+			achieve high performance when it is needed.
+		</p>
+		<p>
+			Flexibility is also a very important part of our template system.  Oyster
+			was designed from the ground up to be able to serve any type of web site.
+		</p>
+		<p>
+			Oyster's simple architecture combined with the module system and toolchain
+			make it very easy to extend Oyster -- and to distribute and update your
+			extensions.
+		</p>
+		<p>
+			Although Oyster's top priority is performance, ease-of-development is also
+			very important to us.  Oyster provides a huge API of 'convenience'
+			functions to accomplish complex tasks involving integration, templating,
+			and database interaction easily.
+		</p>
+	</section>
+	<section title="Design &amp; Architecture">
+		<p>
+			CPAN is an amazing resource for Perl modules and a shining example to
+			other languages.  However, a web framework encompasses a wide range of
+			functionality;  the Oyster team decided to write custom libraries for
+			common tasks instead of using CPAN alternatives.  Doing this allows us to
+			gain consistency: all of the Oyster libraries follow the same coding
+			style, aim for the same goals as Oyster itself, can be well integrated
+			with Oyster, and don't include extra bloat.  That said, we do realize
+			when certain tasks are simply too complex for us to dedicate enough time
+			to create a good library for them, and we do use CPAN modules in those
+			cases.
+		</p>
+		<p>
+			Oyster's design and architecture is very simple.  Unlike many frameworks,
+			we decided to avoid a complex class/object heirarchy and take a simpler
+			namespace approach.  This is faster, requires less memory, and makes
+			understanding the framework as a whole simpler.  That said, we do use
+			object-orientation where it makes sense.
+		</p>
+	</section>
+</document>

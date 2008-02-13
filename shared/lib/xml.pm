@@ -820,6 +820,7 @@ sub print_var {
         }
         print "$indent</$name>\n";
     }
+    # TODO: come up with a nice way to do tail recursion to print multiple variables -- the depth variable is currently getting in the way
 }
 
 # Copyright BitPiston 2008

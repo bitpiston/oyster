@@ -116,10 +116,12 @@ TODO
 - docs:
 	& xml/xslt conventions
 	& module creation walkthrough
+	- admin/menu api integration
+	- runloop diagram
 - make sure admin center contextual menus are consistent
 - possibly add user list to user admin
 - qdcontent (rename static_content?)
 - ssxslt needs version checks for various rendering engines
 - add an admin.pm api so that it can create all of the functions and hooks necessary for a module, easily
 - change $module_db_prefix to $db_prefix and $module_admin_base_url to $admin_base_url
-
+- oyster::request?
