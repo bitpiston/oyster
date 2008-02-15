@@ -14,7 +14,7 @@ our %loaded; # currently loaded modules
 =xml
     <function name="print_start_xml">
         <synopsis>
-            A convenience function to print "\t<module_id>\n"
+            A convenience function to print "\t&lt;module_id&gt;\n"
         </synopsis>
         <note>
             If the optional 'module_id' argument is not defined, the calling package will be assumed.
@@ -31,7 +31,7 @@ our %loaded; # currently loaded modules
     </function>
     <function name="print_end_xml">
         <synopsis>
-            A convenience function to print "\t</module_id>\n"
+            A convenience function to print "\t&lt;/module_id&gt;\n"
         </synopsis>
         <note>
             This uses the module name of the last call to module::print_start_xml()
