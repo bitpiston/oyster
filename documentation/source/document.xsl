@@ -3,19 +3,52 @@
 	<xsl:output method="xml" version="1.0" encoding="UTF-8" media-type="application/xhtml+xml" indent="yes" doctype-public="-//W3C//DTD XHTML 1.1//EN"  doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
 	
 	<xsl:template match="/document">
-		<h1><xsl:value-of select="@title" /></h1>
-		
-		<xsl:if test="/document/todo">
-			<div class="todo">
-				<strong>Todo</strong>
-				<ul>
-					<xsl:for-each select="/document/todo">
-						<li><xsl:value-of select="." /></li>
-					</xsl:for-each>
-				</ul>
-			</div>
-		</xsl:if>
-		<xsl:apply-templates />
+		<html xml:lang="en">
+			<head>
+				<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+				<meta http-equiv="content-style-type" content="text/css" />
+				<link rel="stylesheet" type="text/css" media="screen" href="./document.css" />
+				<title><xsl:value-of select="@title" /></title>
+			</head>
+			<body class="documentation">
+				<div id="header">
+					<div class="wrapper">
+						<a id="title" href="">Oyster</a>
+						<span id="subtitle">A Perl web application framework.</span>
+					</div>
+				</div>
+				<hr />
+				<div id="content">
+					<div class="wrapper">
+						<div id="content-primary">
+							<h1><xsl:value-of select="@title" /></h1>
+	
+							<xsl:if test="/document/todo">
+								<div class="todo">
+									<strong>Todo</strong>
+									<ul>
+										<xsl:for-each select="/document/todo">
+											<li><xsl:value-of select="." /></li>
+										</xsl:for-each>
+									</ul>
+								</div>
+							</xsl:if>
+							<xsl:apply-templates />
+						</div>
+						<div id="content-secondary">
+					
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div id="footer">
+					<div class="wrapper">
+						<p class="copyright">Copyright &#169; 2007&#8211;2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br /> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2.</a></p>
+						<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+					</div>
+				</div>
+			</body>
+		</html>
 	</xsl:template>
 	
 	<xsl:template match="todo" />
