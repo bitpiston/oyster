@@ -35,7 +35,7 @@ use XML::LibXML;
 my $parser  = XML::LibXML->new();
 my $xslt    = XML::LibXSLT->new();
 
-my $style_doc = $parser->parse_file('./script/doc_style.xsl');
+my $style_doc = $parser->parse_file('../documentation/source/document.xsl');
 my $style     = $xslt->parse_stylesheet($style_doc);
 
 compile_dir($source_path);
