@@ -578,13 +578,13 @@ sub _bbcode_parse_code {
         # anything before a [, this is necessary for entities() to pick up anything longer than 1 char
         elsif ($text =~ /^([\s\S]+?)(?=\[)/o) {
             my $chunk = $1;
-            $remove_len = length $chunk;
+            $replace_len = length $chunk;
             $xhtml .= entities($chunk);
         }
 
         # nothing has matched a [ yet it must just be a plain [
         elsif (substr($text, 0, 1) eq '[') {
-            $remove_len = 1;
+            $replace_len = 1;
             $xhtml .= '[;';
         }
 
