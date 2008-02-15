@@ -17,8 +17,9 @@ my @dirs = ('./lib/', './modules/', './script/');
 
 # figure out the destination directory
 my $dest = shift;
-die "A destination directory must be specified." unless length $dest;
-die "Destination directory does not exist!"      unless -d $dest;
+#die "A destination directory must be specified." unless length $dest;
+$dest = '../documentation/source'           unless length $dest;
+die "Destination directory does not exist!" unless -d $dest;
 $dest .= '/' unless $dest =~ m!/$!;
 
 # settings
