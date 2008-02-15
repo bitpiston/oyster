@@ -8,7 +8,7 @@
 package console::util;
 
 =xml
-    <function name="end_all_clean">
+    <function name="process_args">
         <synopsis>
             Quick and dirty command line argument processing.  This treats any string prefixed with - or -- as a 'key' and any string directly after it as a value for that key.  If no key is available, the value is stored with the key ''.
         </synopsis>
