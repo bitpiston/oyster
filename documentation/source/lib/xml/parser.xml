@@ -1,8 +1,0 @@
-<document title="XML Parser">
-    <warning>
-        This library is considered pre-alpha.
-    </warning>
-    <synopsis>
-        A quick and dirty XML parser inspired by PHP's xml_ functions.
-    </synopsis>
-</document>

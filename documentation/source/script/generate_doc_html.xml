@@ -1,8 +1,0 @@
-<document title="Generate Documentation (X)HTML">
-    <synopsis>
-        Converts documentation XML to XHTML.
-    </synopsis>
-    <section title="Command Line Arguments">
-        Expects two arguments, the source directory and destination directory.
-    </section>
-</document>
