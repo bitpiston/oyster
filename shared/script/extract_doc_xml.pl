@@ -23,7 +23,6 @@ die "Startup Failed: An error occured while loading Oyster: $@" if $@;
 
 # figure out the destination directory
 my $dest = shift;
-#die "A destination directory must be specified." unless length $dest;
 $dest = '../documentation/source'           unless length $dest;
 die "Destination directory does not exist!" unless -d $dest;
 $dest .= '/' unless $dest =~ m!/$!;
@@ -41,20 +40,20 @@ my %exts = (
 # extract the xml
 
 # directories to spider
-my $i = 0;
-spider_directory($_, ++$i) for ('./lib/', './modules/', './script/');
+#my $i = 0;
+#spider_directory($_, ++$i) for ('./lib/', './modules/', './script/');
+spider_directory($_) for ('./lib/', './modules/', './script/');
 
 # iterate through directories until none are left
 sub spider_directory {
     my $dir   = shift;
-    my $index = shift;
-    #$index =~ s{(\d+)$}{ $1 + 1 }e;
+    #my $index = shift;
 
     # retreive files in the current directory
     my @files = <$dir*>;
 
     # iterate over those files
-    my $i = 0;
+    #my $i = 0;
     for my $file (@files) {
 
         # extract just the filename
@@ -65,7 +64,8 @@ sub spider_directory {
 
         # if the file is a directory
         if (-d $file) {
-            spider_directory($file . '/', $index . '.' . ++$i);
+            #spider_directory($file . '/', $index . '.' . ++$i);
+            spider_directory($file . '/');
             #push @dirs, $file . '/';
         }
 
@@ -82,24 +82,24 @@ sub spider_directory {
 
             # if any xml was found
             if (length $xml) {
-                $i++;
-
+                #$i++;
 
                 # preprocess it
                 die "XML does not begin with <document in '$file'." unless $xml =~ /^\s*<document[^<]*>/o;
-                
+
+                # extraction time
                 my $attr = 'extract_time="' . datetime::from_unixtime(time()) . '"';
                 $xml =~ s/^([\s\S]+?)>/$1 $attr>/ unless ($xml =~ s/^(\s*<document[^<]+>)extract_time=".+?"/$1$attr/o);
-                my $attr = 'index="' . $index . '.' . $i . '"';
-                $xml =~ s/^([\s\S]+?)>/$1 $attr>/ unless ($xml =~ s/^(\s*<document[^<]+>)index=".+?"/$1$attr/o);
-                $file =~ m!^\./(.+)\.$file_ext$!;
-                my $attr = 'path="' . $1 . '"';
-                $xml =~ s/^([\s\S]+?)>/$1 $attr>/ unless ($xml =~ s/^(\s*<document[^<]+>)path=".+?"/$1$attr/o);
+                # path
+                #$file =~ m!^\./(.+)\.$file_ext$!;
+                #my $attr = 'path="' . $1 . '"';
+                #$xml =~ s/^([\s\S]+?)>/$1 $attr>/ unless ($xml =~ s/^(\s*<document[^<]+>)path=".+?"/$1$attr/o);
+                # source
                 my $attr = 'source="' . $file . '"';
                 $xml =~ s/^([\s\S]+?)>/$1 $attr>/ unless ($xml =~ s/^(\s*<document[^<]+>)source=".+?"/$1$attr/o);
-                #if ($attr =~ /^.+extract_time=".+?"/o) {
-                    #
-                #}
+                # index
+                #my $attr = 'index="' . $index . '.' . $i . '"';
+                #$xml =~ s/^([\s\S]+?)>/$1 $attr>/ unless ($xml =~ s/^(\s*<document[^<]+>)index=".+?"/$1$attr/o);
 
                 # save it
                 my $dest_file = $filename_noext . '.xml';

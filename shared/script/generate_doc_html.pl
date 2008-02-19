@@ -11,14 +11,12 @@ package oyster::script::generate_doc_html;
 
 # figure out the source directory
 my $source_path = shift;
-#die "A source directory must be specified." unless length $source_path;
 $source_path = '../documentation/source' unless length $source_path;
 die "Source directory does not exist!"   unless -d $source_path;
 $source_path .= '/' unless $source_path =~ m!/$!;
 
 # figure out the destination directory
 my $dest_path = shift;
-#die "A destination directory must be specified." unless length $dest_path;
 $dest_path = '../documentation'             unless length $dest_path;
 die "Destination directory does not exist!" unless -d $dest_path;
 $dest_path.= '/' unless $dest_path=~ m!/$!;

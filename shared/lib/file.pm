@@ -169,6 +169,9 @@ sub slurp {
         <prototype>
             file::write(string filename, string file_contents[, bool autocreate_directories])
         </prototype>
+        <todo>
+        	replace single last argument with optional flags for dir_autocreate, append, utf8, bin
+        </todo>
     </function>
 =cut
 
