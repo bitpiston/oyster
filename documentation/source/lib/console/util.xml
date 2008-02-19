@@ -1,0 +1,16 @@
+<document title="Console Utility Functions" extract_time="2008-02-19 08:11:16" source="./lib/console/util.pm">
+    <synopsis>
+        Functions used by various Oyster console applications
+    </synopsis>
+    <function name="process_args">
+        <synopsis>
+            Quick and dirty command line argument processing.  This treats any string prefixed with - or -- as a 'key' and any string directly after it as a value for that key.  If no key is available, the value is stored with the key ''.
+        </synopsis>
+        <note>
+            If you include config.pl (or it was included for you), you do not need to call this, the results will be stored in %oyster::config::args.
+        </note>
+        <prototype>
+            hash = console::util::process_args()
+        </prototype>
+    </function>
+</document>

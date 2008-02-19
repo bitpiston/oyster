@@ -1,0 +1,217 @@
+<document title="Module Management Functions" extract_time="2008-02-19 08:11:16" source="./lib/module.pm">
+    <synopsis>
+        Functions associated with module management
+    </synopsis>
+    <function name="print_start_xml">
+        <synopsis>
+            A convenience function to print "\t&lt;module_id&gt;\n"
+        </synopsis>
+        <note>
+            If the optional 'module_id' argument is not defined, the calling package will be assumed.
+        </note>
+        <note>
+            If the optional 'action_id' argument is not defined, the calling sub routine will be assumed.
+        </note>
+        <note>
+            If only one optional argument is present, it is assumed to be the module name
+        </note>
+        <prototype>
+            module::print_start_xml([string module_id][, string action_id]);
+        </prototype>
+    </function>
+    <function name="print_end_xml">
+        <synopsis>
+            A convenience function to print "\t&lt;/module_id&gt;\n"
+        </synopsis>
+        <note>
+            This uses the module name of the last call to module::print_start_xml()
+        </note>
+        <prototype>
+            module::print_end_xml();
+        </prototype>
+    </function>
+    <function name="get_available">
+        <synopsis>
+            Retreives a list of all available modules.
+        </synopsis>
+        <prototype>
+            array = module::get_available()
+        </prototype>
+    </function>
+    <function name="get_enabled">
+        <synopsis>
+            Retreives a list of enabled modules
+        </synopsis>
+        <prototype>
+            array = module::get_enabled()
+        </prototype>
+    </function>
+    <function name="order_by_dependencies">
+        <synopsis>
+            Given a list of modules, orders them based on their dependencies
+        </synopsis>
+        <note>
+            This is susceptible to infinte looping if modules have circular dependencies
+        </note>
+        <prototype>
+            array = module::order_by_dependencies(array)
+        </prototype>
+    </function>
+    <function name="get_latest_revision">
+        <synopsis>
+            Retreives the latest revision available for a module
+        </synopsis>
+        <note>
+            returns 0 if no revisions.pl file is available
+        </note>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
+        <prototype>
+            int = module::get_latest_revision(string module_id)
+        </prototype>
+    </function>
+    <function name="enable">
+        <synopsis>
+            Enables a module
+        </synopsis>
+        <note>
+            This does not load the module
+        </note>
+        <note>
+            This does nothing if passed a non-existant module ID.
+        </note>
+        <prototype>
+            module::enable(string module_id)
+        </prototype>
+    </function>
+    <function name="disable">
+        <synopsis>
+            Disables a module
+        </synopsis>
+        <note>
+            This does not unload the module if it is currently loaded.
+        </note>
+        <note>
+            This does nothing if passed a non-existant module ID.
+        </note>
+        <prototype>
+            module::disable(string module_id)
+        </prototype>
+    </function>
+    <function name="is_enabled">
+        <synopsis>
+            Checks if a given module is enabled
+        </synopsis>
+        <prototype>
+            bool = module::is_enabled(string module_id)
+        </prototype>
+    </function>
+    <function name="is_registered">
+        <synopsis>
+            Checks if a given module is registered
+        </synopsis>
+        <prototype>
+            bool = module::is_registered(string module_id)
+        </prototype>
+    </function>
+    <function name="register">
+        <synopsis>
+            Adds an entry to the modules table
+        </synopsis>
+        <prototype>
+            module::register(string module_id[, revision])
+        </prototype>
+        <note>
+            This does nothing and returns undef if the given module ID is already registered.
+        </note>
+        <todo>
+            error if module is already installed? (or just update revision?)
+        </todo>
+    </function>
+    <function name="unregister">
+        <synopsis>
+            Removes a module's entry in the modules table
+        </synopsis>
+        <note>
+            This does nothing if passed a non-existant module ID.
+        </note>
+        <prototype>
+            module::unregister(string module_id)
+        </prototype>
+    </function>
+    <function name="set_revision">
+        <synopsis>
+            Sets a module's current revision
+        </synopsis>
+        <note>
+            Does nothing if the module is not registered
+        </note>
+        <prototype>
+            module::set_revision(string module_id, int revision)
+        </prototype>
+    </function>
+    <function name="get_revision">
+        <synopsis>
+            Gets a module's revision number
+        </synopsis>
+        <note>
+            Returns 0 if a module is not registered
+        </note>
+        <prototype>
+            int revision = module::get_revision(string module_name)
+        </prototype>
+        <todo>
+            Should probably throw a perl error or something if a module is not registered
+        </todo>
+    </function>
+    <function name="get_meta">
+        <synopsis>
+            Fetches meta information about a module
+        </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
+        <prototype>
+            hashref = module::get_meta(string module_name)
+        </prototype>
+    </function>
+    <function name="load">
+        <synopsis>
+            Loads a module
+        </synopsis>
+        <note>
+            If the module is already loaded, it is unloaded first.
+        </note>
+        <note>
+            dies on failure
+        </note>
+        <prototype>
+            module::load(string module_id);
+        </prototype>
+    </function>
+    <function name="load_config">
+        <todo>
+            Document this function
+        </todo>
+    </function>
+    <function name="unload">
+        <synopsis>
+            Unloads a module
+        </synopsis>
+        <note>
+            This is not gauranteed to work -- and when it does, it may break other things.
+        </note>
+        <prototype>
+            module::unload(string module_id);
+        </prototype>
+    </function>
+    <function name="print_modules_xml">
+        <synopsis>
+            Print modules in an xml-friendly manner.
+        </synopsis>
+        <prototype>
+            print_module_xml()
+        </prototype>
+    </function>
+</document>

@@ -1,0 +1,11 @@
+<document title="Source Search" extract_time="2008-02-19 08:11:17" source="./script/search.pl">
+    <synopsis>
+        Searches for a given (regular expression) string in the pl, pm, and xsl files.
+    </synopsis>
+    <section title="Command Line Arguments">
+        This utility requires one argument and can optionally take two.  The first is the regular expression to search for, the second is the directory to search.  If no directory is specified, the current directory is assumed.
+    </section>
+    <todo>
+        Update this utility to use console::util to parse arguments so more options can be specified, such as extensions to search or ignore and whether to be case sensitive or not (maybe the option to do a non-regex search too)
+    </todo>
+</document>

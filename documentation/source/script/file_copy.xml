@@ -1,0 +1,11 @@
+<document title="File Copy Utility" extract_time="2008-02-19 08:11:17" source="./script/file_copy.pl">
+    <synopsis>
+        Moves/renames a file just like the system command, but in an OS-neutral way.
+    </synopsis>
+    <section title="Command Line Arguments">
+        This utility requires two arguments, the file to copy and the destination filename.
+    </section>
+    <todo>
+        This should probably use File::Copy::Recursive
+    </todo>
+</document>

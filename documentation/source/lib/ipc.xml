@@ -1,0 +1,53 @@
+<document title="IPC Functions" extract_time="2008-02-19 08:11:16" source="./lib/ipc.pm">
+    <synopsis>
+        Functions that allow daemons to communicate.  These are mainly used to force
+        daemons to reload cached data when one of them updates it.
+    </synopsis>
+    <function name="do">
+        <synopsis>
+            Issues a command for all daemons of the current site to execute
+        </synopsis>
+        <note>
+            'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
+        </note>
+        <prototype>
+            ipc::do(string module, string function[, array args])
+        </prototype>
+        <example>
+            ipc::do('news', 'load_category', $category_id);
+        </example>
+    </function>
+    <function name="global_do">
+        <synopsis>
+            Issues a command for all daemons to execute
+        </synopsis>
+        <note>
+            'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
+        </note>
+        <prototype>
+            ipc::global_do(string module, string function[, array args])
+        </prototype>
+        <example>
+            ipc::global_do('oyster', '_load_config');
+        </example>
+    </function>
+    <function name="update">
+        <synopsis>
+            Executes all waiting tasks in the ipc queue
+        </synopsis>
+        <note>
+            This function is not exported by default, to use it you must call it by
+            its fully qualified name.
+        </note>
+        <note>
+            Modules should not need to call this function, Oyster performs this
+            task automatically.
+        </note>
+        <prototype>
+            ipc::update()
+        </prototype>
+        <todo>
+            try {}
+        </todo>
+    </function>
+</document>

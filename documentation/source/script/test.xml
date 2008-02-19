@@ -1,0 +1,17 @@
+<document title="Oyster Testing Framework" extract_time="2008-02-19 08:11:17" source="./script/test.pl">
+    <synopsis>
+        This script runs all test scripts and returns the totalled test results.
+    </synopsis>
+    <todo>
+        A 'how to' doc for creating tests.
+    </todo>
+    <todo>
+        Use IPC::Open3 instead of `` to run tests and redirect STDERR.
+    </todo>
+    <todo>
+       Print success/failure on -d for convenience
+    </todo>
+    <todo>
+       Change success/failure to pass/fail
+    </todo>
+</document>
