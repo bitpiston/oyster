@@ -1,4 +1,4 @@
-<document title="Oyster Console" extract_time="2008-02-19 08:11:17" source="./script/console.pl">
+<document title="Oyster Console" extract_time="2008-02-19 08:14:36" source="./script/console.pl" path="script/" index="5.1" depth="../">
     <synopsis>
         Allows you to execute perl code within a Oyster environment.
     </synopsis>

@@ -1,4 +1,4 @@
-<document title="Administration Center" extract_time="2008-02-19 08:11:17" source="./modules/admin.pm">
+<document title="Administration Center" extract_time="2008-02-19 08:14:35" source="./modules/admin.pm" path="modules/" index="3.1" depth="../">
     <synopsis>
         Provides a central place to manage core administrative functions, as well
         as an API for modules to use to integrate with the administration center.

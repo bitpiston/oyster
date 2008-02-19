@@ -1,4 +1,4 @@
-<document title="XSL Cleaner" extract_time="2008-02-19 08:11:17" source="./script/xslclean.pl">
+<document title="XSL Cleaner" extract_time="2008-02-19 08:14:36" source="./script/xslclean.pl" path="script/" index="5.13" depth="../">
     <synopsis>
         Deletes compiled stylesheet data.
     </synopsis>

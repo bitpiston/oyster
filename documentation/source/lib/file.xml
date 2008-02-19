@@ -1,4 +1,4 @@
-<document title="File Functions" extract_time="2008-02-19 08:11:16" source="./lib/file.pm">
+<document title="File Functions" extract_time="2008-02-19 08:14:35" source="./lib/file.pm" path="lib/" index="2.10" depth="../">
     <synopsis>
         Functions associated with file manipulation.  This is a lightweight
         implementation of several File::* CPAN modules.

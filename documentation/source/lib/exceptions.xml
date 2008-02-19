@@ -1,4 +1,4 @@
-<document title="Exception Handling Functions" extract_time="2008-02-19 08:11:16" source="./lib/exceptions.pm">
+<document title="Exception Handling Functions" extract_time="2008-02-19 08:14:35" source="./lib/exceptions.pm" path="lib/" index="2.9" depth="../">
     <synopsis>
         Functions that allow errors to be handled and trapped.
     </synopsis>

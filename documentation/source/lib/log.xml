@@ -1,4 +1,4 @@
-<document title="Logging Functions" extract_time="2008-02-19 08:11:16" source="./lib/log.pm">
+<document title="Logging Functions" extract_time="2008-02-19 08:14:35" source="./lib/log.pm" path="lib/" index="2.15" depth="../">
     <synopsis>
         Functions associated with reading or writing log data.
     </synopsis>

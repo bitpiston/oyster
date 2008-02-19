@@ -1,4 +1,4 @@
-<document title="Date &amp; Time Functions" extract_time="2008-02-19 08:11:16" source="./lib/datetime.pm">
+<document title="Date &amp; Time Functions" extract_time="2008-02-19 08:14:35" source="./lib/datetime.pm" path="lib/" index="2.6" depth="../">
     <synopsis>
         Functions associated with retreiving, calculating, or formatting the date
         and time.

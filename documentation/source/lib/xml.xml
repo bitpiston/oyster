@@ -1,4 +1,4 @@
-<document title="XML Functions" extract_time="2008-02-19 08:11:16" source="./lib/xml.pm">
+<document title="XML Functions" extract_time="2008-02-19 08:14:35" source="./lib/xml.pm" path="lib/" index="2.23" depth="../">
     <synopsis>
         Functions related to xml validation, transformation, and parsing.
     </synopsis>

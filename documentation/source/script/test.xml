@@ -1,4 +1,4 @@
-<document title="Oyster Testing Framework" extract_time="2008-02-19 08:11:17" source="./script/test.pl">
+<document title="Oyster Testing Framework" extract_time="2008-02-19 08:14:36" source="./script/test.pl" path="script/" index="5.11" depth="../">
     <synopsis>
         This script runs all test scripts and returns the totalled test results.
     </synopsis>

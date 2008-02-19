@@ -1,4 +1,4 @@
-<document title="File Copy Utility" extract_time="2008-02-19 08:11:17" source="./script/file_copy.pl">
+<document title="File Copy Utility" extract_time="2008-02-19 08:14:36" source="./script/file_copy.pl" path="script/" index="5.3" depth="../">
     <synopsis>
         Moves/renames a file just like the system command, but in an OS-neutral way.
     </synopsis>

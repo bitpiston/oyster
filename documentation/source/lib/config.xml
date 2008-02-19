@@ -1,4 +1,4 @@
-<document title="Configuration Functions" extract_time="2008-02-19 08:11:16" source="./lib/config.pm">
+<document title="Configuration Functions" extract_time="2008-02-19 08:14:35" source="./lib/config.pm" path="lib/" index="2.3" depth="../">
     <synopsis>
         Functions for reading configuration options -- mostly used internally.
     </synopsis>

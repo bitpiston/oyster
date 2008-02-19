@@ -1,4 +1,4 @@
-<document title="Source Search" extract_time="2008-02-19 08:11:17" source="./script/search.pl">
+<document title="Source Search" extract_time="2008-02-19 08:14:36" source="./script/search.pl" path="script/" index="5.9" depth="../">
     <synopsis>
         Searches for a given (regular expression) string in the pl, pm, and xsl files.
     </synopsis>

@@ -1,4 +1,4 @@
-<document title="Set File Permissions" extract_time="2008-02-19 08:11:17" source="./script/perm.pl">
+<document title="Set File Permissions" extract_time="2008-02-19 08:14:36" source="./script/perm.pl" path="script/" index="5.8" depth="../">
     <synopsis>
         This can be used to set the proper file permissions on *nix systems.
     </synopsis>

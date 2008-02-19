@@ -1,4 +1,4 @@
-<document title="Oyster" extract_time="2008-02-19 08:11:16" source="./lib/oyster.pm">
+<document title="Oyster" extract_time="2008-02-19 08:14:35" source="./lib/oyster.pm" path="lib/" index="2.17" depth="../">
     <synopsis>
         This is a lightweight web application framework, focusing on: speed, flexibility, scalability, and ease of development.  For more information, visit <link uri="http://oyster.bitpiston.com">the official Oyster website</link>.
     </synopsis>

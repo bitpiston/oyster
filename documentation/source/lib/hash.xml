@@ -1,4 +1,4 @@
-<document title="Hashing Functions" extract_time="2008-02-19 08:11:16" source="./lib/hash.pm">
+<document title="Hashing Functions" extract_time="2008-02-19 08:14:35" source="./lib/hash.pm" path="lib/" index="2.11" depth="../">
     <synopsis>
         Functions related to hashing data.
     </synopsis>

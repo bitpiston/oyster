@@ -1,4 +1,4 @@
-<document title="Console Utility Functions" extract_time="2008-02-19 08:11:16" source="./lib/console/util.pm">
+<document title="Console Utility Functions" extract_time="2008-02-19 08:14:35" source="./lib/console/util.pm" path="lib/console/" index="2.4.1" depth="../../">
     <synopsis>
         Functions used by various Oyster console applications
     </synopsis>

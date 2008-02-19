@@ -1,4 +1,4 @@
-<document title="String Functions" extract_time="2008-02-19 08:11:16" source="./lib/string.pm">
+<document title="String Functions" extract_time="2008-02-19 08:14:35" source="./lib/string.pm" path="lib/" index="2.19" depth="../">
     <synopsis>
         String related stuff -- some general, some Oyster specific.
     </synopsis>

@@ -1,4 +1,4 @@
-<document title="Paypal API" extract_time="2008-02-19 08:11:16" source="./lib/paypal.pm">
+<document title="Paypal API" extract_time="2008-02-19 08:14:35" source="./lib/paypal.pm" path="lib/" index="2.18" depth="../">
     <warning>
         This library is considered pre-alpha.
     </warning>

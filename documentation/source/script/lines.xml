@@ -1,4 +1,4 @@
-<document title="Line Counter (aka, epeen measurer)" extract_time="2008-02-19 08:11:17" source="./script/lines.pl">
+<document title="Line Counter (aka, epeen measurer)" extract_time="2008-02-19 08:14:36" source="./script/lines.pl" path="script/" index="5.7" depth="../">
     <synopsis>
         Counts the total number of lines in pl, pm, and xsl files in the shared directory.
     </synopsis>

@@ -1,4 +1,4 @@
-<document title="SQL Compatability">
+<document title="SQL Compatability" path="" depth="" index="6">
 	<synopsis>While Oyster currently only supports MySQL, we plan to implement PgSQL support as well.  This document outlines various imcompatibilities between the two, so that code written now will require minimal changes to be made compatible later.</synopsis>
 	<section title="Reserved Words">
 		MySQL and PostgreSQL have different sets of reserved words.  Choose column names carefully.

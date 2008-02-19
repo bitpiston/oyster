@@ -1,4 +1,4 @@
-<document title="File Move Utility" extract_time="2008-02-19 08:11:17" source="./script/file_move.pl">
+<document title="File Move Utility" extract_time="2008-02-19 08:14:36" source="./script/file_move.pl" path="script/" index="5.4" depth="../">
     <synopsis>
         Moves/renames a file just like the system command, but in an OS-neutral way.
     </synopsis>

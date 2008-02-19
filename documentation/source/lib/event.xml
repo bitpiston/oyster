@@ -1,4 +1,4 @@
-<document title="Event Functions" extract_time="2008-02-19 08:11:16" source="./lib/event.pm">
+<document title="Event Functions" extract_time="2008-02-19 08:14:35" source="./lib/event.pm" path="lib/" index="2.8" depth="../">
     <synopsis>
         These functions allow the creation of events that modules can hook into.
     </synopsis>

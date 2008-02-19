@@ -1,4 +1,4 @@
-<document title="URL Functions" extract_time="2008-02-19 08:11:16" source="./lib/url.pm">
+<document title="URL Functions" extract_time="2008-02-19 08:14:35" source="./lib/url.pm" path="lib/" index="2.21" depth="../">
     <synopsis>
         Functions dealing with Oyster's url handling as well as external url
         utilities.

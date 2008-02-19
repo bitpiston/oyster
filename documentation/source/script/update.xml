@@ -1,4 +1,4 @@
-<document title="Oyster Update/Installation Utility" extract_time="2008-02-19 08:11:17" source="./script/update.pl">
+<document title="Oyster Update/Installation Utility" extract_time="2008-02-19 08:14:36" source="./script/update.pl" path="script/" index="5.12" depth="../">
     <synopsis>
         This utility runs module installation routines and brings their revisions up to date.
     </synopsis>

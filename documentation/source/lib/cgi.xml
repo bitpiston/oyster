@@ -1,4 +1,4 @@
-<document title="Common Gateway Interface Functions" extract_time="2008-02-19 08:11:16" source="./lib/cgi.pm">
+<document title="Common Gateway Interface Functions" extract_time="2008-02-19 08:14:35" source="./lib/cgi.pm" path="lib/" index="2.2" depth="../">
     <synopsis>
         Functions associated with processing Common Gateway Interface requests
     </synopsis>

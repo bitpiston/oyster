@@ -1,4 +1,4 @@
-<document title="User Module" extract_time="2008-02-19 08:11:17" source="./modules/user.pm">
+<document title="User Module" extract_time="2008-02-19 08:14:36" source="./modules/user.pm" path="modules/" index="3.3" depth="../">
     <synopsis>
         This module encapsulates the current user's data/permissions and all user-related actions.
     </synopsis>

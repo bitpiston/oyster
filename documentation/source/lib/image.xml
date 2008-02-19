@@ -1,4 +1,4 @@
-<document title="Image Functions" extract_time="2008-02-19 08:11:16" source="./lib/image.pm">
+<document title="Image Functions" extract_time="2008-02-19 08:14:35" source="./lib/image.pm" path="lib/" index="2.13" depth="../">
     <warning>
         This library is considered pre-alpha.  It needs to be updated to prevent shell injection and to use exceptions.
     </warning>

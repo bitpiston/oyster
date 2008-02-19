@@ -1,4 +1,4 @@
-<document title="Generate Documentation (X)HTML" extract_time="2008-02-19 08:11:17" source="./script/generate_doc_html.pl">
+<document title="Generate Documentation (X)HTML" extract_time="2008-02-19 08:14:36" source="./script/generate_doc_html.pl" path="script/" index="5.5" depth="../">
     <synopsis>
         Converts documentation XML to XHTML.
     </synopsis>

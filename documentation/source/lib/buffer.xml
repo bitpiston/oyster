@@ -1,4 +1,4 @@
-<document title="Output Buffering Functions" extract_time="2008-02-19 08:11:16" source="./lib/buffer.pm">
+<document title="Output Buffering Functions" extract_time="2008-02-19 08:14:35" source="./lib/buffer.pm" path="lib/" index="2.1" depth="../">
     <synopsis>
         These functions that allow capturing output.  These were inspired by
         php's ob_* series of functions.

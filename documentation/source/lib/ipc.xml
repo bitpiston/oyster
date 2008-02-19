@@ -1,4 +1,4 @@
-<document title="IPC Functions" extract_time="2008-02-19 08:11:16" source="./lib/ipc.pm">
+<document title="IPC Functions" extract_time="2008-02-19 08:14:35" source="./lib/ipc.pm" path="lib/" index="2.14" depth="../">
     <synopsis>
         Functions that allow daemons to communicate.  These are mainly used to force
         daemons to reload cached data when one of them updates it.

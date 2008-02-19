@@ -934,7 +934,7 @@ sub hook_request_init {
     }
 
     # if a session id is set
-    if (length $USER{'session'}) {
+    if (exists $USER{'session'}) {
 
         # fetch user data from the db
         $select_user_by_session->execute($USER{'session'});

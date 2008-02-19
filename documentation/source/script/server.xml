@@ -1,4 +1,4 @@
-<document title="Oyster Web Server" extract_time="2008-02-19 08:11:17" source="./script/server.pl">
+<document title="Oyster Web Server" extract_time="2008-02-19 08:14:36" source="./script/server.pl" path="script/" index="5.10" depth="../">
     <synopsis>
         A simple, quick and dirty, web server that can (and should only!) be used to deploy quick development environments.
     </synopsis>
