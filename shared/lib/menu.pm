@@ -4,15 +4,40 @@
         The menu API provides an easy way to create complex menus and print their corresponding XML easily.
     </synopsis>
     <todo>
-        Create an OO interface for menus and items.
-    </todo>
-    <todo>
         Add icons?
     </todo>
+    <section title="Implementation Details">
+        As a side effect of allowing both OO and procedural syntaxes, this actually uses inside-out objects for menus (although items are still self-contained, since they were a hash ref anyways).
+    </section>
 =cut
+package menu::item;
+
+sub add_item {
+    goto &menu::add_item;
+}
+
 package menu;
 
 my (%menus, %menu_labels, %menu_descriptions, $default_menu);
+
+=xml
+    <function name="new">
+        <synopsis>
+            Allows OO-style access to the menu API.
+        </synopsis>
+        <prototype>
+            obj = menu->new(string label[, string description])
+        </prototype>
+    </function>
+=cut
+
+sub new {
+    my $class = shift;
+    my $id    = string::random();
+    menu::label($id, shift)       if @_;
+    menu::description($id, shift) if @_;
+    return bless \$id, $class;
+}
 
 =xml
     <function name="label">
@@ -25,11 +50,15 @@ my (%menus, %menu_labels, %menu_descriptions, $default_menu);
         <prototype>
             menu::label([string menu_id], string menu_label)
         </prototype>
+        <prototype>
+            obj->label(string menu_label)
+        </prototype>
     </function>
 =cut
 
 sub label {
     my $menu  = scalar @_ == 2 ? shift : $default_menu ;
+    $menu = ${$menu} if ref $menu; # allow OO syntax
     $menu_labels{$menu} = shift;
 }
 
@@ -42,13 +71,17 @@ sub label {
             If no menu ID is specified, the default menu ID is used.
         </note>
         <prototype>
-            menu::description([string menu_id], string menu_label)
+            menu::description([string menu_id], string menu_description)
+        </prototype>
+        <prototype>
+            obj->description(string menu_description)
         </prototype>
     </function>
 =cut
 
 sub description {
     my $menu  = scalar @_ == 2 ? shift : $default_menu ;
+    $menu = ${$menu} if ref $menu; # allow OO syntax
     $menu_descriptions{$menu} = shift;
 }
 
@@ -60,15 +93,23 @@ sub description {
         <todo>
             Should this return the old default menu ID?
         </todo>
+        <todo>
+            This should probably either be removed or hard coded to navigation;  or at least have a warning that changing it is probably a bad idea.
+        </todo>
         <prototype>
             menu::set_default_menu(string menu_id)
+        </prototype>
+        <prototype>
+            obj->set_default_menu()
         </prototype>
     </function>
 =cut
 
 sub set_default_menu {
     #my $old_default_menu = $default_menu;
-    $default_menu = shift;
+    my $menu = shift;
+    $menu = ${$menu} if ref $menu; # allow OO syntax
+    $default_menu = $menu;
     #return $old_default_menu;
 }
 
@@ -89,14 +130,38 @@ sub set_default_menu {
         <note>
             'label' and 'url' are assumed to be xml-safe, if they must be entified, you must call xml::entities() on them yourself
         </note>
+        <note>
+            If OO syntax is used, an object is returned instead of a normal hash reference.  add_item() can be called on that object to add sub items.
+        </note>
         <prototype>
             hashref item = menu::add_item([menu => string menu_id OR parent => hashref item][, require_children => bool], label => string label, url => string url)
+        </prototype>
+        <prototype>
+            obj = obj->add_item([, require_children => bool], label => string label, url => string url)
         </prototype>
     </function>
 =cut
 
 sub add_item {
-    my %args = @_;
+    my %args;
+
+    # allow OO syntax
+    my ($is_oo);
+    if (ref $_[0]) {
+        $is_oo = 1;
+        my $obj  = shift;
+        my $type = ref $obj;
+        if ($type eq 'menu') { # menu
+            %args = ('menu' => ${$obj}, @_);
+        } else {                 # item
+            %args = ('parent' => $obj, @_);
+        }
+    }
+
+    # procedural syntax
+    else {
+        %args = @_;
+    }
 
     my $item_list;
     if (exists $args{'parent'}) {
@@ -111,7 +176,7 @@ sub add_item {
 
     my $i = push @{$item_list}, \%args;
 
-    return $item_list->[ $i - 1 ];
+    return $is_oo == 1 ? bless $item_list->[ $i - 1 ], 'menu' : $item_list->[ $i - 1 ] ;
 }
 
 =xml
@@ -137,11 +202,15 @@ sub add_item {
         <prototype>
             bool was_anything_printed = menu::print_xml([string menu_id])
         </prototype>
+        <prototype>
+            bool was_anything_printed = obj->print_xml()
+        </prototype>
     </function>
 =cut
 
 sub print_xml {
     my $menu = scalar @_ == 1 ? shift : $default_menu ;
+    $menu = ${$menu} if ref $menu; # allow OO syntax
 
     # do nothing if the menu contained no items
     return unless scalar @{ $menus{$menu} }; # should this delete the menu as well?
