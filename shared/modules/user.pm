@@ -222,9 +222,9 @@ sub edit_settings {
 
             # if they are trying to (and can) change their style
             if ($INPUT{'style'} eq $edit_user->{'style'}) { # leave the style as-is
-            } elsif (length $INPUT{'style'} == 0) {    # the user wants the default style
+            } elsif (length $INPUT{'style'} == 0) { # the user wants the default style
                 $update{'style'} = '';
-            } else {                                   # the user wants to specify a style
+            } else {                                # the user wants to specify a style
                 throw 'validation_error' => 'Invalid style ID.' unless style::is_enabled($INPUT{'style'});
                 $update{'style'} = $INPUT{'style'};
             }
