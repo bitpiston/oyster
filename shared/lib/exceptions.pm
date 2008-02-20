@@ -12,6 +12,9 @@
     <todo>
         Catch blocks should probably assume abort()
     </todo>
+    <todo>
+        Some optimizations could be made here, lots of unnecessary boolean-context conditionals
+    </todo>
 =cut
 
 package exceptions;

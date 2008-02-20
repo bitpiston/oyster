@@ -79,7 +79,7 @@ sub hook_request_init {
         }
 
         # start an output buffer
-        $REQUEST{'mime_type'} = $engine eq 'msie' ? 'text/html' : 'application/xhtml+xml'; # IE requires text/html for xhtml
+        $REQUEST{'mime_type'} = $engine eq 'msie' ? 'text/html' : 'application/xhtml+xml' ; # IE requires text/html for xhtml
         buffer::start();
     }
 }
