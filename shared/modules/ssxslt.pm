@@ -52,14 +52,13 @@ sub load {
 
 event::register_hook('request_init', 'hook_request_init', 110);
 sub hook_request_init {
-    return if $disable_ssxslt;
+    return if $disable_ssxslt == 1;
 
     # parse the user agent to get a rendering engine and version
     oyster::parse_user_agent();
 
     # figure out of the user's engine and version can handle xml/xslt
-    my $engine  = $REQUEST{'ua_render_engine'};
-    my $version = $REQUEST{'ua_render_engine_version'};
+    my ($engine, $version)  = @REQUEST{ 'ua_render_engine', 'ua_render_engine_version' };
     if    ($engine eq 'msie'  and $version > 5.5) { return }
     elsif ($engine eq 'opera' and $version >= 9)  { return }
     elsif ($engine eq 'gecko')                    { return }
@@ -71,9 +70,9 @@ sub hook_request_init {
     if (exists $REQUEST{'server_side_xslt'}) {
 
         # if this is the first ssxslt request, load gnome's xml libs
-        unless ($loaded) {
+        unless ($loaded == 1) {
             load();
-            if ($disable_ssxslt) {
+            if ($disable_ssxslt == 1) {
                 delete $REQUEST{'server_side_xslt'};
                 return;
             }
