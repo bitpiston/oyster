@@ -57,7 +57,7 @@ sub iter_dir {
     my $i;
     for my $file (<${path}*>) {
 
-        # skip index.xml created by this file
+        # skip index.xml created by this script
         next if $file eq $source_path . 'index.xml';
 
         # if the file is a directory
@@ -87,6 +87,9 @@ sub iter_dir {
             $depth =~ s![^/]+!..!g;
             $attr = qq~depth="$depth"~;
             $xml =~ s/^([\s\S]+?)>/$1 $attr>/o unless ($xml =~ s/^(\s*<document[^>]+)depth="[^"]*"/$1$attr/o);
+            # file
+            $attr = qq~file="$name"~;
+            $xml =~ s/^([\s\S]+?)>/$1 $attr>/o unless ($xml =~ s/^(\s*<document[^>]+)file="[^"]*"/$1$attr/o);
             # save it
             file::write($file, $xml);
 
