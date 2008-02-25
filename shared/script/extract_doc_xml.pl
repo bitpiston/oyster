@@ -79,7 +79,7 @@ sub spider_directory {
             if (length $xml) {
 
                 # preprocess it
-                die "XML does not begin with <document in '$file'." unless $xml =~ /^\s*<document[^<]*>/o;
+                CORE::die "XML does not begin with <document in '$file'." unless $xml =~ /^\s*<document[^<]*>/o;
 
                 # extraction time
                 my $attr = 'extract_time="' . datetime::from_unixtime(time()) . '"';

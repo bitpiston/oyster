@@ -41,9 +41,10 @@ sub iter_dir {
     my $path  = shift;
     my $index = shift;
     my $short_path   = substr($path, length $source_path);
-    my $index_prefix = length $index ? $index . '.' : '' ;
     my $indent_depth = $short_path =~ tr~/~/~;
     my $indent       = "\t" x $indent_depth;
+    my $i;
+    my $index_prefix = length $index ? $index . '.' : '' ;
 
     my $heading_added;
     my $add_index_heading = sub {
@@ -54,7 +55,6 @@ sub iter_dir {
     };
 
     # iterate through files in this directory
-    my $i;
     for my $file (<${path}*>) {
 
         # skip index.xml created by this script
@@ -74,7 +74,7 @@ sub iter_dir {
 
             # add some stuff to the xml
             my $xml = file::read($file);
-            die "XML does not begin with <document in '$file'." unless $xml =~ /^\s*<document[^<]*>/o;
+            CORE::die "XML does not begin with <document in '$file'." unless $xml =~ /^\s*<document[^<]*>/o;
             my $attr;
             # path
             $attr = qq~path="$short_path"~;
@@ -101,6 +101,8 @@ sub iter_dir {
     }
 
     push @index_xml, qq~$indent</directory>~ if $heading_added;
+
+    return $i;
 }
 
 =xml

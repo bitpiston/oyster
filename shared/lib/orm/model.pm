@@ -86,7 +86,7 @@ sub delete {
     my $obj = shift;
 
     # if the object has been saved, remove it from the database
-    $DB->query("DELETE FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'}) if exists $obj->{'id'};
+    $oyster::DB->query("DELETE FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'}) if exists $obj->{'id'};
 
     # destroy the object
     undef %{$obj};

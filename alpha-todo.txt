@@ -38,6 +38,7 @@ DELAYED
 		- necessary, but the testing framework is simple enough that this isn't really REQUIRED for alpha
 + various utils should use console::util to parse args instead of just using @ARGV
 	- Some probably should, but some that don't do it for a reason (file move/copy)
++ add an admin.pm api so that it can create all of the functions and hooks necessary for a module, easily
 
 COMPLETED
 
@@ -97,7 +98,7 @@ COMPLETED
 * move module::*permissions* stuff to user.pm
 * console should print to STDOUT explicitely in case buffers are active
 * bug with user::add_permission_once -- shouldn't that be 'unless $perm_exists' ?
-* xsl compiler creates barebones dynamic styles
+* update xslcompiler to generate dynamic styles (at least the easy ones to figure out)
 
 Finished but need testing
 
@@ -122,9 +123,9 @@ TODO
 - possibly add user list to user admin
 - qdcontent (rename static_content?)
 - ssxslt needs version checks for various rendering engines
-- add an admin.pm api so that it can create all of the functions and hooks necessary for a module, easily
 - change $module_db_prefix to $db_prefix and $module_admin_base_url to $admin_base_url
 - oyster::request::_*?
 - consider separating ajax layout into another file and generating separate dynamic styles for it -- or at least simplifying ajax templates
 	- move ajax stuff for main layout to either a <swaf:ajax_stuff /> element or a js call
 - replace some variables on /oyster/ with style-compile-time variables
+- exceptions->import should accept a flag to NOT log fatal errors (for scripts and whatnot)

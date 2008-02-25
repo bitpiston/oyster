@@ -33,10 +33,20 @@ use XML::LibXML;
 my $parser  = XML::LibXML->new();
 my $xslt    = XML::LibXSLT->new();
 
-my $style_doc = $parser->parse_file('../documentation/source/document.xsl');
-my $style     = $xslt->parse_stylesheet($style_doc);
+my $style = $xslt->parse_stylesheet($parser->parse_file('../documentation/document.xsl'));
+
+# generate doc index xml
 
 compile_dir($source_path);
+
+# generate doc index html
+my $xml = eval { $parser->parse_string(file::read('../documentation/source/index.xml')) };
+CORE::die("Error parsing XML on 'index.xml': $@") if $@;
+my $output = eval { $style->transform($xml) };
+CORE::die("Error applying XSLT on 'index.xml': $@") if $@;
+my $html = $style->output_string($output);
+file::write($dest_path . 'index.xhtml', $html, 1);
+
 
 sub compile_dir {
     my $path = shift;
@@ -52,7 +62,7 @@ sub compile_dir {
             my $output = eval { $style->transform($xml) };
             CORE::die("Error applying XSLT on '$name': $@") if $@;
             my $html = $style->output_string($output);
-            my $dest_file = $dest_path . $name . '.html';
+            my $dest_file = $dest_path . $name . '.xhtml';
             #my ($dest_dir) = ($dest_file =~ /^(.+?)\.html$/o);
             #print "Dest Dir: $dest_dir\n";
             file::write($dest_file, $html, 1);
