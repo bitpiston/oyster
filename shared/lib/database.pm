@@ -4,9 +4,6 @@
         Extensions to DBI functionality (mostly driver neutral access to insert_ids
         and prepared statements)
     </synopsis>
-    <todo>
-        BUG! All of the Pg/mysql conditionals in here use the oyster config, not the driver of the db connection they are operating on!
-    </todo>
 =cut
 
 package database;
@@ -68,28 +65,13 @@ sub connect {
 =cut
 
 sub compress_metadata {
-    return '' unless @_; # sql will expect an empty string
+    return '' if @_ == 0; # sql will expect an empty string
 
     local $" = "\0"; # use tricky string interpolation instead of join
 
     return "@{$_[0]}"      if ref $_[0] eq 'ARRAY';
     return "@{[%{$_[0]}]}" if ref $_[0] eq 'HASH';
     return "@_";
-
-    #if (ref $_[0] eq 'HASH') {
-    #    my @pairs;
-    #    for my $name (keys %{@_}) {
-    #        push @pairs, "$name\0$_[0]->{$name}";
-    #    }
-    #    return join "\0\0", @pairs;
-    #}
-
-    #my %meta = @_;
-    #my @pairs;
-    #for my $name (keys %meta) {
-    #    push @pairs, "$name\0$meta{$name}";
-    #}
-    #return join "\0\0", @pairs;
 }
 
 =xml
@@ -113,17 +95,7 @@ sub compress_metadata {
 =cut
 
 sub expand_metadata {
-    #return () unless length $_[0]; # will expect an empty list (TODO: would return; be sufficient?)
-
-    return split(/\0/o, shift);
-
-    #my %meta;
-    #my @pairs = split /\0\0/, shift;
-    #for my $pair (@pairs) {
-    #    my ($name, $value) = split /\0/, $pair;
-    #    $meta{$name} = $value;
-    #}
-    #return %meta;
+    return split(/\0/o, $_[0]);
 }
 
 =xml
@@ -147,12 +119,13 @@ use exceptions;
 
 sub insert_id {
     my ($DB, $seq) = @_;
+    my $driver = $DB->{'Driver'}->{'Name'};
 
     # MySQL
-    return $DB->{'mysql_insertid'}                                              if $oyster::CONFIG{'database'}->{'driver'} eq 'mysql';
+    return $DB->{'mysql_insertid'}                                              if $driver eq 'mysql';
 
     # PostgreSQL
-    return $DB->last_insert_id(undef, undef, undef, undef, { sequence=> $seq }) if $oyster::CONFIG{'database'}->{'driver'} eq 'Pg';
+    return $DB->last_insert_id(undef, undef, undef, undef, { sequence=> $seq }) if $driver eq 'Pg';
 }
 
 =xml
@@ -172,13 +145,14 @@ sub insert_id {
 
 sub server_prepare {
     my ($DB, $sql) = @_;
+    my $driver = $DB->{'Driver'}->{'Name'};
 
     # MySQL
-    #return $DBH->prepare($sql, { 'mysql_server_prepare' => 1 }) if $oyster::CONFIG{'database'}->{'driver'} eq 'mysql';
-    return $DB->prepare($sql) if $oyster::CONFIG{'database'}->{'driver'} eq 'mysql';
+    #return $DBH->prepare($sql, { 'mysql_server_prepare' => 1 }) if $driver eq 'mysql';
+    return $DB->prepare($sql) if $driver eq 'mysql';
 
     # PostgreSQL
-    return $DB->prepare($sql, { 'pg_server_prepare' => 1 }) if $oyster::CONFIG{'database'}->{'driver'} eq 'Pg';
+    return $DB->prepare($sql, { 'pg_server_prepare' => 1 }) if $driver eq 'Pg';
 }
 
 =xml
