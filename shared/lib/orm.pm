@@ -2,6 +2,7 @@
 package orm;
 
 use orm::model;
+use orm::result_set;
 use orm::field::type;
 use orm::field::type::hash_fast;
 use orm::field::type::metadata;

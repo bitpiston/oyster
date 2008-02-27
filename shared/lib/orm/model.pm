@@ -27,11 +27,15 @@ sub new {
     return $obj;
 }
 
+sub new_from_db {
+    my $class  = shift;
+    my $rowobj = shift;
+}
+
+# this should never be called directly, only via the auto-generated imported get()'s
 sub get {
-    my $where;
-    my @where_values;
-    my @columns;
-    my $offset = 0;
+    my ($class, $limit, $offset, $where, @where_values, @columns) = (shift(), ' LIMIT 1');
+    my $model = ${ $class . '::model' };
 
     # parse arguments
     while (@_) {
@@ -39,16 +43,19 @@ sub get {
 
         # where clauses
         if ($arg eq 'where') {
-            #my $arg = shift;
-            #$where = shift @{$arg};
-            #@where_values = @{$arg};
             @where_values = @{ shift() };
-            $where        = shift @where_values;
+            $where        = ' WHERE ' . shift @where_values;
         }
 
         # offset
         elsif ($arg eq 'offset') {
-            $offset = shift;
+            $offset = ' OFFSET ' . shift();
+        }
+
+        # limit
+        elsif ($arg eq 'limit') {
+            my $num = shift;
+            $limit = $num == 0 ? '' : " LIMIT $num" ;
         }
 
         # the argument is a column name
@@ -58,8 +65,18 @@ sub get {
     }
 
     # prepare and execute the query
-    my $columns = @columns ? join(', ', @columns) : '*' ;
-    $oyster::DB->query("SELECT $columns FROM");
+    my $columns = @columns == 0 ? '*' : join(', ', @columns) ;
+    my $query   = $oyster::DB->query("SELECT $columns FROM $model->{table}$where$limit$offset");
+
+    # if limit was not 1 (a result set is expected)
+    if ($limit ne ' LIMIT 1') {
+        return orm::result_set::new($class, $model, $query);
+    }
+
+    # a single row object should be returned
+    else {
+        return $class->new_from_db($query);
+    }
 }
 
 sub save {
@@ -90,6 +107,22 @@ sub delete {
 
     # destroy the object
     undef %{$obj};
+}
+
+sub import {
+    my $pkg = $_[0] ne 'orm::model' ? $_[0] : caller() ;
+    return if $pkg eq 'orm'; # don't import into orm.pm -- it's just pulling in all of the orm stuff
+
+    eval qq~
+        sub ${pkg}::get {
+            unshift \@_, '$pkg';
+            goto &orm::model::get;
+        }
+        sub ${pkg}::get_all {
+            unshift \@_, '$pkg', 'limit', 0;
+            goto &orm::model::get;
+        }
+    ~;
 }
 
 sub AUTOLOAD {
