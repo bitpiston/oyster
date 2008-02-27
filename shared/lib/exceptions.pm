@@ -19,6 +19,9 @@
 
 package exceptions;
 
+our @stack;           # stores a handlers for try blocks
+our $disable_logging; # if set to true, will disable error logging
+
 # override perl's die() with something that logs the error
 *CORE::GLOBAL::die = sub {
     my $error = @_ ? shift : $@ ; # for some reason certain deaths don't pass their error string (base::import... aka a problem during use module;)
@@ -27,12 +30,10 @@ package exceptions;
         require Data::Dumper;
         $error .= "\nREQUEST:\n" . Data::Dumper::Dumper(%REQUEST);
     }
-    log::error('Died: '  . $error);
+    log::error('Died: '  . $error) unless $disable_logging;
     print STDERR "Fatal Error:\n$error\n";
     CORE::exit;
 };
-
-our @stack; # stores a handlers for try blocks
 
 =xml
     <function name="throw">
@@ -252,7 +253,6 @@ sub abort {
     CORE::die($exception);
 }
 
-
 =xml
     <function name="trace">
         <synopsis>
@@ -292,12 +292,13 @@ sub trace {
 # export exception functions
 sub import {
     my $pkg = $_[0] ne 'exceptions' ? $_[0] : caller();
+    $disable_logging = 1 if $_[1] eq 'nolog';
 
-    *{ $pkg . '::try' }     = \&try;
-    *{ $pkg . '::catch' }   = \&catch;
-    *{ $pkg . '::with' }    = \&with;
-    *{ $pkg . '::throw' }   = \&throw;
-    *{ $pkg . '::abort' }   = \&abort;
+    *{ $pkg . '::try' }   = \&try;
+    *{ $pkg . '::catch' } = \&catch;
+    *{ $pkg . '::with' }  = \&with;
+    *{ $pkg . '::throw' } = \&throw;
+    *{ $pkg . '::abort' } = \&abort;
 }
 
 # Copyright BitPiston 2008

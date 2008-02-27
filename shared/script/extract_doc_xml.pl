@@ -15,7 +15,7 @@ BEGIN {
 }
 
 # load the oyster base class
-use oyster 'launcher';
+use oyster 'script';
 
 # load oyster
 eval { oyster::load($config, load_modules => 0, load_libs => 1) };

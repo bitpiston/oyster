@@ -16,8 +16,8 @@ BEGIN {
 }
 
 # load oyster libraries
-use oyster 'launcher';
-use exceptions;
+use oyster 'script';
+use exceptions 'nolog';
 #use module;
 #use database;
 

@@ -139,12 +139,17 @@ sub import {
         # nothing
     }
 
+    # script
+    elsif ($import_set eq 'script') {
+        $exceptions::disable_logging = 1;
+    }
+
     # daemon
     elsif ($import_set eq 'daemon') {
         # todo
     }
 
-    # daemon
+    # test
     elsif ($import_set eq 'test') {
         # todo
     }

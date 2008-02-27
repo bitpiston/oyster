@@ -18,7 +18,7 @@ $source_path .= '/' unless $source_path =~ m!/$!;
 use lib './lib/';
 
 use file;
-use exceptions;
+use exceptions 'nolog';
 use log;
 
 my %directory_titles = (

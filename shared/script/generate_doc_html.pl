@@ -24,7 +24,7 @@ $dest_path.= '/' unless $dest_path=~ m!/$!;
 use lib './lib/';
 
 use file;
-use exceptions;
+use exceptions 'nolog';
 use log;
 
 use XML::LibXSLT;

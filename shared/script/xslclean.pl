@@ -21,7 +21,7 @@ BEGIN {
 }
 
 # load the oyster base class
-use oyster 'launcher';
+use oyster 'script';
 
 my $styles_path = "$config->{site_path}styles/";
 
