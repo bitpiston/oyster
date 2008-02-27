@@ -1,7 +1,6 @@
 package url;
 
-use orm;
-use base 'orm::model';
+use orm 'model';
 
 our $model = {
     'table'  => 'site_urls',

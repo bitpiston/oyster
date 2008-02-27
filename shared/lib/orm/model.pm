@@ -3,36 +3,15 @@ package orm::model;
 use exceptions;
 
 sub new {
-    my $class = shift;
-    my $model = ${ $class . '::model' };
-    my $obj   = bless {'model' => $model}, $class;
-
-    # create fields
-    my $model_fields = $model->{'fields'};
-    for my $field_id (keys %{$model_fields}) {
-        my $model_field = $model_fields->{$field_id};
-        $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-    }
-
-    # set field values if any were specified
-    if (@_) {
-        my %values     = @_;
-        my $obj_fields = $obj->{'fields'};
-        for my $field_id (keys %values) {
-            $obj_fields->{$field_id}->value($values{$field_id});
-        }
-    }
-
-    # return the new orm object
-    return $obj;
+    goto &orm::object::new;
 }
 
 sub new_from_db {
-    my $class  = shift;
-    my $rowobj = shift;
+    goto &orm::object::new_from_db;
 }
 
 # this should never be called directly, only via the auto-generated imported get()'s
+# is that true? this would work fine as long as it was called as a method
 sub get {
     my ($class, $limit, $offset, $where, @where_values, @columns) = (shift(), ' LIMIT 1');
     my $model = ${ $class . '::model' };
@@ -68,45 +47,14 @@ sub get {
     my $columns = @columns == 0 ? '*' : join(', ', @columns) ;
     my $query   = $oyster::DB->query("SELECT $columns FROM $model->{table}$where$limit$offset");
 
+    # if no rows were returned
+    return if $query->rows() == 0;
+
     # if limit was not 1 (a result set is expected)
-    if ($limit ne ' LIMIT 1') {
-        return orm::result_set::new($class, $model, $query);
-    }
+    return orm::result_set::new($class, $model, $query) if ($limit ne ' LIMIT 1');
 
     # a single row object should be returned
-    else {
-        return $class->new_from_db($query);
-    }
-}
-
-sub save {
-    my $obj = shift;
-
-    my %fields;
-    my $obj_fields = $obj->{'fields'};
-    for my $field_id (keys %{$obj_fields}) {
-        $fields{$field_id} = $obj_fields->{$field_id}->get_save_value();
-    }
-
-    # if the object has an ID, just update it
-    if (exists $obj->{'id'}) {
-        #
-    }
-
-    # if the object has no ID, insert it
-    else {
-        #
-    }
-}
-
-sub delete {
-    my $obj = shift;
-
-    # if the object has been saved, remove it from the database
-    $oyster::DB->query("DELETE FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'}) if exists $obj->{'id'};
-
-    # destroy the object
-    undef %{$obj};
+    return $class->new_from_db($query);
 }
 
 sub import {
@@ -122,15 +70,15 @@ sub import {
             unshift \@_, '$pkg', 'limit', 0;
             goto &orm::model::get;
         }
+        #package ${pkg}::object;
+        #use base 'orm::object';
+        push @${pkg}::object::ISA, 'orm::object';
     ~;
 }
 
 sub AUTOLOAD {
     my $obj      = shift;
     my ($method) = ($AUTOLOAD =~ /::(.+?)$/o);
-
-    # field objects
-    return $obj->{'fields'}->{$method} if exists $obj->{'fields'}->{$method};
 
     # dynamic select
     

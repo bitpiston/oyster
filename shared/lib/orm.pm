@@ -1,8 +1,9 @@
 
 package orm;
 
+use orm::object;
+use orm::object::set;
 use orm::model;
-use orm::result_set;
 use orm::field::type;
 use orm::field::type::hash_fast;
 use orm::field::type::metadata;
@@ -10,6 +11,13 @@ use orm::field::type::url;
 use orm::field::type::sql::bool;
 use orm::field::type::sql::int;
 use orm::field::type::sql::varchar;
+
+sub import {
+    return unless $_[1] eq 'model';
+    my $pkg = $_[0] ne 'orm' ? $_[0] : caller() ;
+    orm::model::import($pkg);
+    push @{ $pkg . '::ISA' }, 'orm::model';
+}
 
 1;
 
