@@ -72,13 +72,13 @@ sub import {
         }
         #package ${pkg}::object;
         #use base 'orm::object';
-        push @${pkg}::object::ISA, 'orm::object';
+        push \@${pkg}::object::ISA, 'orm::object';
     ~;
 }
 
 sub AUTOLOAD {
     my $obj      = shift;
-    my ($method) = ($AUTOLOAD =~ /::(.+?)$/o);
+    my ($method) = ($AUTOLOAD =~ /([^:]+)$/o);
 
     # dynamic select
     

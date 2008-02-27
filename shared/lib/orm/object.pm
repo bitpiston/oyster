@@ -64,7 +64,7 @@ sub delete {
 
 sub AUTOLOAD {
     my $obj      = shift;
-    my ($method) = ($AUTOLOAD =~ /::(.+?)$/o);
+    my ($method) = ($AUTOLOAD =~ /([^:]+)$/o);
 
     # field objects
     return $obj->{'fields'}->{$method} if exists $obj->{'fields'}->{$method};
