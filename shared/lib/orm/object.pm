@@ -3,24 +3,17 @@ package orm::object;
 use exceptions;
 
 sub new {
-    my $class = shift;
-    my $model = ${ $class . '::model' };
-    my $obj   = bless {'model' => $model}, $class . '::object';
+    my $class  = shift;
+    my %values = @_;
+    my $model  = ${ $class . '::model' };
+    my $obj    = bless {'model' => $model}, $class . '::object';
 
     # create fields
     my $model_fields = $model->{'fields'};
     for my $field_id (keys %{$model_fields}) {
         my $model_field = $model_fields->{$field_id};
         $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-    }
-
-    # set field values if any were specified
-    if (@_) {
-        my %values     = @_;
-        my $obj_fields = $obj->{'fields'};
-        for my $field_id (keys %values) {
-            $obj_fields->{$field_id}->value($values{$field_id});
-        }
+        $obj->{'fields'}->{$field_id}->value($values{$field_id}) if exists $values{$field_id};
     }
 
     # return the new orm object
@@ -29,7 +22,20 @@ sub new {
 
 sub new_from_db {
     my $class  = shift;
-    my $rowobj = shift;
+    my $values = shift()->fetchrow_hashref();
+    my $model  = ${ $class . '::model' };
+    my $obj    = bless {'model' => $model}, $class . '::object';
+
+    # create fields
+    my $model_fields = $model->{'fields'};
+    for my $field_id (keys %{$model_fields}) {
+        my $model_field = $model_fields->{$field_id};
+        $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+        $obj->{'fields'}->{$field_id}->value_from_db($values->{$field_id});
+    }
+
+    # return the new orm object
+    return $obj;
 }
 
 sub save {

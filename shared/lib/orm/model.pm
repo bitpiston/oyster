@@ -70,8 +70,6 @@ sub import {
             unshift \@_, '$pkg', 'limit', 0;
             goto &orm::model::get;
         }
-        #package ${pkg}::object;
-        #use base 'orm::object';
         push \@${pkg}::object::ISA, 'orm::object';
     ~;
 }

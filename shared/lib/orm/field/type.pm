@@ -13,7 +13,7 @@ sub new {
     }, $class;
     Scalar::Util::weaken($obj->{'orm_obj'});
 
-    # set default value, if any
+    # set the default value, if any
     $obj->value($model_field->{'default'}) if exists $model_field->{'default'};
 
     # return the object
@@ -24,6 +24,11 @@ sub value {
     my $obj         = shift;
     $obj->{'value'} = shift if @_;
     return $obj->{'value'};
+}
+
+sub value_from_db {
+    my $obj = shift;
+    $obj->{'value'} = shift;
 }
 
 sub get_save_value {

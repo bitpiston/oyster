@@ -13,7 +13,8 @@ sub num {
 }
 
 sub next {
-    #
+    my $set = shift;
+    return $set->{'class'}->new_from_db($set->{'query'});
 }
 
 1;
