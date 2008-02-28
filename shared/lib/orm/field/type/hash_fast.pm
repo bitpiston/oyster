@@ -1,5 +1,7 @@
 package orm::field::type::hash_fast;
 
+use base 'orm::field::type';
+
 use Scalar::Util;
 
 sub new {
@@ -20,7 +22,7 @@ sub new {
 
 sub value {
     my $obj = shift;
-    hash::fast($obj->{'orm_obj'}->{'fields'}->{ $obj->{'hash_field'} }->value());
+    hash::fast( $obj->{'orm_obj'}->{'fields'}->{ $obj->{'hash_field'} }->value() );
 }
 
 sub get_save_value {
