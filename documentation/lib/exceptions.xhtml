@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>Exception Handling Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+        Handle modules that throw stringifiable objects (use Error;)
+    </li><li>
+        FIXME! If an exception is thrown from a catch block, it should NOT be thrown from the same level it was caught, but one below
+    </li><li>
+        Catch blocks should probably assume abort()
+    </li><li>
+        Some optimizations could be made here, lots of unnecessary boolean-context conditionals
+    </li></ul></div>
+    <p>
+        Functions that allow errors to be handled and trapped.
+    </p>
+    
+    
+    
+    
+    <div class="function"><h2>throw</h2><p>
+            Throws an exception to be caught by a catch handler.
+        </p><p class="note">
+            The perl here is can be pretty tough to understand, it is heavily
+            documented!
+        </p><p class="note">
+            "=&gt;" is just syntactic sugar, you can use "," too.
+        </p><p class="note">
+            Handlers are executed in the scope of where the exception was thrown
+            from, this is a byproduct of how the exception system works (handlers
+            can choose to abort or not)
+        </p><p class="note">
+            Exceptions thrown from inside handlers are treated as if the exception
+            was thrown from the same scope that the original exception came from.
+        </p><h3>throw</h3><h3>Prototype:</h3><pre class="prototype">
+            throw(string exception_type[ =&gt; arguments to be passed to exception handler])
+        </pre><h3>throw</h3><h3>Example:</h3><pre class="code">
+            throw('validation_error', 'Title is too short') if length($INPUT{'title'}) &lt; 5;
+        </pre><pre class="code">
+            throw 'validation_error' =&gt; 'Title is too short' if length $INPUT{'title'} &lt; 5;
+        </pre></div>
+    <div class="function"><h2>catch</h2><p>
+            Executes a block of code, trapping exceptions.  Returns true if the block
+            executed successfully without exceptions, false otherwise.
+        </p><p class="note">
+            If an exception of an unknown type is encountered, it is rethrown as a
+            perl_error.
+        </p><p class="note">
+            Exceptions *must* be caught!  An uncaught exception raises a perl_error.
+        </p><p class="note">
+            If multiple catch blocks are defined for the same exception type, the
+            innermost takes precedence.
+        </p><p class="note">
+            If an exception is caught further up the stack than it was thrown, the
+            handler can either abort at the level it was caught at or the level it
+            was thrown at.  See abort() for more information.
+        </p><h3>catch</h3><h3>Prototype:</h3><pre class="prototype">
+            bool success = try { block } [ catch string exception_type, with { block } ... ];
+        </pre><h3>catch</h3><h3>Example:</h3><pre class="code">
+        try {
+            print "Hello";
+                throw 'error' =&gt; 'something went terribly wrong' if $armageddon;
+                print " World\n";
+            }
+        </pre><pre class="code">
+            catch 'error', with {
+               my $msg = shift;
+               print "Error: $msg\n";
+               abort();
+            };
+        </pre></div>
+    <div class="function"><h2>abort</h2><p>
+            Ends execution of a try block.
+        </p><p class="note">
+            Calling abort() with no arguments will end all blocks up to where the
+            error was caught.
+        </p><p class="note">
+            Calling abort(1) ends only the most recent try block, regardless of
+            where the error was caught.
+        </p><p class="note">
+            If no try blocks are active, returns false and does nothing.
+        </p><p class="note">
+            If called outside of a catch block, this will always act as abort(1).
+        </p><h3>abort</h3><h3>Prototype:</h3><pre class="prototype">
+            abort([bool only_current_block])
+        </pre></div>
+    <div class="function"><h2>trace</h2><p>
+            
+        </p><p class="note">
+            
+        </p><h3>trace</h3><h3>Prototype:</h3><pre class="prototype">
+            
+        </pre><h3>trace</h3><h3>Example:</h3><pre class="code">
+            
+        </pre></div>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<document title="Server Side XSLT Module" extract_time="2008-02-28 07:29:59" source="./modules/ssxslt.pm" path="modules/" index="3.2" depth="../" file="ssxslt">
+    <synopsis>
+        Does XSL processing using the Gnome LibXSLT libraries
+    </synopsis>
+    <todo>
+        Add alternatives to Gnome LibXSLT/XML
+    </todo>
+    <todo>
+       Drop cached styles after a given time period, to prevent rarely-used styles from permanentally hogging memory.
+    </todo>
+</document>

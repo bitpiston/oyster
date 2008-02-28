@@ -1,0 +1,151 @@
+<document title="File Functions" extract_time="2008-02-28 07:29:59" source="./lib/file.pm" path="lib/" index="2.10" depth="../" file="file">
+    <synopsis>
+        Functions associated with file manipulation.  This is a lightweight
+        implementation of several File::* CPAN modules.
+    </synopsis>
+    <todo>
+        Size and mtime should throw exceptions if the file does not exist.
+    </todo>
+    <function name="tmp_name">
+        <synopsis>
+            Generates a name for a temporary file, returns the path to that file
+        </synopsis>
+        <prototype>
+            string file_path = file::tmp_name()
+        </prototype>
+    </function>
+    <function name="tmp_web_name">
+        <warning>
+            Unimplemented
+        </warning>
+        <synopsis>
+            Generates a name for a temporary file in a web accessible directory,
+            returns both the path and url to that file
+        </synopsis>
+        <note>
+            A single argument is optional, if specified, it will be used as the file
+            extension.
+        </note>
+        <prototype>
+            string file_path, string file_url = file::tmp_web_name([string extension])
+        </prototype>
+    </function>
+    <function name="rename">
+        <synopsis>
+            Move or rename a file
+        </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
+        <prototype>
+            file::rename(string from_filename, string to_filename)
+        </prototype>
+        <example>
+            file::rename("foo.txt", "bar.txt");
+        </example>
+    </function>
+    
+    <function name="move">
+        <note>
+            file::move is an alias for <link target="rename">file::rename</link>
+        </note>
+    </function>
+    <function name="copy">
+        <synopsis>
+            Copy a file or a directory
+        </synopsis>
+        <note>
+            throws a 'perl_error' exception on failure
+        </note>
+        <prototype>
+            file::copy(string from_filename, string to_filename)
+        </prototype>
+        <example>
+            file::copy("foo.txt", "bar.txt");
+        </example>
+    </function>
+    <function name="size">
+        <synopsis>
+            Returns a file's size, in kilobytes
+        </synopsis>
+        <prototype>
+            int fsize = file::size(string filename)
+        </prototype>
+    </function>
+    <function name="slurp">
+        <synopsis>
+            Quick and dirty file reading
+        </synopsis>
+        <note>
+            Throws a perl_error exception on failure
+        </note>
+        <prototype>
+            string file_contents = file::slurp(string filename)
+        </prototype>
+        <example>
+            
+        </example>
+        <todo>
+            
+        </todo>
+    </function>
+    
+    <function name="read">
+        <note>
+            file::read is an alias for <link target="slurp">file::slurp</link>
+        </note>
+    </function>
+    <function name="write">
+        <synopsis>
+            Quick and dirty file writing
+        </synopsis>
+        <note>
+            The third optional argument, if true, will attempt to create any directories necessary to create to the file.
+        </note>
+        <note>
+            Throws a perl_error exception on failure
+        </note>
+        <prototype>
+            file::write(string filename, string file_contents[, bool autocreate_directories])
+        </prototype>
+        <todo>
+        	replace single last argument with optional flags for dir_autocreate, append, utf8, bin
+        </todo>
+    </function>
+    <function name="rmdir">
+        <synopsis>
+            Recursively deletes a directory and everything inside it.
+        </synopsis>
+        <note>
+            Throws a perl_error exception on failure
+        </note>
+        <prototype>
+            file::rmdir(string path)
+        </prototype>
+    </function>
+    <function name="mkdir">
+        <synopsis>
+            Recursively creates a directory and all directories leading up to it (if necessary)
+        </synopsis>
+        <prototype>
+            file::mkdir(string path)
+        </prototype>
+    </function>
+    <function name="mtime">
+        <synopsis>
+            Returns a file's last-modified time
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+        <todo>
+            this should be adjusted to gmt
+        </todo>
+    </function>
+</document>

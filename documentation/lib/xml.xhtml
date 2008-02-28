@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>XML Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+        Possibly make include/call syntax more strict so the regex parsing is
+        faster.
+    </li><li>
+        I think there may be a bug with proper_english in the xhtml and bbcode
+        parsers -- since they pass entify text in small chunks entities that have
+        a start end (quotations) will not work properly if there is a tag/element
+        between them.
+    </li></ul></div>
+    <p>
+        Functions related to xml validation, transformation, and parsing.
+    </p>
+    
+    
+    <div class="function"><h2>strip_elements</h2><p>
+            Takes an xml-safe string and strips xml elements (aka tags/nodes)
+        </p><p class="note">
+            The 'xml-safe' part is important! If the string contains '&lt;' or '&gt;',
+            they will be interpretted as parts of xml elements.
+        </p><p class="note">
+            The optional second argument can be used to replace elements with
+            something instead of merely stripping them.
+        </p><h3>strip_elements</h3><h3>Prototype:</h3><pre class="prototype">
+            string = xml::strip_elements(string[, string replace_with])
+        </pre></div>
+    <div class="function"><h2>replace_entities</h2><p>
+            Takes an XML-safe string and replaces XML entities with their plain ASCII equivalents
+        </p><h3>replace_entities</h3><h3>Prototype:</h3><pre class="prototype">
+            string = xml::replace_entities(string)
+        </pre></div>
+    <div class="function"><h2>entities</h2><p>
+            Takes a string and makes it XML-safe.
+        </p><p class="note">
+            The 'safe' flag, if set, will not re-entify things that already look
+            like entities; this is useful if you are not sure if a string already
+            contains XML entities.  For example, xml::entities('&amp;amp;', safe =&gt; 1)
+            would result in '&amp;amp;', not '&amp;amp;amp;'.
+        </p><p class="note">
+            The 'proper_english' flag replaces various entities with their "proper"
+            equivalents, including: ellipses, dashes, subtraction, hyphenation,
+            single/double quotes, and apostrophes.
+        </p><h3>entities</h3><h3>Prototype:</h3><pre class="prototype">
+            string = xml::entities(string[, 'safe'][, 'proper_english'])
+        </pre><h3>entities</h3><h3>Example:</h3><pre class="code">
+            print xml::entities($INPUT{'title'});
+        </pre></div>
+    <div class="function"><h2>bbcode</h2><p>
+            Transforms BBcode into XHTML
+        </p><p class="note">
+            This function raises a validation_error if a problem is encountered.
+        </p><h3>bbcode</h3><h3>Prototype:</h3><pre class="prototype">
+            string xhtml = xml::bbcode(string bbcode[, disabled_tags =&gt; hashref, allow_calls =&gt; bool, allow_includes =&gt; bool])
+        </pre><h3>bbcode</h3><h3>Example:</h3><pre class="code">
+            my $post = xml::bbcode($INPUT{'post'});
+        </pre></div>
+    <div class="function"><h2>_bbcode_parse_code</h2><p>
+            Parses BBcode until a [/code] tag is found
+        </p><p class="note">
+            This function properly keeps track of embedded [code] tags and only
+            returns when the right ending tag is found.
+        </p><p class="note">
+            This is used internally by bbcode(), modules should never need to
+            call this; it is not exported by default.
+        </p><h3>_bbcode_parse_code</h3><h3>Prototype:</h3><pre class="prototype">
+            my ($bbcode, $xhtml) = _bbcode_parse_code($bbcode, $xhtml)
+        </pre></div>
+    <div class="function"><h2>_bbcode_inspect_stack</h2><p>
+            Allows you to inspect the bbcode tag stack
+        </p><p class="note">
+            This function returns undef if the tag is not found, this means
+            that if you are checking to see if a tag is in the stack (and don't
+            care about its position) you must check if the result is defined,
+            not just that it is true.
+        </p><p class="note">
+            Offset defaults to zero.
+        </p><h3>_bbcode_inspect_stack</h3><h3>Prototype:</h3><pre class="prototype">
+            int position = _bbcode_inspect_stack(string tag_name[, int offset])
+        </pre></div>
+    <div class="function"><h2>validate_xhtml</h2><p>
+            Validates xhtml and returns the xml-compatible equivalent
+        </p><p class="note">
+            This may potentially change the xhtml, transforming some entities to be
+            xml-friendly.
+        </p><p class="note">
+            If a parse-error is encountered, a validation_error will be raised.
+        </p><p class="note">
+            Calls allow you to dynamically (each page view) include data from other
+            modules.
+        </p><p class="note">
+            Includes allow you to include data from other modules when the page is
+            saved.
+        </p><p class="note">
+            The permission level option allows you to only enable certain xhtml
+            tags.
+        </p><h3>validate_xhtml</h3><h3>Prototype:</h3><pre class="prototype">
+            string xml = xml::validate_xhtml(string xhtml[, permission_level =&gt; int level, allow_calls =&gt; bool, allow_includes =&gt; bool])
+        </pre></div>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+<document title="Oyster Update/Installation Utility" extract_time="2008-02-28 07:29:59" source="./script/update.pl" path="script/" index="5.15" depth="../" file="update">
+    <synopsis>
+        This utility runs module installation routines and brings their revisions up to date.
+    </synopsis>
+    <todo>
+        Document how to create revision files.
+    </todo>
+    <todo>
+        Document arguments
+    </todo>
+</document>

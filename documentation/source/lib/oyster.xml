@@ -1,0 +1,288 @@
+<document title="Oyster" extract_time="2008-02-28 07:29:59" source="./lib/oyster.pm" path="lib/" index="2.18" depth="../" file="oyster">
+    <synopsis>
+        This is a lightweight web application framework, focusing on: speed, flexibility, scalability, and ease of development.  For more information, visit <link uri="http://oyster.bitpiston.com">the official Oyster website</link>.
+    </synopsis>
+    <section title="Global Variables">
+        <synopsis>
+            These are exported to modules.
+        </synopsis>
+        <dl>
+            <dt>%REQUEST</dt>
+            <dd>Data associated with the current request (such as the style, templates, module, action, etc).  This is a good place to store data that you want to persist for only the current request; but be careful to avoid conflicts.</dd>
+            <dt>%INPUT</dt>
+            <dd>GET/POST data for the current request</dd>
+            <dt>%COOKIES</dt>
+            <dd>Cookie data for the current request</dd>
+            <dt>$DB</dt>
+            <dd>The database object</dd>
+            <dt>%CONFIG</dt>
+            <dd>The Oyster configuration, a combination of config.pl, information from the database, and some values added when Oyster is loaded</dd>
+        </dl>
+    </section>
+    <section title="Internals">
+        <synopsis>
+            These are functions used to run oyster, rarely called by external code (except for launchers).
+        </synopsis>
+        <function name="import">
+            <synopsis>
+                Exports Oyster variables
+            </synopsis>
+            <note>
+                Can optionally be passed an argument to be imported into a specific package instead of the caller.
+            </note>
+            <note>
+                Import sets: module, launcher, test, daemon (some are NYI or dont export anything)
+            </note>
+            <prototype>
+                oyster::import(string package_name[, string import_set])
+            </prototype>
+            <prototype>
+                use oyster [string import_set]
+            </prototype>
+            <prototype>
+                oyster->import([string import_set])
+            </prototype>
+        </function>
+        <function name="load">
+            <synopsis>
+                Load Oyster and prepares the oyster environment
+            </synopsis>
+            <note>
+                The optional arguments can be used to tell Oyster to only load certain things.  This can be useful for certain scripts that only need a minimal Oyster environment.
+            </note>
+            <note>
+                All optional arguments default to true.
+            </note>
+            <note>
+                'load_config' determines whether additional configuration data should be loaded from the database.
+            </note>
+            <note>
+                'load_libs' does not determine whether libraries are imported or not, but whether their load event routines are called.
+            </note>
+            <note>
+                'load_request' determines whether Oyster should be prepared to serve page requests.
+            </note>
+            <note>
+                'load_modules' determines whether modules will be loaded.
+            </note>
+            <prototype>
+                oyster::load(hashref configuration[, db_connect => bool][, load_config => bool][, load_modules => bool][, load_libs => bool][, load_request => bool])
+            </prototype>
+        </function>
+        <function name="_db_connect">
+            <synopsis>
+                Establishes a database connection if one isn't already active
+            </synopsis>
+            <todo>
+                Ensure the 'force_reconnect' argument properly re-uses the same database object.
+            </todo>
+            <prototype>
+                _db_connect([bool force_reconnect])
+            </prototype>
+        </function>
+        <function name="_load_config">
+            <synopsis>
+                Loads (or reloads) oyster configuration
+            </synopsis>
+            <prototype>
+                _load_config()
+            </prototype>
+        </function>
+        <function name="_load_modules">
+            <synopsis>
+                Loads (or reloads) oyster modules
+            </synopsis>
+            <prototype>
+                _load_modules()
+            </prototype>
+        </function>
+    </section>
+    
+    <section title="Request Handling">
+        <synopsis>
+            These functions deal with handling page requests.  Like the above internal functions, should rarely be called by outside code (except for launchers).
+        </synopsis>
+        <function name="request_pre">
+            <synopsis>
+                Called before each page request
+            </synopsis>
+            <note>
+                This is primarily used to perform updates necessary to keep daemons in sync before the next page should be served.
+            </note>
+            <prototype>
+                oyster::request_pre()
+            </prototype>
+        </function>
+        <function name="request_handler">
+            <synopsis>
+                Called to handle each page request
+            </synopsis>
+            <prototype>
+                oyster::request_handler()
+            </prototype>
+            <note>
+                <p>
+                    The output buffer used here is a necessary evil (the header
+                    must know which .xsl file to include, but that is not known
+                    until the action is executed). However, it is a
+                    vulnerability.  Perl cannot free memory back to the operating
+                    system once it has claimed it, so if the buffer becomes
+                    excessively large, the process will hog memory even after the
+                    buffer is cleared.
+                </p>
+                <p>
+                    This is possible to work around by wrapping your action in the
+                    following code:
+                    <example>
+                        # style::include() all necessary styles before doing this...
+                        buffer::end();
+                        print::header();
+                        # code here that may potentially print lots of xml
+                        buffer::start();
+                    </example>
+                </p>
+                <p>
+                    However, this will NOT help if the request requires SSXSLT.
+                    There is currently no way to work around this.
+                </p>
+            </note>
+            <todo>
+                Possibly make an option that will buffer to a file instead of
+                to memory.
+            </todo>
+        </function>
+        <function name="request_cleanup">
+            <synopsis>
+                Performed after request_handler, after the connection is closed
+            </synopsis>
+            <note>
+                Hooking into request_cleanup is favorable to request_finish (unless you have a good reason), since request_finish hooks should not print anything anyways.
+            </note>
+            <warning>
+                request_cleanup does NOT trap exceptions! (TODO!)
+            </warning>
+            <prototype>
+                oyster::request_cleanup()
+            </prototype>
+        </function>
+        <function name="_load_exception_handlers">
+            <synopsis>
+                Prepares the exception handlers necessary to serve a page request.
+            </synopsis>
+            <prototype>
+                _load_exception_handlers()
+            </prototype>
+        </function>
+    </section>
+
+    <section title="Public API">
+        <synopsis>
+            The oyster API is a set of functions available to all oyster code and oyster modules.
+        </synopsis>
+        <function name="execute_script">
+            <synopsis>
+                Executes a script in the shared_path/script/ directory, under the current site ID.
+            </synopsis>
+            <note>
+                The first argument is the filename without the .pl extension.
+            </note>
+            <prototype>
+                string output = oyster::execute_script(string script_name[, array args])
+            </prototype>
+            <example>
+                print execute_script('xslcompiler');
+            </example>
+        </function>
+        <function name="restart">
+            <synopsis>
+                Restarts the current script.
+            </synopsis>
+            <prototype>
+                oyster::restart()
+            </prototype>
+        </function>
+        <function name="perl_require">
+            <synopsis>
+                Performs a 'require' without Oyster's library search paths.
+            </synopsis>
+            <note>
+                This cannot be used like 'require IO::Socket', you must use 'IO/Socket.pm' instead.
+            </note>
+            <prototype>
+                oyster::perl_require(string filename)
+            </prototype>
+            <todo>
+                Is this necessary? The fact that all of our libs are lowercase should stop conflicts anyways.  This is only a slower, less flexible, version of 'require'
+            </todo>
+        </function>
+        <function name="shell_escape">
+            <synopsis>
+                Escapes characters to avoid injection when executing shell commands.
+            </synopsis>
+            <note>
+                Currently only escapes double quotes.  The data passed to this function
+                assumes that it will be placed inside double quotes when it is passed to
+                the shell.
+            </note>
+            <prototype>
+                string escaped_string = oyster::shell_escape(string)
+            </prototype>
+            <todo>
+                Make this better, should have different mechanics for different shells.
+            </todo>
+        </function>
+        <function name="dump">
+            <synopsis>
+                Uses Data::Dumper to return a dump of a variable.
+            </synopsis>
+            <note>
+                This is simply here for convenience.
+            </note>
+            <note>
+                It is probably not a good idea to use this in production code, as it loads Data::Dumper once it is called, which requires a significant amount of memory.
+            </note>
+            <note>
+                Like Data::Dumper::Dumper, be sure to pass a ref.
+            </note>
+            <prototype>
+                variable = oyster::dump(ref)
+            </prototype>
+        </function>
+    </section>
+
+    <section title="Exported Functions">
+        <synopsis>
+            Similar in purpose to the Oyster API, but these are automatically exported to modules.
+        </synopsis>
+        <function name="confirm">
+            <synopsis>
+                Prompts a user for confirmation.  If confirmation has not been gotten,
+                calls abort().  If confirmation has been gotten, does nothing.
+            </synopsis>
+            <note>
+                This uses the &lt;confirm&gt; xml node, styled in shared/styles/source.xsl
+            </note>
+            <prototype>
+                confirm(string message)
+            </prototype>
+            <todo>
+                This should preserve POST data.
+            </todo>
+            <example>
+                confirm("Are you sure you want to delete everything on your hard drive?");
+                `rm -f /*.*`;
+            </example>
+        </function>
+    <function name="confirmation">
+        <synopsis>
+            Prints a confirmation message.
+        </synopsis>
+        <prototype>
+            confirmation(string confirmation_message[, forward_options])
+        </prototype>
+        <example>
+            confirmation('Something happened.', $BASE_URL => 'Return to the home page.');
+        </example>
+    </function>
+    </section>
+</document>

@@ -1,0 +1,8 @@
+<document title="Clean Documentation Directory" extract_time="2008-02-28 07:29:59" source="./script/clean_docs.pl" path="script/" index="5.1" depth="../" file="clean_docs">
+    <synopsis>
+        
+    </synopsis>
+    <section title="Command Line Arguments">
+        Expects one argument, the documentation directory.
+    </section>
+</document>

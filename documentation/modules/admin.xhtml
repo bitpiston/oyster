@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>Administration Center</h1>
+    <p>
+        Provides a central place to manage core administrative functions, as well
+        as an API for modules to use to integrate with the administration center.
+    </p>
+    <h2>Actions</h2><p>
+
+        <div class="function"><h3>menu</h3><p>
+                The main administration center menu
+            </p><p class="note">
+                This is registered to the url 'admin'.
+            </p></div>
+        <div class="function"><h3>config</h3><p>
+                General site/global configuration options
+            </p><p class="note">
+                This is registered to the url 'admin/config'.
+            </p></div>
+        <div class="function"><h3>config_navigation</h3><p>
+                Manages the order of navigation items
+            </p><p class="note">
+                This is registered to the url 'admin/config/navigation'.
+            </p></div>
+        <div class="function"><h3>modules</h3><p>
+                Allows you to manage installed modules
+            </p><p class="note">
+                This is registered to the url 'admin/modules'.
+            </p></div>
+        <div class="function"><h3>logs</h3><p>
+                Allows you to view the error and status logs
+            </p><p class="note">
+                This is registered to the url 'admin/logs'.
+            </p></div>
+        <div class="function"><h3>styles</h3><p>
+                Allows you to manage installed styles
+            </p><p class="note">
+                This is registered to the url 'admin/styles'.
+            </p></div>
+    </p>
+
+    <h2>Event Hooks</h2><p>
+    </p>
+
+    <h2>Helper Functions</h2><p>
+    </p>
+
+    <h2>Public API</h2><p>
+    </p>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>

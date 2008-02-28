@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>URL Functions</h1>
+    <p>
+        Functions dealing with Oyster's url handling as well as external url
+        utilities.
+    </p>
+    <h2>General URL Functions</h2><p>
+
+        <div class="function"><h3>is_valid</h3><p>
+                Returns true if a given string is a valid url.
+            </p><h4>is_valid</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = url::is_valid(string url)
+            </pre></div>
+    </p>
+
+    <h2>Oyster URL Registration/Dispatching Functions</h2><p>
+    
+        <div class="function"><h3>unique</h3><p>
+                Finds a unique url
+            </p><p class="note">
+                If the url passed to url::unique is taken, unique_url will generate an
+                alternative.
+            </p><h4>unique</h4><h3>Prototype:</h3><pre class="prototype">
+                url::unique(string url)
+            </pre></div>
+        <div class="function"><h3>register</h3><p>
+                Associates a URL with an action in the database
+            </p><p class="note">
+                This function performs no error checking to make sure your arguments
+                are valid.
+            </p><p class="note">
+                The optional 'params' argument is polymorphic and will properly save
+                your parameters based on what type of variable you pass.
+            </p><p class="note">
+                The optional 'parent_id' argument allows you to skip a query if you
+                already know the parent id of the URL.
+            </p><p class="note">
+                The second return value is necessary because the URL you requested may
+                not have been available and may have been changed.
+            </p><h4>register</h4><h3>Prototype:</h3><pre class="prototype">
+                int url_id, string url = url::register(
+                   'url'            =&gt; string url,
+                   'module'         =&gt; string module_id,
+                   'function'       =&gt; string function_name,
+                   'title'          =&gt; string url_title,
+                   ['show_nav_link' =&gt; bool show_nav_link,]
+                   ['nav_priority'  =&gt; int navigation_priority,]
+                   ['params'        =&gt; arrayref parameters or hashref parameters or string parameter,]
+                   ['parent_id'     =&gt; int parent_id,]
+                   ['regex'         =&gt; bool is_regex,]
+                )
+            </pre></div>
+        <div class="function"><h3>update</h3><p>
+                Updates a registered URL
+            </p><p class="note">
+                This function performs no error checking to make sure your arguments
+                are valid.
+            </p><p class="note">
+                The optional 'params' argument is polymorphic and will properly save
+                your parameters based on what type of variable you pass.
+            </p><p class="note">
+                The second return value is necessary because the URL you requested may
+                not have been available and may have been changed.
+            </p><p class="note">
+                If you change the URL you should NOT change anything but the last part.
+                This may be changed later, but it would require significant remapping of
+                many URLs.
+            </p><h4>update</h4><h3>Prototype:</h3><pre class="prototype">
+                int url_id, string url = url::update(
+                   'url' or 'id'    =&gt; string url_to_update or int url_id_to_update,
+                   ['url'           =&gt; string new_url,]
+                   ['module'        =&gt; string new_module_id,]
+                   ['function'      =&gt; string new_function_name,]
+                   ['title'         =&gt; string new_url_title,]
+                   ['show_nav_link' =&gt; bool new_show_nav_link,]
+                   ['nav_priority'  =&gt; int new_navigation_priority,]
+                   ['params'        =&gt; arrayref parameters or hashref parameters or string parameter]
+                )
+            </pre></div>
+        <div class="function"><h3>_parse_params_arg</h3><p>
+                This is what allows the optional 'params' argument on register and update
+                to be polymorphic.
+            </p><h4>_parse_params_arg</h4><h3>Prototype:</h3><pre class="prototype">
+                hashref = _parse_params_arg(hashref or arrayref or string params)
+            </pre></div>
+        <div class="function"><h3>unregister </h3><p>
+                Deletes a URL
+            </p><p class="note">
+                This doesn't care if the url has any children!
+            </p><h4>unregister </h4><h3>Prototype:</h3><pre class="prototype">
+                bool = url::unregister(string url)
+            </pre></div>
+        <div class="function"><h3>unregister_by_id</h3><p>
+                Deletes a URL, by id
+            </p><p class="note">
+                This doesn't care if the url has any children!
+            </p><h4>unregister_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = url::unregister_by_id(int url_id)
+            </pre></div>
+        <div class="function"><h3>is_registered</h3><p>
+                Checks if a URL is registered
+            </p><h4>is_registered</h4><h3>Prototype:</h3><pre class="prototype">
+                bool is_taken = url::is_registered(string url)
+            </pre></div>
+        <div class="function"><h3>is_registered_by_id</h3><p>
+                Checks if a URL is taken, by id
+            </p><h4>is_registered_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+                bool is_taken = url::is_registered_by_id(int url_id)
+            </pre></div>
+        <div class="function"><h3>get</h3><p>
+                Retreives data associated with a url from the database
+            </p><p class="note">
+                Returns undef if no urls matched
+            </p><h4>get</h4><h3>Prototype:</h3><pre class="prototype">
+                hashref url_data = url::get(string url)
+            </pre></div>
+        <div class="function"><h3>get_by_id</h3><p>
+                Retreives all data associated with a URL from the database, by id
+            </p><p class="note">
+                Returns undef if no urls matched
+            </p><h4>get_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+                hashref url_data = url::get_by_id(int url_id)
+            </pre></div>
+        <div class="function"><h3>get_url_by_id</h3><p>
+                Retreives only the URL from the database, by id
+            </p><p class="note">
+                Returns undef if no urls matched
+            </p><h4>get_url_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+                string url = url::get_url_by_id(int url_id)
+            </pre></div>
+        <div class="function"><h3>get_parent</h3><p/></div>
+        <div class="function"><h3>get_parent_by_id</h3><p>
+                Incomplete
+            </p></div>
+        <div class="function"><h3>has_children</h3><p>
+                Checks if a url has any children
+            </p><h4>has_children</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = url::has_children(string url)
+            </pre></div>
+        <div class="function"><h3>has_children_by_id</h3><p>
+                Checks if a url has any children, by id
+            </p><h4>has_children_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = url::has_children_by_id(int url_id)
+            </pre></div>
+        <div class="function"><h3>print_subpage_xml</h3><p>
+                Prints subpage xml for a given url id.
+            </p><h4>print_subpage_xml</h4><h3>Prototype:</h3><pre class="prototype">
+                url::print_subpage_xml(int url_id)
+            </pre></div>
+    </p>
+
+    <h2>Navigation Functions</h2><p>
+        <p>
+            Functions related to the navigation menu, modules should rarely need
+            to call these.  Oyster does it automatically.
+        </p>
+
+    </p>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>

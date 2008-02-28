@@ -1,0 +1,5 @@
+<document title="Generate Documentation" extract_time="2008-02-28 07:29:59" source="./script/generate_docs.pl" path="script/" index="5.8" depth="../" file="generate_docs">
+    <synopsis>
+        Executes all of the doc generation scripts in the proper order.
+    </synopsis>
+</document>

@@ -1,0 +1,122 @@
+<document title="Exception Handling Functions" extract_time="2008-02-28 07:29:58" source="./lib/exceptions.pm" path="lib/" index="2.9" depth="../" file="exceptions">
+    <synopsis>
+        Functions that allow errors to be handled and trapped.
+    </synopsis>
+    <todo>
+        Handle modules that throw stringifiable objects (use Error;)
+    </todo>
+    <todo>
+        FIXME! If an exception is thrown from a catch block, it should NOT be thrown from the same level it was caught, but one below
+    </todo>
+    <todo>
+        Catch blocks should probably assume abort()
+    </todo>
+    <todo>
+        Some optimizations could be made here, lots of unnecessary boolean-context conditionals
+    </todo>
+    <function name="throw">
+        <synopsis>
+            Throws an exception to be caught by a catch handler.
+        </synopsis>
+        <note>
+            The perl here is can be pretty tough to understand, it is heavily
+            documented!
+        </note>
+        <note>
+            "=&gt;" is just syntactic sugar, you can use "," too.
+        </note>
+        <note>
+            Handlers are executed in the scope of where the exception was thrown
+            from, this is a byproduct of how the exception system works (handlers
+            can choose to abort or not)
+        </note>
+        <note>
+            Exceptions thrown from inside handlers are treated as if the exception
+            was thrown from the same scope that the original exception came from.
+        </note>
+        <prototype>
+            throw(string exception_type[ =&gt; arguments to be passed to exception handler])
+        </prototype>
+        <example>
+            throw('validation_error', 'Title is too short') if length($INPUT{'title'}) &lt; 5;
+        </example>
+        <example>
+            throw 'validation_error' =&gt; 'Title is too short' if length $INPUT{'title'} &lt; 5;
+        </example>
+    </function>
+    <function name="catch">
+        <synopsis>
+            Executes a block of code, trapping exceptions.  Returns true if the block
+            executed successfully without exceptions, false otherwise.
+        </synopsis>
+        <note>
+            If an exception of an unknown type is encountered, it is rethrown as a
+            perl_error.
+        </note>
+        <note>
+            Exceptions *must* be caught!  An uncaught exception raises a perl_error.
+        </note>
+        <note>
+            If multiple catch blocks are defined for the same exception type, the
+            innermost takes precedence.
+        </note>
+        <note>
+            If an exception is caught further up the stack than it was thrown, the
+            handler can either abort at the level it was caught at or the level it
+            was thrown at.  See abort() for more information.
+        </note>
+        <prototype>
+            bool success = try { block } [ catch string exception_type, with { block } ... ];
+        </prototype>
+        <example>
+        try {
+            print "Hello";
+                throw 'error' =&gt; 'something went terribly wrong' if $armageddon;
+                print " World\n";
+            }
+        </example>
+        <example>
+            catch 'error', with {
+               my $msg = shift;
+               print "Error: $msg\n";
+               abort();
+            };
+        </example>
+    </function>
+    <function name="abort">
+        <synopsis>
+            Ends execution of a try block.
+        </synopsis>
+        <note>
+            Calling abort() with no arguments will end all blocks up to where the
+            error was caught.
+        </note>
+        <note>
+            Calling abort(1) ends only the most recent try block, regardless of
+            where the error was caught.
+        </note>
+        <note>
+            If no try blocks are active, returns false and does nothing.
+        </note>
+        <note>
+            If called outside of a catch block, this will always act as abort(1).
+        </note>
+        <prototype>
+            abort([bool only_current_block])
+        </prototype>
+    </function>
+    <function name="trace">
+        <synopsis>
+            
+        </synopsis>
+        <note>
+            
+        </note>
+        <prototype>
+            
+        </prototype>
+        <example>
+            
+        </example>
+    </function>
+</document>

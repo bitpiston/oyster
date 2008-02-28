@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>Style &amp; Templates Functions</h1>
+    <p>
+        Functions related to styles and templates
+    </p>
+    <h2/><p>
+
+        <div class="function"><h3>include_template</h3><p>
+                Defines a specific xsl template to use for the current request.
+            </p><h4>include_template</h4><h3>Prototype:</h3><pre class="prototype">
+                style::include_template(string template_name)
+            </pre></div>
+        <div class="function"><h3>register</h3><p>
+                Adds an entry to the current site's styles table
+            </p><p class="note">
+                This does nothing (and returns undef) if the given style ID is already registered.
+            </p><h4>register</h4><h3>Prototype:</h3><pre class="prototype">
+                style::register(string style_id, string style_name)
+            </pre></div>
+        <div class="function"><h3>unregister</h3><p>
+                Removes a style's entry in the current site's styles table
+            </p><p class="note">
+                This does nothing if passed a non-existant style ID.
+            </p><h4>unregister</h4><h3>Prototype:</h3><pre class="prototype">
+                style::unregister(string style_id)
+            </pre></div>
+        <div class="function"><h3>enable</h3><p>
+                Enables a style
+            </p><p class="note">
+                This does nothing if passed an invalid style ID.
+            </p><h4>enable</h4><h3>Prototype:</h3><pre class="prototype">
+                style::enable(string style_id)
+            </pre></div>
+        <div class="function"><h3>disable</h3><p>
+                Disables a style
+            </p><p class="note">
+                This does nothing if passed an invalid style ID.
+            </p><h4>disable</h4><h3>Prototype:</h3><pre class="prototype">
+                style::disable(string style_id)
+            </pre></div>
+        <div class="function"><h3>is_enabled</h3><p>
+                Checks if a given style is enabled
+            </p><h4>is_enabled</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = style::is_enabled(string style_id)
+            </pre></div>
+        <div class="function"><h3>is_registered</h3><p>
+                Checks if a given style is registered
+            </p><h4>is_registered</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = style::is_registered(string style_id)
+            </pre></div>
+        <div class="function"><h3>print_header</h3><p>
+                Print the page header.
+            </p><p class="note">
+                Modules should rarely need to call this function explicitely.  Each page
+                request is wrapped in the template automatically.
+            </p><h4>print_header</h4><h3>Prototype:</h3><pre class="prototype">
+                style::print_header()
+            </pre></div>
+        <div class="function"><h3>print_footer</h3><p>
+                Print the page footer.
+            </p><p class="note">
+                Modules should rarely need to call this function explicitely.  Each page
+                request is wrapped in the template automatically.
+            </p><h4>print_footer</h4><h3>Prototype:</h3><pre class="prototype">
+                style::print_footer()
+            </pre></div>
+        <div class="function"><h3>print_styles_xml</h3><p>
+                Prints styles in an xml-friendly manner.
+            </p><h4>print_styles_xml</h4><h3>Prototype:</h3><pre class="prototype">
+                style::print_styles_xml()
+            </pre></div>
+        <div class="function"><h3>print_enabled_styles_xml</h3><p>
+                Print enabled styles in an xml-friendly manner.
+            </p><h4>print_enabled_styles_xml</h4><h3>Prototype:</h3><pre class="prototype">
+                style::print_enabled_styles_xml()
+            </pre></div>
+        <div class="function"><h3>is_valid_style</h3><p>
+                Returns true if a valid style is found.
+            </p><h4>is_valid_style</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = style::is_valid_style(string style_id[, string ignore_style_id])
+            </pre></div>
+        <div class="function"><h3>is_reserved_id</h3><p>
+                Returns true if a style id is reserved.
+            </p><h4>is_reserved_id</h4><h3>Prototype:</h3><pre class="prototype">
+                bool = style::is_reserved_id(string style_id)
+            </pre></div>
+        <div class="function"><h3>compile</h3><p>
+                Calls xslcompiler.pl on all of the current site's styles, returns the url path to the style for the given stylesheets.
+            </p><h4>compile</h4><h3>Prototype:</h3><pre class="prototype">
+                string stylesheet_url, string stylesheet_path = style::compile(string style[, string stylesheet][, string stylesheet])
+            </pre></div>
+    </p>
+    
+    <h2>Private Functions</h2><p>
+        <div class="function"><h3>_get_module_stylesheets</h3><p/></div>
+        <div class="function"><h3>_needs_compilation</h3><p/></div>
+        <div class="function"><h3>_load</h3><p>
+                Loads (or reloads) enabled styles
+            </p><h4>_load</h4><h3>Prototype:</h3><pre class="prototype">
+                _load()
+            </pre></div>
+        <div class="function"><h3>_compile_style</h3><p/></div>
+    </p>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>

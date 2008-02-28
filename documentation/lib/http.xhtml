@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>HTTP Functions</h1>
+    <p>
+        Various functions that don't (yet) warrant their own categories
+    </p>
+    <div class="function"><h2>get</h2><p>
+            Fetches a remote file and saves it locally.
+        </p><p class="note">
+            Throws a 'validation_error' if the file could not be fetched.
+        </p><p class="note">
+            Throws a 'perl_error' if the destination file could not be created or
+            opened.
+        </p><p class="note">
+            'data_handler' can be used to parse a remote file in pieces, never
+            writing the entire file to memory or disk.  If this argument is defined,
+            the file is not saved, and the contents are not returned, but as the
+            file is retreived, pieces are sent as arguments to the handler sub
+            routine.
+            
+            If the data handler routine returns -1, the connection will be
+            immediately closed and the rest of the file will be ignored.
+        </p><p class="note">
+            The return value of this function varies depending on its arguments.  If
+            'file' or 'data_handler' are defined, http::get() returns 1 for
+            success.  Otherwise, the contents of the fetched file are returned.
+        </p><h3>get</h3><h3>Prototype:</h3><pre class="prototype">
+            http::get(string url, ['file' =&gt; string local_file][, 'max_size' =&gt; int max_size_in_kb][, 'data_handler' =&gt; subref])
+        </pre></div>
+    <div class="function"><h2>header</h2><p>
+            Prints an http header.
+        </p><h3>header</h3><h3>Prototype:</h3><pre class="prototype">
+            http::header(string header)
+        </pre><h3>header</h3><h3>Example:</h3><pre class="code">
+            http::header("Content-Type: text/plain");
+        </pre></div>
+    <div class="function"><h2>clear_headers</h2><p/></div>
+    <div class="function"><h2>print_headers</h2><p/></div>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>

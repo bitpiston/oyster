@@ -1,0 +1,61 @@
+<document title="Email Functions" extract_time="2008-02-28 07:29:58" source="./lib/email.pm" path="lib/" index="2.7" depth="../" file="email">
+    <synopsis>
+        Functions associated with email.
+    </synopsis>
+    <function name="is_valid_email">
+        <synopsis>
+            Validates a possible email address
+        </synopsis>
+        <prototype>
+            bool is_valid = email::is_valid_email(string email_address)
+        </prototype>
+        <example>
+            my $email = 'ShaneCalimlim@gmail.com';
+            if (email::is_valid_email($email)) {
+               print "$email is a valid email address\n";
+            } else {
+               print "$email is not a valid email address\n";
+            }
+        </example>
+        <todo>
+            rename is_valid_address? (email::is_valid_address sounds nice)
+        </todo>
+    </function>
+    <function name="send">
+        <synopsis>
+            Sends an email
+        </synopsis>
+        <note>
+            If no path to sendmail is configured, the email will be printed in a
+            &lt;litera&gt; xml node
+        </note>
+        <prototype>
+            email::send(to => string, subject => string[, string header_name => string header_value ...], string content)
+        </prototype>
+        <example>
+            email::send(to => 'ShaneCalimlim@gmail.com', subject => 'Hello!', 'You suck!');
+        </example>
+        <todo>
+            Add alternatives to sendmail
+        </todo>
+    </function>
+    <function name="send_template">
+        <synopsis>
+            Sends an email using a template from the database
+        </synopsis>
+        <note>
+            Templates are stored in site_email_templates
+        </note>
+        <prototype>
+            email::send_template(string template_name, string to, hashref variables)
+        </prototype>
+        <example>
+            email::send_template('user_registration', 'ShaneCalimlim@gmail.com', {'username' => 'ShaneC'});
+        </example>
+    </function>
+    <function name="add_template">
+        <todo>
+            Document this function
+        </todo>
+    </function>
+</document>

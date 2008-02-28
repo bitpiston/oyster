@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<meta http-equiv="content-style-type" content="text/css"/>
+<link rel="stylesheet" type="text/css" media="screen" href="document.css"/>
+<title>Oyster Documentation</title>
+<!--[if lt IE 8]>
+					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
+					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
+				<![endif]-->
+</head>
+<body class="documentation">
+<div id="header">
+<div class="wrapper">
+<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+<span id="subtitle">A Perl web application framework.</span>
+</div>
+</div>
+<hr/>
+<div id="navigation">
+<div class="wrapper">
+<ul>
+<li>
+<a href="http://oyster.bitpiston.com/">Overview</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/download/">Download</a>
+</li>
+<li class="selected">
+<a href="../index.xhtml">Documentation</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+</li>
+<li>
+<a href="http://oyster.bitpiston.com/development/">Development</a>
+</li>
+</ul>
+</div>
+</div>
+<hr/>
+<div id="content">
+<div class="wrapper">
+<div id="content-primary"><h1>Menu</h1><div class="todo"><strong>Todo</strong><ul><li>
+        Add icons?
+    </li></ul></div>
+    <p>
+        The menu API provides an easy way to create complex menus and print their corresponding XML easily.
+    </p>
+    
+    <h2>Implementation Details</h2><p>
+        As a side effect of allowing both OO and procedural syntaxes, this actually uses inside-out objects for menus (although items are still self-contained, since they were a hash ref anyways).
+    </p>
+    <div class="function"><h2>new</h2><p>
+            Allows OO-style access to the menu API.
+        </p><h3>new</h3><h3>Prototype:</h3><pre class="prototype">
+            obj = menu-&gt;new(string label[, string description])
+        </pre></div>
+    <div class="function"><h2>label</h2><p>
+            Sets the corresponding proper label for a menu ID.
+        </p><p class="note">
+            If no menu ID is specified, the default menu ID is used.
+        </p><h3>label</h3><h3>Prototype:</h3><pre class="prototype">
+            menu::label([string menu_id], string menu_label)
+        </pre><pre class="prototype">
+            obj-&gt;label(string menu_label)
+        </pre></div>
+    <div class="function"><h2>description</h2><p>
+            Sets the corresponding description for a menu ID.
+        </p><p class="note">
+            If no menu ID is specified, the default menu ID is used.
+        </p><h3>description</h3><h3>Prototype:</h3><pre class="prototype">
+            menu::description([string menu_id], string menu_description)
+        </pre><pre class="prototype">
+            obj-&gt;description(string menu_description)
+        </pre></div>
+    <div class="function"><h2>set_default_menu</h2><p>
+            Sets the default menu ID to be assumed if none is specified.
+        </p><h3>set_default_menu</h3><h3>Prototype:</h3><pre class="prototype">
+            menu::set_default_menu(string menu_id)
+        </pre><pre class="prototype">
+            obj-&gt;set_default_menu()
+        </pre></div>
+    <div class="function"><h2>add_item</h2><p>
+            Adds an item to a menu
+        </p><p class="note">
+            To add sub-items to an existing item, specify the 'parent' argument instead of 'menu'.
+        </p><p class="note">
+            If no menu ID or item is specified, the default menu ID is used.
+        </p><p class="note">
+            If the 'require_children' argument is true, this item will ONLY be printed if it contains sub-items.
+        </p><p class="note">
+            'label' and 'url' are assumed to be xml-safe, if they must be entified, you must call xml::entities() on them yourself
+        </p><p class="note">
+            If OO syntax is used, an object is returned instead of a normal hash reference.  add_item() can be called on that object to add sub items.
+        </p><h3>add_item</h3><h3>Prototype:</h3><pre class="prototype">
+            hashref item = menu::add_item([menu =&gt; string menu_id OR parent =&gt; hashref item][, require_children =&gt; bool], label =&gt; string label, url =&gt; string url)
+        </pre><pre class="prototype">
+            obj = obj-&gt;add_item([, require_children =&gt; bool], label =&gt; string label, url =&gt; string url)
+        </pre></div>
+    <div class="function"><h2>print_xml</h2><p>
+            Prints a menu's XML
+        </p><p class="note">
+            If no menu ID is specified, the default menu ID is used.
+        </p><p class="note">
+            If the menu contains no items, nothing will be printed.
+        </p><p class="note">
+            If the menu does not have a label -- set via menu::label -- the id is printed instead (as id="" instead of label="").
+        </p><p class="note">
+            Once finished, this deletes all data associated with the printed menu.
+        </p><h3>print_xml</h3><h3>Prototype:</h3><pre class="prototype">
+            bool was_anything_printed = menu::print_xml([string menu_id])
+        </pre><pre class="prototype">
+            bool was_anything_printed = obj-&gt;print_xml()
+        </pre></div>
+</div>
+<div id="content-secondary">
+<form id="search" method="get" action="/search/">
+<div>
+<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+</div>
+</form>
+<h2>Lorem Ipsum</h2>
+<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+</div>
+</div>
+</div>
+<hr/>
+<div id="footer">
+<div class="wrapper">
+<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+</div>
+</div>
+</body>
+</html>
