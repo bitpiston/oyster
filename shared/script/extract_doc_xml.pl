@@ -8,6 +8,7 @@
     </section>
 =cut
 package oyster::script::extract_doc_xml;
+
 # configuration
 BEGIN {
     our $config = eval { require './config.pl' };
