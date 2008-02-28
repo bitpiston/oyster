@@ -19,7 +19,6 @@ use lib './lib/';
 
 use file;
 use exceptions 'nolog';
-use log;
 
 my %directory_titles = (
     'lib/'         => 'Library API',
