@@ -1,8 +1,0 @@
-<document title="Generate Documentation (X)HTML" extract_time="2008-02-19 08:14:36" source="./script/generate_doc_html.pl" path="script/" index="5.5" depth="../">
-    <synopsis>
-        Converts documentation XML to XHTML.
-    </synopsis>
-    <section title="Command Line Arguments">
-        Expects two arguments, the source directory and destination directory.
-    </section>
-</document>

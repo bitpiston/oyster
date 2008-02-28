@@ -1,8 +1,0 @@
-<document title="XML Parser" extract_time="2008-02-19 08:14:35" source="./lib/xml/parser.pm" path="lib/xml/" index="2.22.2" depth="../../">
-    <warning>
-        This library is considered pre-alpha.
-    </warning>
-    <synopsis>
-        A quick and dirty XML parser inspired by PHP's xml_ functions.
-    </synopsis>
-</document>
