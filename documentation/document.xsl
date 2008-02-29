@@ -7,8 +7,8 @@
 			<head>
 				<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
 				<meta http-equiv="content-style-type" content="text/css" />
-				<link rel="stylesheet" type="text/css" media="screen" href="{@depth}document.css" />
-				<title>Oyster Documentation</title>
+				<link rel="stylesheet" type="text/css" media="screen" href="{/document/@depth}document.css" />
+				<title><xsl:if test="/document"><xsl:value-of select="/document/@title" /> | </xsl:if>Oyster Documentation</title>
 				<xsl:comment>[if lt IE 8]&gt;
 					&lt;link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" /&gt;
 					&lt;script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"&gt;&lt;/script&gt;

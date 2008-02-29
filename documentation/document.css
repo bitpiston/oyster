@@ -21,7 +21,6 @@ thead, tr, th, td {
 
 /* Basic Elements */
 html {
-	border-top: 4px solid #4d4942;
 	background-color: #E8ECD4; 
 	font: normal 14px/1.5 Georgia, Times, serif; 
 	color: #3d3931; /* 4d4942 */
@@ -166,14 +165,16 @@ form.rows div input[type=submit] { margin: 1.5em 0 0; }
 form.rows { padding: 0 0 3em; }
 
 /* Layout Structure */
+body {
+	border-top: 4px solid #4d4942;
+	min-width: 58em;
+}
 div.wrapper {
 	width: 55em;
 	margin: 0 auto;
 	position: relative;
 }
-#header, #content, #footer {
-	padding: 1.5em;
-}
+#header, #content, #footer { padding: 1.5em; }
 #navigation {
 	padding: 0 1.5em;
 	background: #fff;
@@ -190,9 +191,7 @@ div.wrapper {
     min-height: 106px;
 	width: 350px;
 }
-#title:hover {
-	background-position: 0 -149px;
-}
+#title:hover { background-position: 0 -149px; }
 #subtitle {
 	font-size: 1.3em;
 	line-height: 1;
@@ -408,6 +407,7 @@ body.download div.section div { width: 38.19em; }
 
 /* Content - Documentation */
 body.documentation #content-primary { width: 39.55em; }
+body.documentation { min-width: 68.5em; }
 body.documentation div.wrapper { width: 62em; }
 body.documentation #content, body.documentation #header, body.documentation #footer, 
 body.documentation #navigation {
