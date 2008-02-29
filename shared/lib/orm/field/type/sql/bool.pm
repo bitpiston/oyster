@@ -3,7 +3,7 @@ package orm::field::type::sql::bool;
 use base 'orm::field::type';
 
 sub value {
-    my $obj         = shift;
+    my $obj = shift;
     unless (@_ == 0) {
         my $value = shift;
         $obj->{'updated'} = undef;

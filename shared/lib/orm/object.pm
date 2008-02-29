@@ -12,8 +12,16 @@ sub new {
     my $model_fields = $model->{'fields'};
     for my $field_id (keys %{$model_fields}) {
         my $model_field = $model_fields->{$field_id};
-        $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-        $obj->{'fields'}->{$field_id}->value($values{$field_id}) if exists $values{$field_id};
+        
+        # if a value for this field was specified
+        if (exists $values{$field_id}) {
+            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values{$field_id});
+        }
+
+        # use the default/no value
+        else {
+            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+        }
     }
 
     # return the new orm object
@@ -30,8 +38,16 @@ sub new_from_db {
     my $model_fields = $model->{'fields'};
     for my $field_id (keys %{$model_fields}) {
         my $model_field = $model_fields->{$field_id};
-        $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-        $obj->{'fields'}->{$field_id}->value_from_db($values->{$field_id});
+
+        # if this field was fetched
+        if (exists $values->{$field_id}) {
+            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values->{$field_id}, '');
+        }
+        
+        # if this field was not fetched
+        else {
+            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, undef, 'not_fetched');
+        }
     }
 
     # return the new orm object

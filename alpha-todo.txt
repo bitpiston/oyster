@@ -41,7 +41,7 @@ DELAYED
 + add an admin.pm api so that it can create all of the functions and hooks necessary for a module, easily
 
 ORM
-- objects created from the database need to NOT set the default value for fields, and need to properly store meta data to track whether the field was fetched or not
+* objects created from the database need to NOT set the default value for fields, and need to properly store meta data to track whether the field was fetched or not
 - lazy field fetching
 
 COMPLETED

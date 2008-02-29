@@ -14,8 +14,29 @@ sub new {
     }, $class;
     Scalar::Util::weaken($obj->{'orm_obj'});
 
-    # set the default value, if any
-    $obj->value($model_field->{'default'}) if exists $model_field->{'default'};
+    # if a value was specified
+    if (@_ == 1) {
+        $obj->value($_[0]);
+    }
+    
+    # if this is being populated from the database
+    elsif (@_ == 2) {
+
+        # if this field's value was fetched
+        if (length $_[1] == 0) {
+            $obj->value_from_db($_[0]);
+        }
+
+        # this field was not fetched
+        else {
+            $obj->{'not_fetched'} = undef;
+        }
+    }
+
+    # if a default value exists
+    elsif (exists $model_field->{'default'}) {
+        $obj->value($model_field->{'default'});
+    }
 
     # return the object
     return $obj;
@@ -23,7 +44,7 @@ sub new {
 
 # sets/gets the object's value
 sub value {
-    my $obj         = shift;
+    my $obj = shift;
     unless (@_ == 0) {
         $obj->{'updated'} = undef;
         $obj->{'value'}   = shift;
@@ -49,7 +70,7 @@ sub was_updated {
 
 # returns true if the column represents the actual value stored in the database (if any -- returns true for unsaved objects)
 sub was_fetched {
-    #return !exists $_[0]->{'wasnt_fetched'};
+    return !exists $obj->{'not_fetched'};
 }
 
 1;
