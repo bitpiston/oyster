@@ -40,6 +40,10 @@ DELAYED
 	- Some probably should, but some that don't do it for a reason (file move/copy)
 + add an admin.pm api so that it can create all of the functions and hooks necessary for a module, easily
 
+ORM
+- objects created from the database need to NOT set the default value for fields, and need to properly store meta data to track whether the field was fetched or not
+- lazy field fetching
+
 COMPLETED
 
 * Refactor config.pl to remove all of that ugly perl code that isn't just config data (create config.heavy.pl to do that stuff)
@@ -101,6 +105,7 @@ COMPLETED
 * update xslcompiler to generate dynamic styles (at least the easy ones to figure out)
 * exceptions->import should accept a flag to NOT log fatal errors (for scripts and whatnot)
 	* additionally, added oyster import set 'script' which automatically supresses exception logging
+
 Finished but need testing
 
 * new ipc library

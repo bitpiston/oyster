@@ -12,9 +12,19 @@ sub new_from_db {
 
 # this should never be called directly, only via the auto-generated imported get()'s
 # is that true? this would work fine as long as it was called as a method
+
+# prototype: get([array columns][, limit => int limit][, offset => int offset][, where => [string where_clause, array where_placeholder_values]])
+# note: limit defaults to 1, if it is set to anything else, a result set will be returned instead of a single object
+# note: arguments can be specified in any order
+# note: if a single argument is passed, it is assumed to be get(where => ['id = ?', int object_id])
+# note: the where clause can also be a simple string or hashref (assumed AND, not OR) [NYI hashrefs]
+# note: if limit is 0, no limit is assumed (use get_all to achieve this)
 sub get {
     my ($class, $limit, $offset, $where, @where_values, @columns) = (shift(), ' LIMIT 1');
     my $model = ${ $class . '::model' };
+
+    # if there is only one argument, and it's a number, they just want to fetch by ID
+    $where = ' WHERE id = ' . shift() if (@_ == 1 && $_[0] !~ /[^0-9]/o);
 
     # parse arguments
     while (@_) {
@@ -22,8 +32,14 @@ sub get {
 
         # where clauses
         if ($arg eq 'where') {
-            @where_values = @{ shift() };
-            $where        = ' WHERE ' . shift @where_values;
+            if (ref $_[0] eq 'ARRAY') {
+                @where_values = @{ shift() };
+                $where        = ' WHERE ' . shift @where_values;
+            } elsif (ref $_[0] eq 'HASH') {
+                # TODO
+            } else {
+                $where = ' WHERE ' . shift();
+            }
         }
 
         # offset
@@ -45,13 +61,13 @@ sub get {
 
     # prepare and execute the query
     my $columns = @columns == 0 ? '*' : join(', ', @columns) ;
-    my $query   = $oyster::DB->query("SELECT $columns FROM $model->{table}$where$limit$offset");
+    my $query   = $oyster::DB->query("SELECT $columns FROM $model->{table}$where$limit$offset", @where_values);
 
     # if no rows were returned
     return if $query->rows() == 0;
 
     # if limit was not 1 (a result set is expected)
-    return orm::result_set::new($class, $model, $query) if ($limit ne ' LIMIT 1');
+    return orm::object::set::new($class, $model, $query) if ($limit ne ' LIMIT 1');
 
     # a single row object should be returned
     return $class->new_from_db($query);

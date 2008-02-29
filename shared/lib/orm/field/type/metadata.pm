@@ -4,7 +4,10 @@ use base 'orm::field::type';
 
 sub value {
     my $obj         = shift;
-    $obj->{'value'} = \@_ if @_;
+    unless (@_ == 0) {
+        $obj->{'updated'} = undef;
+        $obj->{'value'}   = \@_;
+    }
     return @{$obj->{'value'}};
 }
 

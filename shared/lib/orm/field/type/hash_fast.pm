@@ -29,4 +29,9 @@ sub get_save_value {
     return $_[0]->value();
 }
 
+sub was_updated {
+    my $obj = shift;
+    return $obj->{'orm_obj'}->{'fields'}->{ $obj->{'hash_field'} }->was_updated();
+}
+
 1;

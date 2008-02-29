@@ -4,16 +4,15 @@ use base 'orm::field::type';
 
 sub value {
     my $obj         = shift;
-    $obj->{'value'} = shift if @_;
+    unless (@_ == 0) {
+        $obj->{'updated'} = undef;
+        $obj->{'value'}   = shift;
+    }
     return $obj->{'value'};
 }
 
 sub get_save_value {
-    my $obj   = shift;
-    my $value = $obj->value();
-    my $url   = url::unique($value);
-    $obj->{'value'} = $url;
-    return $url;
+    return $obj->{'value'} = url::unique(shift()->value());
 }
 
 1;
