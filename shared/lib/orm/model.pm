@@ -55,9 +55,10 @@ sub get {
 
         # the argument is a column name
         else {
-            push @columns, $arg;
+            push @columns, $arg if $arg ne 'id'; # do NOT add the id column here, otherwise we'd have to grep for it later to ensure we don't add it twice
         }
     }
+    unshift @columns, 'id' if @columns != 0;
 
     # prepare and execute the query
     my $columns = @columns == 0 ? '*' : join(', ', @columns) ;
@@ -67,7 +68,7 @@ sub get {
     return if $query->rows() == 0;
 
     # if limit was not 1 (a result set is expected)
-    return orm::object::set::new($class, $model, $query) if ($limit ne ' LIMIT 1');
+    return orm::object::set::new($class, $model, $query) if $limit ne ' LIMIT 1';
 
     # a single row object should be returned
     return $class->new_from_db($query);
@@ -97,6 +98,8 @@ sub AUTOLOAD {
     # dynamic select
     
     # dynamic update
+
+    # dynamic delete
 
     # nothing matched...
     throw 'perl_error' => "Invalid dynamic method '$method' called on ORM object '" . ref($obj) . "'.";

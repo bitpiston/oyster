@@ -3,7 +3,7 @@ package orm::field::type::metadata;
 use base 'orm::field::type';
 
 sub value {
-    my $obj         = shift;
+    my $obj = shift;
     unless (@_ == 0) {
         $obj->{'updated'} = undef;
         $obj->{'value'}   = \@_;

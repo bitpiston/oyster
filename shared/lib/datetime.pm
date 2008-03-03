@@ -21,8 +21,8 @@ sub _load {
     @formats = ();
 
     # fetch formats from the db and store them
-    my $query = $oyster::DB->query("SELECT format FROM date_formats");
-    while (my $format = $query->fetchrow_arrayref()) {
+    my $formats = $oyster::DB->selectall_arrayref("SELECT format FROM date_formats");
+    for my $format (@{$formats}) {
         push @formats, $format->[0];
     }
 }
@@ -40,7 +40,7 @@ sub _load {
 
 sub is_valid_format {
     my $format = shift;
-    return grep(/^\Q$format\E$/, @formats) ? 1 : 0 ;
+    return grep(/^\Q$format\E$/, @formats) ? '1' : '0' ;
 }
 
 =xml
@@ -180,7 +180,7 @@ sub get_gmt_offset {
 =cut
 
 sub from_unixtime {
-    my ($sec, $min, $hour, $day, $mon, $year) = gmtime(shift());
+    my ($sec, $min, $hour, $day, $mon, $year) = CORE::gmtime(shift());
     $mon++;
     $year += 1900;
     $mon  = '0' . $mon  unless length $mon  == 2;

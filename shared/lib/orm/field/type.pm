@@ -21,16 +21,7 @@ sub new {
     
     # if this is being populated from the database
     elsif (@_ == 2) {
-
-        # if this field's value was fetched
-        if (length $_[1] == 0) {
-            $obj->value_from_db($_[0]);
-        }
-
-        # this field was not fetched
-        else {
-            $obj->{'not_fetched'} = undef;
-        }
+        $obj->value_from_db($_[0]);
     }
 
     # if a default value exists
@@ -54,8 +45,7 @@ sub value {
 
 # used to set the value when an object is created from a database entry
 sub value_from_db {
-    my $obj = shift;
-    $obj->{'value'} = shift;
+    $_[0]->{'value'} = $_[1];
 }
 
 # used to perform any processing necessary to get the value to insert into the database
@@ -69,8 +59,8 @@ sub was_updated {
 }
 
 # returns true if the column represents the actual value stored in the database (if any -- returns true for unsaved objects)
-sub was_fetched {
-    return !exists $obj->{'not_fetched'};
-}
+#sub was_fetched {
+#    return !exists $_[0]->{'not_fetched'};
+#}
 
 1;

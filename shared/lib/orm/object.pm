@@ -2,26 +2,24 @@ package orm::object;
 
 use exceptions;
 
+# TODO: do not 'new' fields until necessary
+
 sub new {
     my $class  = shift;
-    my %values = @_;
     my $model  = ${ $class . '::model' };
     my $obj    = bless {'model' => $model}, $class . '::object';
 
-    # create fields
-    my $model_fields = $model->{'fields'};
-    for my $field_id (keys %{$model_fields}) {
-        my $model_field = $model_fields->{$field_id};
-        
-        # if a value for this field was specified
-        if (exists $values{$field_id}) {
-            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values{$field_id});
+    # create fields from any values passed
+    unless (@_ == 0) {
+        my $model_fields = $model->{'fields'};
+        my $obj_fields;
+        my $i = 0;
+        while (exists $_[$i]) {
+            my ($field_id, $value) = ($_[$i++], $_[$i++]);
+            my $model_field = $model_fields->{$field_id};
+            $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $value);
         }
-
-        # use the default/no value
-        else {
-            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-        }
+        $obj->{'fields'} = $obj_fields;
     }
 
     # return the new orm object
@@ -32,26 +30,42 @@ sub new_from_db {
     my $class  = shift;
     my $values = shift()->fetchrow_hashref();
     my $model  = ${ $class . '::model' };
-    my $obj    = bless {'model' => $model}, $class . '::object';
+    my $obj    = bless {'id' => delete $values->{'id'}, 'model' => $model}, $class . '::object';
 
-    # create fields
+    # create fields from any values retreived
     my $model_fields = $model->{'fields'};
-    for my $field_id (keys %{$model_fields}) {
+    my $obj_fields;
+    for my $field_id (keys %{$values}) {
         my $model_field = $model_fields->{$field_id};
-
-        # if this field was fetched
-        if (exists $values->{$field_id}) {
-            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values->{$field_id}, '');
-        }
-        
-        # if this field was not fetched
-        else {
-            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, undef, 'not_fetched');
-        }
+        $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values->{$field_id}, 'from_db');
     }
+    $obj->{'fields'} = $obj_fields;
 
     # return the new orm object
     return $obj;
+}
+
+sub fetch_fields {
+    my $obj = shift;
+
+    # do nothing if this object has not been saved
+    return unless exists $obj->{'id'};
+
+    # assume all fields if none were specified
+    push @_, '*' if @_ == 0;
+
+    # use interpolation instead of join
+    local $" = ', ';
+
+    # fetch fields
+    my @values = $oyster::DB->query("SELECT @_ FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'})->fetchrow_array();
+
+    # put field values into the object's fields
+    my $obj_fields = $obj->{'fields'};
+    my $i = 0;
+    for my $field_id (@_) {
+        $obj_fields->{$field_id}->value_from_db($values[ $i++ ]);
+    }
 }
 
 sub save {
@@ -88,12 +102,28 @@ sub AUTOLOAD {
     my $obj      = shift;
     my ($method) = ($AUTOLOAD =~ /([^:]+)$/o);
 
-    # field objects
+    # existing field objects
     return $obj->{'fields'}->{$method} if exists $obj->{'fields'}->{$method};
 
-    # dynamic select
-    
-    # dynamic update
+    # unfetched/created field objects
+    my $model        = $obj->{'model'};
+    my $model_fields = $model->{'fields'};
+    if (exists $model_fields->{$method}) {
+        my $model_field = $model_fields->{$method};
+
+        # if this is a database-based object
+        if (exists $obj->{'id'}) {
+            my $value = $oyster::DB->query("SELECT $method FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'})->fetchrow_arrayref()->[0];
+            $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field, $value, 'from_db');
+        }
+
+        # if this is a new object
+        else {
+            $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field);
+        }
+
+        return $obj->{'fields'}->{$method}
+    }
 
     # nothing matched...
     throw 'perl_error' => "Invalid dynamic method '$method' called on ORM object '" . ref($obj) . "'.";

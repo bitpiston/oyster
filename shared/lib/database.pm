@@ -10,18 +10,11 @@ package database;
 
 use exceptions;
 
-our $current_query;
-
 push(@DBI::db::ISA, 'oyster::database::dbi::db');
 push(@DBI::st::ISA, 'oyster::database::dbi::st');
 
 sub handle_error {
-    my $error = $DBI::errstr;
-    if (defined $database::current_query) {
-        $error .= "\nQuery [$database::current_query]\n";
-        undef $database::current_query;
-    }
-    throw 'db_error' => $error;
+    throw 'db_error' => $DBI::errstr;
 }
 
 =xml
@@ -168,10 +161,8 @@ sub server_prepare {
 
 sub query {
     my ($DB, $sql, @args) = @_;
-    $database::current_query = $sql;
     my $query = $DB->prepare($sql);
     $query->execute(@args);
-    undef $database::current_query;
     return $query;
 }
 

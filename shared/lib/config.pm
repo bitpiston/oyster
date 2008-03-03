@@ -8,6 +8,7 @@
 package config;
 
 use exceptions;
+use module;
 
 =xml
     <function name="load">
@@ -45,10 +46,9 @@ sub load {
     # append options from the database to the config hash
     try {
 
-        # iterate through config options and add them to the config hash
-        my $rows = $oyster::DB->query("SELECT name, value FROM $options{table}");
-        while (my $row = $rows->fetchrow_hashref()) {
-            $options{'config_hash'}->{$row->{'name'}} = $row->{'value'};
+        my $values = $oyster::DB->selectall_arrayref("SELECT name, value FROM $options{table}");
+        for my $option (@{$values}) {
+            $options{'config_hash'}->{$option->[0]} = $option->[1];
         }
     }
     catch 'db_error', with { # fail silently if the table does not exist
