@@ -16,7 +16,7 @@ sub new {
         my $i = 0;
         while (exists $_[$i]) {
             my ($field_id, $value) = ($_[$i++], $_[$i++]);
-            my $model_field = $model_fields->{$field_id};
+            next unless my $model_field = $model_fields->{$field_id};
             $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $value);
         }
         $obj->{'fields'} = $obj_fields;
@@ -36,7 +36,8 @@ sub new_from_db {
     my $model_fields = $model->{'fields'};
     my $obj_fields;
     for my $field_id (keys %{$values}) {
-        my $model_field = $model_fields->{$field_id};
+        #my $model_field = $model_fields->{$field_id};
+        next unless my $model_field = $model_fields->{$field_id};
         $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values->{$field_id}, 'from_db');
     }
     $obj->{'fields'} = $obj_fields;

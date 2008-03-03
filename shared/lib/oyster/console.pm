@@ -160,7 +160,7 @@ sub search {
 # module_urls
 sub module_urls {
     my $module = shift;
-    my $query = $oyster::DB->query("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE module = ? ORDER BY LENGTH(url) ASC", $module);
+    my $query = $DB->query("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE module = ? ORDER BY LENGTH(url) ASC", $module);
     while (my $url = $query->fetchrow_hashref()) {
         print qq~url::register('url' => '$url->{url}', 'module' => '$url->{module}', 'function' => '$url->{function}', 'title' => '$url->{title}');\n~;
     }
