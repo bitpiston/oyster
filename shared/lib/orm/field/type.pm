@@ -58,9 +58,4 @@ sub was_updated {
     return exists $_[0]->{'updated'};
 }
 
-# returns true if the column represents the actual value stored in the database (if any -- returns true for unsaved objects)
-#sub was_fetched {
-#    return !exists $_[0]->{'not_fetched'};
-#}
-
 1;

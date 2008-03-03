@@ -7,20 +7,26 @@ sub new {
     my $model  = ${ $class . '::model' };
     my $obj    = bless {'model' => $model}, $class . '::object';
 
-    # create fields from any values passed
-    unless (@_ == 0) {
-        my $model_fields = $model->{'fields'};
-        my $obj_fields;
-        my $i = 0;
-        while (exists $_[$i]) {
-            my ($field_id, $value) = ($_[$i++], $_[$i++]);
-            next unless my $model_field = $model_fields->{$field_id};
-            $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $value);
+    # create field objects
+    my %values = @_;
+    my $model_fields = $model->{'fields'};
+    my $obj_fields;
+    for my $field_id (keys %{$model_fields}) {
+        my $model_field = $model_fields->{$field_id};
+
+        # if a value was specified
+        if (exists $values{$field_id}) {
+            $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values{$field_id});
         }
-        $obj->{'fields'} = $obj_fields;
+
+        # if the field has a default value
+        elsif (exists $model_field->{'default'}) {
+            $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+        }
     }
 
     # return the new orm object
+    $obj->{'fields'} = $obj_fields;
     return $obj;
 }
 
@@ -37,9 +43,9 @@ sub new_from_db {
         next unless my $model_field = $model_fields->{$field_id};
         $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values->{$field_id}, 'from_db');
     }
-    $obj->{'fields'} = $obj_fields;
 
     # return the new orm object
+    $obj->{'fields'} = $obj_fields;
     return $obj;
 }
 
@@ -67,23 +73,54 @@ sub fetch_fields {
 }
 
 sub save {
-    my $obj = shift;
-
-    my %fields;
+    my $obj        = shift;
     my $obj_fields = $obj->{'fields'};
-    for my $field_id (keys %{$obj_fields}) {
-        $fields{$field_id} = $obj_fields->{$field_id}->get_save_value();
-    }
 
     # if the object has an ID, update it
     if (exists $obj->{'id'}) {
-        #
+        my %update;
+        for my $field_id (keys %{$obj_fields}) {
+            my $obj_field = $obj_fields->{$field_id};
+            next unless $obj_field->was_updated();
+            $update{$field_id} = $obj_field->get_save_value();
+        }
+        return if keys %update == 0;
+        my $fields = join(' = ?, ', keys %update) . ' = ?';
+        $DBH->query("UPDATE $obj->{model}->{table} SET $fields WHERE id = ?", values %update, $obj->{'id'});
+
+        # relationships
     }
 
     # if the object has no ID, insert it
     else {
-        #
+        my %insert;
+        for my $field_id (keys %{$obj_fields}) {
+            my $obj_field = $obj_fields->{$field_id};
+            next unless $obj_field->was_updated();
+            $insert{$field_id} = $obj_field->get_save_value();
+        }
+        my $query;
+
+        # if there are fields to be inserted
+        if (keys %insert != 0) {
+            my $fields       = join(', ', keys %insert);
+            my $placeholders = join(', ', map '?', values %insert);
+            $query           = $DBH->query("INSERT INTO $obj->{model}->{table} $fields VALUES $placeholders", values %insert);
+        }
+
+        # if there are no fields to insert, we still need to perform an insert to get an ID
+        else {
+            $query = $DBH->query("INSERT INTO $obj->{model}->{table}");
+        }
+
+        # save the new object ID
+        $obj->{'id'} = $query->insert_id($obj->{'model'}->{'table'} . '_id');
+
+        # relationships
     }
+
+    # return the object ID
+    return $obj->{'id'};
 }
 
 sub delete {
@@ -113,7 +150,7 @@ sub AUTOLOAD {
 
         # if this is a database-based object
         if (exists $obj->{'id'}) {
-            my $value = $oyster::DB->query("SELECT $method FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'})->fetchrow_arrayref()->[0];
+            my $value = $oyster::DB->selectcol_arrayref("SELECT $method FROM $obj->{model}->{table} WHERE id = $obj->{id}")->[0];
             return $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field, $value, 'from_db');
         }
 
