@@ -2,8 +2,6 @@ package orm::object;
 
 use exceptions;
 
-# TODO: do not 'new' fields until necessary
-
 sub new {
     my $class  = shift;
     my $model  = ${ $class . '::model' };
@@ -36,7 +34,6 @@ sub new_from_db {
     my $model_fields = $model->{'fields'};
     my $obj_fields;
     for my $field_id (keys %{$values}) {
-        #my $model_field = $model_fields->{$field_id};
         next unless my $model_field = $model_fields->{$field_id};
         $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values->{$field_id}, 'from_db');
     }
@@ -78,7 +75,7 @@ sub save {
         $fields{$field_id} = $obj_fields->{$field_id}->get_save_value();
     }
 
-    # if the object has an ID, just update it
+    # if the object has an ID, update it
     if (exists $obj->{'id'}) {
         #
     }
@@ -93,11 +90,13 @@ sub delete {
     my $obj = shift;
 
     # if the object has been saved, remove it from the database
-    $oyster::DB->query("DELETE FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'}) if exists $obj->{'id'};
+    $oyster::DB->do("DELETE FROM $obj->{model}->{table} WHERE id = $obj->{id}") if exists $obj->{'id'};
 
     # destroy the object
     undef %{$obj};
 }
+
+sub id { $_[0]->{'id'} }
 
 sub AUTOLOAD {
     my $obj      = shift;
@@ -115,15 +114,11 @@ sub AUTOLOAD {
         # if this is a database-based object
         if (exists $obj->{'id'}) {
             my $value = $oyster::DB->query("SELECT $method FROM $obj->{model}->{table} WHERE id = ?", $obj->{'id'})->fetchrow_arrayref()->[0];
-            $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field, $value, 'from_db');
+            return $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field, $value, 'from_db');
         }
 
         # if this is a new object
-        else {
-            $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field);
-        }
-
-        return $obj->{'fields'}->{$method}
+        return $obj->{'fields'}->{$method} = $model_field->{'type'}->new($obj, $method, $model_field);
     }
 
     # nothing matched...
