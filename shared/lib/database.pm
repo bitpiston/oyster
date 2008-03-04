@@ -92,7 +92,7 @@ sub expand_metadata {
 }
 
 =xml
-    <section title="Extensions to Database Handle">
+    <section title="Extensions to Database Handles">
 =cut
 
 package oyster::database::dbi::db;
@@ -105,7 +105,7 @@ use exceptions;
                 Returns the unique ID of the last row inserted into the database.
             </synopsis>
             <prototype>
-                int = $DBH->insert_id(string sequence_name)
+                int = $DB->insert_id(string sequence_name)
             </prototype>
         </function>
 =cut
@@ -131,7 +131,7 @@ sub insert_id {
                 specifying it per-query, only per connection.
             </note>
             <prototype>
-                object statement_handle = $DBH->server_prepare(string statement)
+                object statement_handle = $DB->server_prepare(string statement)
             </prototype>
         </function>
 =cut
@@ -154,7 +154,7 @@ sub server_prepare {
             Prepares and executes a query in one command, returns the query object
         </synopsis>
         <prototype>
-            object statement_handle = $DBH->query(string statement[, bind variables]);
+            object statement_handle = $DB->query(string statement[, bind variables]);
         </prototype>
     </function>
 =cut
@@ -177,7 +177,7 @@ package oyster::database::dbi::st;
 =xml
     <function name="insert_id">
         <synopsis>
-            An alias to $DBH->insert_id()
+            An alias to $DB->insert_id()
         </synopsis>
     </function>
 =cut

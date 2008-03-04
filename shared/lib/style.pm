@@ -60,8 +60,8 @@ sub include_template {
 
 sub register {
     my ($style_id, $name) = @_;
-    return if $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->fetchrow_arrayref()->[0] == 1;
-    $oyster::DB->query("INSERT INTO $oyster::CONFIG{db_prefix}styles (id, name) VALUES (?, ?)", $style_id, $name);
+    return if is_registered($style_id);
+    $oyster::DB->do("INSERT INTO $oyster::CONFIG{db_prefix}styles (id, name) VALUES (?, ?)", $style_id, $name);
 }
 
 =xml
@@ -80,7 +80,7 @@ sub register {
 
 sub unregister {
     my $style_id = shift;
-    $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id);
+    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id);
 }
 
 =xml
@@ -99,7 +99,7 @@ sub unregister {
 
 sub enable {
     my $style_id = shift;
-    $oyster::DB->query("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '1' WHERE id = ?", $style_id);
+    $oyster::DB->do("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '1' WHERE id = ?", $style_id);
 }
 
 =xml
@@ -118,7 +118,7 @@ sub enable {
 
 sub disable {
     my $style_id = shift;
-    $oyster::DB->query("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '0' WHERE id = ?", $style_id);
+    $oyster::DB->do("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '0' WHERE id = ?", $style_id);
 }
 
 =xml
@@ -134,7 +134,7 @@ sub disable {
 
 sub is_enabled {
     my $style_id = shift;
-    return $oyster::DB->query("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id)->fetchrow_arrayref()->[0];
+    return $oyster::DB->selectcol_arrayref("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id)->[0];
 }
 
 =xml
@@ -150,7 +150,7 @@ sub is_enabled {
 
 sub is_registered {
     my $style_id = shift;
-    return if $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->fetchrow_arrayref()->[0];
+    return if $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->[0];
 }
 
 =xml
@@ -287,12 +287,10 @@ sub print_enabled_styles_xml {
 sub is_valid_style {
     if (scalar(@_) == 2) {
         my ($new_id, $current_id) = @_;
-        my $query = $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? and id != ? LIMIT 1", $new_id, $current_id);
-        return $query->fetchrow_arrayref()->[0];
+        return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? and id != ? LIMIT 1", $new_id, $current_id)->[0];
     } else {
         my $id = shift;
-        my $query = $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $id);
-        return $query->fetchrow_arrayref()->[0];
+        return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $id)->[0];
     }
 }
 

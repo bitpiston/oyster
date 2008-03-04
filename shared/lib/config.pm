@@ -45,7 +45,6 @@ sub load {
 
     # append options from the database to the config hash
     try {
-
         my $values = $oyster::DB->selectall_arrayref("SELECT name, value FROM $options{table}");
         for my $option (@{$values}) {
             $options{'config_hash'}->{$option->[0]} = $option->[1];

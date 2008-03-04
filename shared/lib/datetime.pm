@@ -16,15 +16,7 @@ package datetime;
 our @formats;
 event::register_hook('load_lib', '_load');
 sub _load {
-
-    # reset data structure
-    @formats = ();
-
-    # fetch formats from the db and store them
-    my $formats = $oyster::DB->selectall_arrayref("SELECT format FROM date_formats");
-    for my $format (@{$formats}) {
-        push @formats, $format->[0];
-    }
+    @formats = @{$oyster::DB->selectcol_arrayref("SELECT format FROM date_formats")};
 }
 
 =xml

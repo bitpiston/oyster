@@ -32,6 +32,7 @@ our $disable_logging; # if set to true, will disable error logging
     }
     log::error('Died: '  . $error) unless $disable_logging;
     print STDERR "Fatal Error:\n$error\n";
+    print "\n" . trace() . "\n";
     CORE::exit;
 };
 

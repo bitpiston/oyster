@@ -21,10 +21,7 @@ sub _load {
     $fetch_nav_urls_by_parent_id = $oyster::DB->server_prepare("SELECT id, url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority DESC");
 
     # load regex urls
-    my $query = $oyster::DB->query("SELECT id, parent_id, url, title, module, function, regex FROM $oyster::CONFIG{db_prefix}urls WHERE regex = 1");
-    while (my $url = $query->fetchrow_hashref()) {
-        $regex_urls{ $url->{'url'} } = $url;
-    }
+    %regex_urls = %{$oyster::DB->selectall_hashref("SELECT id, parent_id, url, title, module, function, regex FROM $oyster::CONFIG{db_prefix}urls WHERE regex = 1", 'url')};
 
     # load navigation
     load_navigation();
@@ -151,8 +148,7 @@ sub unique {
 
 sub register_once {
     my %args = @_;
-    my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
-    return if $oyster::DB->query("SELECT COUNT(*) FROM $url_table where url_hash = ? LIMIT 1", hash::fast($args{'url'}))->fetchrow_arrayref()->[0] == 1;
+    return if url::is_registered($args{'url'});
     goto &register;
 }
 
@@ -279,8 +275,7 @@ sub update {
     my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
 
     # fetch the current url's data
-    my $query = $oyster::DB->query("SELECT * FROM $url_table WHERE $update_by_field = ? LIMIT 1", $update_by_value);
-    my %url   = %{$query->fetchrow_hashref()};
+    my %url = %{$oyster::DB->selectrow_hashref("SELECT * FROM $url_table WHERE $update_by_field = ? LIMIT 1", $update_by_value)};
 
     # prepare columns to update, and only update them if necessary
     my %update;
@@ -301,8 +296,8 @@ sub update {
     return $url{'id'}, $url{'url'} unless %update;
 
     # perform the update
-    my $set   = join(', ', map("$_ = ?", keys %update));
-    my $query = $oyster::DB->query("UPDATE $url_table SET $set WHERE $update_by_field = ? LIMIT 1", values %update, $update_by_value);
+    my $set = join(', ', map("$_ = ?", keys %update));
+    $oyster::DB->do("UPDATE $url_table SET $set WHERE $update_by_field = ? LIMIT 1", values %update, $update_by_value);
 
     # if the url was changed, update all sub pages to the new url
     if (exists $update{'url'}) {
@@ -378,7 +373,7 @@ sub _parse_params_arg {
 
 sub unregister {
     my $url = shift;
-    $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ?", hash::fast($url));
+    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ?", hash::fast($url));
 }
 
 =xml
@@ -400,7 +395,7 @@ sub unregister {
 
 sub unregister_by_id {
     my $id = shift;
-    $oyster::DB->query("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE id = ?", $id);
+    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE id = ?", $id);
 }
 
 =xml
@@ -416,7 +411,7 @@ sub unregister_by_id {
 
 sub is_registered {
     my $url = shift;
-    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->fetchrow_arrayref()->[0];
+    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->[0];
 }
 
 =xml
@@ -432,7 +427,7 @@ sub is_registered {
 
 sub is_registered_by_id {
     my $id = shift;
-    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $id)->fetchrow_arrayref()->[0];
+    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $id)->[0];
 }
 
 =xml
@@ -559,7 +554,7 @@ sub get_parent_by_id {
 
 sub has_children_by_id {
     my $id = shift;
-    return $oyster::DB->query("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? LIMIT 1", $id)->fetchrow_arrayref()->[0];
+    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? LIMIT 1", $id)->[0];
 }
 
 =xml
@@ -655,7 +650,7 @@ sub _load_nav_urls_by_parent_id {
 }
 
 sub print_navigation_xml {
-    return unless length $nav_xml;
+    return if length $nav_xml == 0;
     print qq~\t<menu id="navigation">\n~;
     print $nav_xml;
     print "\t</menu>\n";

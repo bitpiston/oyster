@@ -127,7 +127,7 @@ sub send_template {
 =cut
 
 sub add_template {
-    $oyster::DB->query("INSERT INTO $oyster::CONFIG{db_prefix}email_templates (name, subject, body) VALUES (?, ?, ?)", @_);
+    $oyster::DB->do("INSERT INTO $oyster::CONFIG{db_prefix}email_templates (name, subject, body) VALUES (?, ?, ?)", @_);
 }
 
 # Copyright BitPiston 2008

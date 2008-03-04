@@ -73,26 +73,47 @@ sub fetch_fields {
 }
 
 sub save {
-    my $obj        = shift;
-    my $obj_fields = $obj->{'fields'};
+    my $obj          = shift;
+    my $obj_fields   = $obj->{'fields'};
+    my $model        = $obj->{'model'};
+    my $model_fields = $model->{'fields'};
 
     # if the object has an ID, update it
     if (exists $obj->{'id'}) {
+
+        # figure out fields values to update
         my %update;
         for my $field_id (keys %{$obj_fields}) {
-            my $obj_field = $obj_fields->{$field_id};
-            next unless $obj_field->was_updated();
+            my $model_field = $model_fields->{$field_id'};
+            my $obj_field;
+
+            # if the field has an object
+            if (exists $obj_fields->{$field_id}) {
+                $obj_field = $obj_fields->{$field_id};
+                next unless $obj_field->was_updated();
+            }
+
+            # if the field does not have an object, and was updated, create an object for it
+            elsif ($model_field->{'type'}->was_updated($obj, $field_id)) {
+                $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+            }
+
+            #my $obj_field = $obj_fields->{$field_id};
             $update{$field_id} = $obj_field->get_save_value();
         }
+
+        # update the object
         return if keys %update == 0;
         my $fields = join(' = ?, ', keys %update) . ' = ?';
-        $DBH->query("UPDATE $obj->{model}->{table} SET $fields WHERE id = ?", values %update, $obj->{'id'});
+        $oyster::DB->query("UPDATE $obj->{model}->{table} SET $fields WHERE id = ?", values %update, $obj->{'id'});
 
         # relationships
     }
 
     # if the object has no ID, insert it
     else {
+
+        # figure out the field values to insert
         my %insert;
         for my $field_id (keys %{$obj_fields}) {
             my $obj_field = $obj_fields->{$field_id};
@@ -105,12 +126,12 @@ sub save {
         if (keys %insert != 0) {
             my $fields       = join(', ', keys %insert);
             my $placeholders = join(', ', map '?', values %insert);
-            $query           = $DBH->query("INSERT INTO $obj->{model}->{table} $fields VALUES $placeholders", values %insert);
+            $query           = $oyster::DB->query("INSERT INTO $obj->{model}->{table} $fields VALUES $placeholders", values %insert);
         }
 
         # if there are no fields to insert, we still need to perform an insert to get an ID
         else {
-            $query = $DBH->query("INSERT INTO $obj->{model}->{table}");
+            $query = $oyster::DB->query("INSERT INTO $obj->{model}->{table}");
         }
 
         # save the new object ID

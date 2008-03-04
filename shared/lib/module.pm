@@ -195,7 +195,7 @@ sub get_latest_revision {
 =cut
 
 sub enable {
-    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '1' WHERE id = '$_[0]'");
+    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $_[0]);
 }
 
 =xml
@@ -216,7 +216,7 @@ sub enable {
 =cut
 
 sub disable {
-    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = '$_[0]'");
+    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = ?", $_[0]);
 }
 
 =xml
@@ -231,7 +231,7 @@ sub disable {
 =cut
 
 sub is_enabled {
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = '$_[0]' LIMIT 1")->[0];
+    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ? LIMIT 1", $_[0])->[0];
 }
 
 =xml
@@ -246,7 +246,7 @@ sub is_enabled {
 =cut
 
 sub is_registered {
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = '$_[0]' LIMIT 1")->[0];
+    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $_[0])->[0];
 }
 
 =xml
@@ -268,9 +268,9 @@ sub is_registered {
 
 sub register {
     my ($module_id, $revision) = @_;
-    return if $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = '$module_id' LIMIT 1")->[0] == 1;
+    return if $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $module_id)->[0] == 1;
     $revision = 0 unless defined $revision;
-    $oyster::DB->do("INSERT INTO modules (id, revision) VALUES ('$module_id', $revision)");
+    $oyster::DB->do("INSERT INTO modules (id, revision) VALUES (?, ?)", $module_id, $revision);
 }
 
 =xml
@@ -288,7 +288,7 @@ sub register {
 =cut
 
 sub unregister {
-    $oyster::DB->do("DELETE FROM modules WHERE id = '$_[0]'");
+    $oyster::DB->do("DELETE FROM modules WHERE id = ?", $_[0]);
 }
 
 =xml
@@ -306,7 +306,7 @@ sub unregister {
 =cut
 
 sub set_revision {
-    $oyster::DB->do("UPDATE modules SET revision = $_[1] WHERE id = '$_[0]'");
+    $oyster::DB->do("UPDATE modules SET revision = $_[1] WHERE id = ?", $_[0]);
 }
 
 =xml
@@ -314,31 +314,25 @@ sub set_revision {
         <synopsis>
             Gets a module's revision number
         </synopsis>
-        <note>
-            Returns 0 if a module is not registered
-        </note>
         <prototype>
             int revision = module::get_revision(string module_name)
         </prototype>
-        <todo>
-            Should probably throw a perl error or something if a module is not registered
-        </todo>
     </function>
 =cut
 
 sub get_revision {
-    return $oyster::DB->selectcol_arrayref("SELECT revision FROM modules WHERE id = '$_[0]' LIMIT 1")->[0];
-    #my $module_id = shift;
-    #my $rev       = 0;
-    #try {
-    #    my $query = $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id);
-    #    abort(1) unless $query->rows() == 1;
-    #    $rev = $query->fetchrow_arrayref()->[0];
-    #}
-    #catch 'db_error', with {
-    #    abort(1);
-    #};
-    #return $rev;
+    #return $oyster::DB->selectcol_arrayref("SELECT revision FROM modules WHERE id = ? LIMIT 1", $_[0])->[0];
+    my $module_id = shift;
+    my $rev       = 0;
+    try {
+        my $query = $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id);
+        abort(1) unless $query->rows() == 1;
+        $rev = $query->fetchrow_arrayref()->[0];
+    }
+    catch 'db_error', with {
+        abort(1);
+    };
+    return $rev;
 }
 
 =xml
