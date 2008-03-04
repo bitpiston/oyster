@@ -124,13 +124,13 @@ sub save {
 }
 
 sub delete {
-    my $obj = shift;
+    my $obj = $_[0];
 
     # if the object has been saved, remove it from the database
     $oyster::DB->do("DELETE FROM $obj->{model}->{table} WHERE id = $obj->{id}") if exists $obj->{'id'};
 
     # destroy the object
-    undef %{$obj};
+    undef $_[0]; # gogo @_ aliases
 }
 
 sub id { $_[0]->{'id'} }
