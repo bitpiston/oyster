@@ -55,7 +55,16 @@ sub get_save_value {
 
 # returns true if the field needs to be updated/inserted
 sub was_updated {
-    return exists $_[0]->{'updated'};
+
+    # if this being called OO
+    if (ref $_[0]) {
+        return exists $_[0]->{'updated'};
+    }
+    
+    # if this being called without an object
+    else {
+        return;
+    }
 }
 
 1;

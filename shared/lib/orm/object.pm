@@ -84,7 +84,7 @@ sub save {
         # figure out fields values to update
         my %update;
         for my $field_id (keys %{$obj_fields}) {
-            my $model_field = $model_fields->{$field_id'};
+            my $model_field = $model_fields->{$field_id};
             my $obj_field;
 
             # if the field has an object
@@ -94,11 +94,11 @@ sub save {
             }
 
             # if the field does not have an object, and was updated, create an object for it
-            elsif ($model_field->{'type'}->was_updated($obj, $field_id)) {
-                $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+            else {
+                next unless $model_field->{'type'}->was_updated($obj, $field_id);
+                $obj_field = $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
             }
 
-            #my $obj_field = $obj_fields->{$field_id};
             $update{$field_id} = $obj_field->get_save_value();
         }
 
