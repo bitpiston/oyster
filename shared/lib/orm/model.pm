@@ -16,7 +16,7 @@ sub new_from_db {
 # prototype: get([array columns][, limit => int limit][, offset => int offset][, where => [string where_clause, array where_placeholder_values]])
 # note: limit defaults to 1, if it is set to anything else, a result set will be returned instead of a single object
 # note: arguments can be specified in any order
-# note: if a single argument is passed, it is assumed to be get(where => ['id = ?', int object_id])
+# note: if a single argument numeric is passed, it is assumed to be get(where => ['id = ?', int object_id])
 # note: the where clause can also be a simple string or hashref (assumed AND, not OR) [NYI hashrefs]
 # note: if limit is 0, no limit is assumed (use get_all to achieve this)
 sub get {
