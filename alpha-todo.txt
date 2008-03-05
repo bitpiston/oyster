@@ -40,6 +40,7 @@ DELAYED
 + various utils should use console::util to parse args instead of just using @ARGV
 	- Some probably should, but some that don't do it for a reason (file move/copy)
 + add an admin.pm api so that it can create all of the functions and hooks necessary for a module, easily
++ queries to global tables need to use oyster::DB explicitely, and provide alternate implementations if the queries are currently using a join that would not work if $DB and $oyster::DB were not the same
 
 ORM
 * objects created from the database need to NOT set the default value for fields, and need to properly store meta data to track whether the field was fetched or not
@@ -138,4 +139,3 @@ TODO
 - all libs should 'use' all libs they require, in case they are imported without importing oyster.pm
 	- circular deps = bad?
 & remove bad uses of query()
-- queries to global tables need to use oyster::DB explicitely, and provide alternate implementations if the queries are currently using a join that would not work if $DB and $oyster::DB were not the same
