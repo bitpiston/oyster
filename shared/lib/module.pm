@@ -195,7 +195,7 @@ sub get_latest_revision {
 =cut
 
 sub enable {
-    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", $_[0]);
+    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '1' WHERE id = ?", {}, $_[0]);
 }
 
 =xml
@@ -216,7 +216,7 @@ sub enable {
 =cut
 
 sub disable {
-    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = ?", $_[0]);
+    $oyster::DB->do("UPDATE modules SET site_$oyster::CONFIG{site_id} = '0' WHERE id = ?", {}, $_[0]);
 }
 
 =xml
@@ -270,7 +270,7 @@ sub register {
     my ($module_id, $revision) = @_;
     return if $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $module_id)->[0] == 1;
     $revision = 0 unless defined $revision;
-    $oyster::DB->do("INSERT INTO modules (id, revision) VALUES (?, ?)", $module_id, $revision);
+    $oyster::DB->do("INSERT INTO modules (id, revision) VALUES (?, ?)", {}, $module_id, $revision);
 }
 
 =xml
@@ -288,7 +288,7 @@ sub register {
 =cut
 
 sub unregister {
-    $oyster::DB->do("DELETE FROM modules WHERE id = ?", $_[0]);
+    $oyster::DB->do("DELETE FROM modules WHERE id = ?", {}, $_[0]);
 }
 
 =xml
@@ -306,7 +306,7 @@ sub unregister {
 =cut
 
 sub set_revision {
-    $oyster::DB->do("UPDATE modules SET revision = $_[1] WHERE id = ?", $_[0]);
+    $oyster::DB->do("UPDATE modules SET revision = $_[1] WHERE id = ?", {}, $_[0]);
 }
 
 =xml

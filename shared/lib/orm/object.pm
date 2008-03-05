@@ -185,7 +185,7 @@ sub save {
         # update the object
         return if keys %update == 0;
         my $fields = join(' = ?, ', keys %update) . ' = ?';
-        $oyster::DB->do("UPDATE $model->{table} SET $fields WHERE id = ?", values %update, $obj->{'id'});
+        $oyster::DB->do("UPDATE $model->{table} SET $fields WHERE id = ?", {}, values %update, $obj->{'id'});
     }
 
     # if the object has no ID, insert it
@@ -263,7 +263,7 @@ sub delete {
     # if the object has been saved, remove it from the database
     if (exists $obj->{'id'}) {
         my $model = $obj->{'model'};
-        $oyster::DB->do("DELETE FROM $model->{table} WHERE id = $obj->{id}");
+        $oyster::DB->do("DELETE FROM $model->{table} WHERE id = ?", {}, $obj->{'id'});
 
         # relationships
         my $relationships = $model->{'relationships'};

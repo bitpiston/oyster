@@ -297,7 +297,7 @@ sub update {
 
     # perform the update
     my $set = join(', ', map("$_ = ?", keys %update));
-    $oyster::DB->do("UPDATE $url_table SET $set WHERE $update_by_field = ? LIMIT 1", values %update, $update_by_value);
+    $oyster::DB->do("UPDATE $url_table SET $set WHERE $update_by_field = ? LIMIT 1", {}, values %update, $update_by_value);
 
     # if the url was changed, update all sub pages to the new url
     if (exists $update{'url'}) {
@@ -373,7 +373,7 @@ sub _parse_params_arg {
 
 sub unregister {
     my $url = shift;
-    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ?", hash::fast($url));
+    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ?", {}, hash::fast($url));
 }
 
 =xml
@@ -395,7 +395,7 @@ sub unregister {
 
 sub unregister_by_id {
     my $id = shift;
-    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE id = ?", $id);
+    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}urls WHERE id = ?", {}, $id);
 }
 
 =xml

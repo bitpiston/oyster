@@ -61,7 +61,7 @@ sub include_template {
 sub register {
     my ($style_id, $name) = @_;
     return if is_registered($style_id);
-    $oyster::DB->do("INSERT INTO $oyster::CONFIG{db_prefix}styles (id, name) VALUES (?, ?)", $style_id, $name);
+    $oyster::DB->do("INSERT INTO $oyster::CONFIG{db_prefix}styles (id, name) VALUES (?, ?)", {}, $style_id, $name);
 }
 
 =xml
@@ -80,7 +80,7 @@ sub register {
 
 sub unregister {
     my $style_id = shift;
-    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id);
+    $oyster::DB->do("DELETE FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", {}, $style_id);
 }
 
 =xml
@@ -99,7 +99,7 @@ sub unregister {
 
 sub enable {
     my $style_id = shift;
-    $oyster::DB->do("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '1' WHERE id = ?", $style_id);
+    $oyster::DB->do("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '1' WHERE id = ?", {}, $style_id);
 }
 
 =xml
@@ -118,7 +118,7 @@ sub enable {
 
 sub disable {
     my $style_id = shift;
-    $oyster::DB->do("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '0' WHERE id = ?", $style_id);
+    $oyster::DB->do("UPDATE $oyster::CONFIG{db_prefix}styles SET status = '0' WHERE id = ?", {}, $style_id);
 }
 
 =xml
