@@ -116,7 +116,7 @@ sub save {
         # update the object
         return if keys %update == 0;
         my $fields = join(' = ?, ', keys %update) . ' = ?';
-        $oyster::DB->query("UPDATE $obj->{model}->{table} SET $fields WHERE id = ?", values %update, $obj->{'id'});
+        $oyster::DB->query("UPDATE $model->{table} SET $fields WHERE id = ?", values %update, $obj->{'id'});
 
         # relationships
     }
@@ -137,18 +137,52 @@ sub save {
         if (keys %insert != 0) {
             my $fields       = join(', ', keys %insert);
             my $placeholders = join(', ', map '?', values %insert);
-            $query           = $oyster::DB->query("INSERT INTO $obj->{model}->{table} $fields VALUES $placeholders", values %insert);
+            $query           = $oyster::DB->query("INSERT INTO $model->{table} $fields VALUES $placeholders", values %insert);
         }
 
         # if there are no fields to insert, we still need to perform an insert to get an ID
         else {
-            $query = $oyster::DB->query("INSERT INTO $obj->{model}->{table}");
+            $query = $oyster::DB->query("INSERT INTO $model->{table}");
         }
 
         # save the new object ID
         $obj->{'id'} = $query->insert_id($obj->{'model'}->{'table'} . '_id');
 
         # relationships
+        my $relationships = $model->{'relationships'};
+        #my $has_many      = $relationships->{'has_many'};
+        my $has_one       = $relationships->{'has_one'};
+
+        # has one
+        for my $class (keys %{$has_many}) {
+            my $fields = $has_many->{$class};
+
+            # assemble values for the new object
+            my (@fetch, %values);
+            for my $type (keys %{$fields}) {
+                my $value_id = $fields->{$type};
+
+                # if the field is from this object's fields
+                if ($type eq 'this') {
+                    if (exists $obj_fields->{$value_id}) {
+                        $values{$value_id} = $obj_fields->{$value_id}->get_save_value();
+                    } else {
+                        push @fetch, $value_id;
+                    }
+                }
+            }
+
+            # grab any values in the fetch queue
+            if (@fetch != 0) {
+                $obj->fetch_fields(@fetch);
+                for my $field_id (@fetch) {
+					$values{$value_id} = $obj_fields->{$value_id}->get_save_value();
+                }
+            }
+
+            # create and save the object
+            $class->new(%values)->save();
+        }
     }
 
     # return the object ID
