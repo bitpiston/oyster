@@ -113,7 +113,6 @@ sub save {
             $update{$field_id} = $obj_field->get_save_value();
         }
 
-
         # relationships
         my $relationships = $model->{'relationships'};
         my $has_many      = $relationships->{'has_many'};
@@ -148,6 +147,39 @@ sub save {
                 $foreign_field->{'updated'} = undef;
             }
             $foreign_obj->save();
+        }
+
+        # has many
+        for my $class (keys %{$has_many}) {
+            my $fields = $has_many->{$class};
+
+            # assemble values for the new object
+            my ($id_field, %values);
+            for my $foreign_field_id (keys %{$fields}) {
+                my $foreign_field = $fields->{$foreign_field_id};
+
+                # if the field is from this object's fields
+                if (exists $foreign_field->{'this'}) {
+                    my $field_id = $foreign_field->{'this'};
+                    if ($field_id eq 'id') {
+                        $id_field = $foreign_field_id;
+                    } elsif (exists $update{$value_id}) {
+                        $values{$foreign_field_id} = $update{$field_id};
+                    }
+                }
+            }
+
+            # update the objects
+            next if keys %values == 0;
+            my $foreign_objs = $class->get_all(keys %values, 'where' => "$id_field = ?", $obj->{'id'});
+                while (my $foreign_bj = $foreign_objs->next()) {
+                for my $foreign_field_id (keys %values) {
+                    my $foreign_field = $foreign_obj->$foreign_field_id;
+                    $foreign_field->value_from_db($values{$foreign_field_id});
+                    $foreign_field->{'updated'} = undef;
+                }
+                $foreign_obj->save();
+            }
         }
 
         # update the object
