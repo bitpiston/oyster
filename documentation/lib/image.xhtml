@@ -58,16 +58,16 @@
             Inspect an image and return the type, width, and height.
         </p><p class="note">
             Returns a undef if an error occured
-        </p><h3>identify</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string type, int width, int height = image::identify(string image_filename)
-        </pre><h3>identify</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             throw 'validation_error' =&gt; "File is not an image!" unless image::identify($INPUT{'some_upload'}-&gt;{'tmp_name'})
         </pre></div>
     <div class="function"><h2>thumbnail</h2><p>
             Create a thumbnail of an image
         </p><p class="note">
             Returns undef on failure, 1 on success.
-        </p><h3>thumbnail</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             image::thumbnail(string source_filename, string dest_filename, int width[, int height])
         </pre></div>
     <div class="function"><h2>watermark</h2><p>
@@ -80,7 +80,7 @@
             bottomright.
         </p><p class="note">
             If no alignment is specified, bottomright is selected.
-        </p><h3>watermark</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             image::thumbnail(string overlay_image, string background_image[, string alignment][, string destination_filename])
         </pre></div>
 </div>

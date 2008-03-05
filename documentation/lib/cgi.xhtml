@@ -60,14 +60,14 @@
            Begins a CGI request, processes POST, GET, and COOKIES 
         </p><p class="note">
             Modules should never need to call this function directly, it is called automatically each request.
-        </p><h3>start</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             cgi::start()
         </pre></div>
     <div class="function"><h2>end</h2><p>
             Ends a CGI request, cleans up after cgi::start()
         </p><p class="note">
             Modules should never need to call this function directly, it is called automatically each request.
-        </p><h3>end</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             cgi::end()
         </pre></div>
     <div class="function"><h2>_process_namespaces</h2><p>
@@ -78,44 +78,44 @@
             Namespaces allow you to emulate the query string using the directory path.
         </p><p class="note">
             Oyster urls should never have : in them unless you mean to use namespaces!
-        </p><h3>_process_namespaces</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             _process_namespaces()
         </pre></div>
     <div class="function"><h2>_process_form_post</h2><p>
             Processes POST data
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
-        </p><h3>_process_form_post</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             _process_form_post()
         </pre></div>
     <div class="function"><h2>_process_form_get</h2><p>
             Processes GET data
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
-        </p><h3>_process_form_get</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             _process_form_get()
         </pre></div>
     <div class="function"><h2>_process_cookies</h2><p>
             Processes cookie data
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
-        </p><h3>_process_cookies</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             _process_cookies()
         </pre></div>
     <div class="function"><h2>set_cookie</h2><p>
             Sets a cookie
         </p><p class="note">
             If no expiration time is set, the cookie is usually removed when the browser window is closed.
-        </p><h3>set_cookie</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             cgi::set_cookie(string name, string value[, int expires_minutes][, string path][, string domain])
-        </pre><h3>set_cookie</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             cgi::set_cookie('last_page_view_time', gmtime(), 60);
         </pre></div>
     <div class="function"><h2>_cookie_date</h2><p>
             Returns a date formatted to be used in a cookie expiration date
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
-        </p><h3>_cookie_date</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string date = _cookie_date(int epoch_seconds)
         </pre></div>
 </div>

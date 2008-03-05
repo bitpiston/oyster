@@ -52,7 +52,7 @@
 
         <div class="function"><h3>is_valid</h3><p>
                 Returns true if a given string is a valid url.
-            </p><h4>is_valid</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = url::is_valid(string url)
             </pre></div>
     </p>
@@ -64,7 +64,7 @@
             </p><p class="note">
                 If the url passed to url::unique is taken, unique_url will generate an
                 alternative.
-            </p><h4>unique</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 url::unique(string url)
             </pre></div>
         <div class="function"><h3>register</h3><p>
@@ -81,7 +81,7 @@
             </p><p class="note">
                 The second return value is necessary because the URL you requested may
                 not have been available and may have been changed.
-            </p><h4>register</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 int url_id, string url = url::register(
                    'url'            =&gt; string url,
                    'module'         =&gt; string module_id,
@@ -109,7 +109,7 @@
                 If you change the URL you should NOT change anything but the last part.
                 This may be changed later, but it would require significant remapping of
                 many URLs.
-            </p><h4>update</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 int url_id, string url = url::update(
                    'url' or 'id'    =&gt; string url_to_update or int url_id_to_update,
                    ['url'           =&gt; string new_url,]
@@ -124,52 +124,52 @@
         <div class="function"><h3>_parse_params_arg</h3><p>
                 This is what allows the optional 'params' argument on register and update
                 to be polymorphic.
-            </p><h4>_parse_params_arg</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = _parse_params_arg(hashref or arrayref or string params)
             </pre></div>
         <div class="function"><h3>unregister </h3><p>
                 Deletes a URL
             </p><p class="note">
                 This doesn't care if the url has any children!
-            </p><h4>unregister </h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = url::unregister(string url)
             </pre></div>
         <div class="function"><h3>unregister_by_id</h3><p>
                 Deletes a URL, by id
             </p><p class="note">
                 This doesn't care if the url has any children!
-            </p><h4>unregister_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = url::unregister_by_id(int url_id)
             </pre></div>
         <div class="function"><h3>is_registered</h3><p>
                 Checks if a URL is registered
-            </p><h4>is_registered</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool is_taken = url::is_registered(string url)
             </pre></div>
         <div class="function"><h3>is_registered_by_id</h3><p>
                 Checks if a URL is taken, by id
-            </p><h4>is_registered_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool is_taken = url::is_registered_by_id(int url_id)
             </pre></div>
         <div class="function"><h3>get</h3><p>
                 Retreives data associated with a url from the database
             </p><p class="note">
                 Returns undef if no urls matched
-            </p><h4>get</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 hashref url_data = url::get(string url)
             </pre></div>
         <div class="function"><h3>get_by_id</h3><p>
                 Retreives all data associated with a URL from the database, by id
             </p><p class="note">
                 Returns undef if no urls matched
-            </p><h4>get_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 hashref url_data = url::get_by_id(int url_id)
             </pre></div>
         <div class="function"><h3>get_url_by_id</h3><p>
                 Retreives only the URL from the database, by id
             </p><p class="note">
                 Returns undef if no urls matched
-            </p><h4>get_url_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 string url = url::get_url_by_id(int url_id)
             </pre></div>
         <div class="function"><h3>get_parent</h3><p/></div>
@@ -178,17 +178,17 @@
             </p></div>
         <div class="function"><h3>has_children</h3><p>
                 Checks if a url has any children
-            </p><h4>has_children</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = url::has_children(string url)
             </pre></div>
         <div class="function"><h3>has_children_by_id</h3><p>
                 Checks if a url has any children, by id
-            </p><h4>has_children_by_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = url::has_children_by_id(int url_id)
             </pre></div>
         <div class="function"><h3>print_subpage_xml</h3><p>
                 Prints subpage xml for a given url id.
-            </p><h4>print_subpage_xml</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 url::print_subpage_xml(int url_id)
             </pre></div>
     </p>

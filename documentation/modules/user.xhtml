@@ -145,41 +145,41 @@
                 Throws a 'permission_error' exception if a user does not meet a certain permission requirement
             </p><p class="note">
                 'minimum_level' defaults to 1.
-            </p><h4>require_permission</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 user::require_permission(string permission_id[, int minimum_level])
             </pre></div>
         <div class="function"><h3>add_permission</h3><p>
                 Adds a permission to the current site's user groups table
             </p><p class="note">
                 'default_permission_level' defaults to 0.
-            </p><h4>add_permission</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 user::add_permission(string permission_id[, int default_permission_level])
             </pre></div>
         <div class="function"><h3>delete_permission</h3><p>
                 Deletes a permission from the current site's user groups table
-            </p><h4>delete_permission</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 user::delete_permission(string permission_id)
             </pre></div>
         <div class="function"><h3>get_email</h3><p>
                 Retreives a user's email address based on their ID.
             </p><p class="note">
                 user_id defaults to the current user ID (if any), and if fetching the current user's email, adds it to the %USER hash.
-            </p><h4>get_email</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 string = user::get_email([int user_id])
             </pre></div>
         <div class="function"><h3>get_name</h3><p>
                 Retreives a user's name based on their ID.
-            </p><h4>get_name</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 string = user::get_name(int user_id)
             </pre></div>
         <div class="function"><h3>find</h3><p>
                 Returns an entry from the user table by id, email, or username
-            </p><h4>find</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = user::find(int user_id or string username or string email)
             </pre></div>
         <div class="function"><h3>is_username_taken</h3><p>
                 Checks if a given username is taken
-            </p><h4>is_username_taken</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = user::is_username_taken(string username)
             </pre></div>
         <div class="function"><h3>get_module_permissions</h3><p>
@@ -188,7 +188,7 @@
                 Returns undef if no permission information is available
             </p><p class="note">
                 throws a 'perl_error' exception if permissions.pl exists but an error occured while reading it
-            </p><h4>get_module_permissions</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = user::get_module_permissions(string module_id)
             </pre></div>
     </p>

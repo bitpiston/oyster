@@ -52,18 +52,18 @@
             Issues a command for all daemons of the current site to execute
         </p><p class="note">
             'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
-        </p><h3>do</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             ipc::do(string module, string function[, array args])
-        </pre><h3>do</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             ipc::do('news', 'load_category', $category_id);
         </pre></div>
     <div class="function"><h2>global_do</h2><p>
             Issues a command for all daemons to execute
         </p><p class="note">
             'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
-        </p><h3>global_do</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             ipc::global_do(string module, string function[, array args])
-        </pre><h3>global_do</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             ipc::global_do('oyster', '_load_config');
         </pre></div>
     <div class="function"><h2>update</h2><p>
@@ -74,7 +74,7 @@
         </p><p class="note">
             Modules should not need to call this function, Oyster performs this
             task automatically.
-        </p><h3>update</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             ipc::update()
         </pre></div>
 </div>

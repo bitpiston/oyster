@@ -52,9 +52,9 @@
         </p><p class="note">
             If a database connection is available, this message is written to the
             #     log table, otherwise it is written to logs/status.log
-        </p><h3>status</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             log:status(string_message)
-        </pre><h3>status</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             log::status('Something happened');
         </pre></div>
     <div class="function"><h2>error</h2><p>
@@ -62,9 +62,9 @@
         </p><p class="note">
             If a database connection is available, this message is written to the
             log table, otherwise it is written to logs/error.log
-        </p><h3>error</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             log::error(string message)
-        </pre><h3>error</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             log::error("We're all gonna die!");
         </pre></div>
     <div class="function"><h2>_message</h2><p>
@@ -79,9 +79,9 @@
         </p><p class="note">
             This function is not exported by default, to use it you must call it by
             its fully qualified name.
-        </p><h3>_message</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             log::_message(string message_type, string message)
-        </pre><h3>_message</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             log::_message("error", "We're all gonna die!");
         </pre></div>
 </div>

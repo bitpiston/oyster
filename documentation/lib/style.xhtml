@@ -51,45 +51,45 @@
 
         <div class="function"><h3>include_template</h3><p>
                 Defines a specific xsl template to use for the current request.
-            </p><h4>include_template</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::include_template(string template_name)
             </pre></div>
         <div class="function"><h3>register</h3><p>
                 Adds an entry to the current site's styles table
             </p><p class="note">
                 This does nothing (and returns undef) if the given style ID is already registered.
-            </p><h4>register</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::register(string style_id, string style_name)
             </pre></div>
         <div class="function"><h3>unregister</h3><p>
                 Removes a style's entry in the current site's styles table
             </p><p class="note">
                 This does nothing if passed a non-existant style ID.
-            </p><h4>unregister</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::unregister(string style_id)
             </pre></div>
         <div class="function"><h3>enable</h3><p>
                 Enables a style
             </p><p class="note">
                 This does nothing if passed an invalid style ID.
-            </p><h4>enable</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::enable(string style_id)
             </pre></div>
         <div class="function"><h3>disable</h3><p>
                 Disables a style
             </p><p class="note">
                 This does nothing if passed an invalid style ID.
-            </p><h4>disable</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::disable(string style_id)
             </pre></div>
         <div class="function"><h3>is_enabled</h3><p>
                 Checks if a given style is enabled
-            </p><h4>is_enabled</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = style::is_enabled(string style_id)
             </pre></div>
         <div class="function"><h3>is_registered</h3><p>
                 Checks if a given style is registered
-            </p><h4>is_registered</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = style::is_registered(string style_id)
             </pre></div>
         <div class="function"><h3>print_header</h3><p>
@@ -97,7 +97,7 @@
             </p><p class="note">
                 Modules should rarely need to call this function explicitely.  Each page
                 request is wrapped in the template automatically.
-            </p><h4>print_header</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::print_header()
             </pre></div>
         <div class="function"><h3>print_footer</h3><p>
@@ -105,32 +105,32 @@
             </p><p class="note">
                 Modules should rarely need to call this function explicitely.  Each page
                 request is wrapped in the template automatically.
-            </p><h4>print_footer</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::print_footer()
             </pre></div>
         <div class="function"><h3>print_styles_xml</h3><p>
                 Prints styles in an xml-friendly manner.
-            </p><h4>print_styles_xml</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::print_styles_xml()
             </pre></div>
         <div class="function"><h3>print_enabled_styles_xml</h3><p>
                 Print enabled styles in an xml-friendly manner.
-            </p><h4>print_enabled_styles_xml</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 style::print_enabled_styles_xml()
             </pre></div>
         <div class="function"><h3>is_valid_style</h3><p>
                 Returns true if a valid style is found.
-            </p><h4>is_valid_style</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = style::is_valid_style(string style_id[, string ignore_style_id])
             </pre></div>
         <div class="function"><h3>is_reserved_id</h3><p>
                 Returns true if a style id is reserved.
-            </p><h4>is_reserved_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 bool = style::is_reserved_id(string style_id)
             </pre></div>
         <div class="function"><h3>compile</h3><p>
                 Calls xslcompiler.pl on all of the current site's styles, returns the url path to the style for the given stylesheets.
-            </p><h4>compile</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 string stylesheet_url, string stylesheet_path = style::compile(string style[, string stylesheet][, string stylesheet])
             </pre></div>
     </p>
@@ -140,7 +140,7 @@
         <div class="function"><h3>_needs_compilation</h3><p/></div>
         <div class="function"><h3>_load</h3><p>
                 Loads (or reloads) enabled styles
-            </p><h4>_load</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 _load()
             </pre></div>
         <div class="function"><h3>_compile_style</h3><p/></div>

@@ -50,31 +50,31 @@
     </p>
     <div class="function"><h2>connect</h2><p>
             Establishes a database connection and tells it to use Oyster exceptions.
-        </p><h3>connect</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             obj = database::connect(, driver =&gt; string driver, host =&gt; string hostname, user =&gt; string username, password =&gt; string password, database =&gt; string database)
         </pre></div>
     <div class="function"><h2>compress_metadata</h2><p>
             
         </p><p class="note">
             
-        </p><h3>compress_metadata</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             
-        </pre><h3>compress_metadata</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
     <div class="function"><h2>expand_metadata</h2><p>
             
         </p><p class="note">
             
-        </p><h3>expand_metadata</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             
-        </pre><h3>expand_metadata</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
     <h2>Extensions to Database Handle</h2><p>
         <div class="function"><h3>insert_id</h3><p>
                 Returns the unique ID of the last row inserted into the database.
-            </p><h4>insert_id</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 int = $DBH-&gt;insert_id(string sequence_name)
             </pre></div>
         <div class="function"><h3>server_prepare</h3><p>
@@ -82,12 +82,12 @@
             </p><p class="note">
                 This calls ordinary prepare() on mysql, its DB driver does not allow
                 specifying it per-query, only per connection.
-            </p><h4>server_prepare</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 object statement_handle = $DBH-&gt;server_prepare(string statement)
             </pre></div>
     <div class="function"><h3>query</h3><p>
             Prepares and executes a query in one command, returns the query object
-        </p><h4>query</h4><h3>Prototype:</h3><pre class="prototype">
+        </p><h4>Prototype:</h4><pre class="prototype">
             object statement_handle = $DBH-&gt;query(string statement[, bind variables]);
         </pre></div>
     </p>

@@ -55,14 +55,14 @@
     </p>
     <div class="function"><h2>new</h2><p>
             Allows OO-style access to the menu API.
-        </p><h3>new</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             obj = menu-&gt;new(string label[, string description])
         </pre></div>
     <div class="function"><h2>label</h2><p>
             Sets the corresponding proper label for a menu ID.
         </p><p class="note">
             If no menu ID is specified, the default menu ID is used.
-        </p><h3>label</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             menu::label([string menu_id], string menu_label)
         </pre><pre class="prototype">
             obj-&gt;label(string menu_label)
@@ -71,14 +71,14 @@
             Sets the corresponding description for a menu ID.
         </p><p class="note">
             If no menu ID is specified, the default menu ID is used.
-        </p><h3>description</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             menu::description([string menu_id], string menu_description)
         </pre><pre class="prototype">
             obj-&gt;description(string menu_description)
         </pre></div>
     <div class="function"><h2>set_default_menu</h2><p>
             Sets the default menu ID to be assumed if none is specified.
-        </p><h3>set_default_menu</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             menu::set_default_menu(string menu_id)
         </pre><pre class="prototype">
             obj-&gt;set_default_menu()
@@ -95,7 +95,7 @@
             'label' and 'url' are assumed to be xml-safe, if they must be entified, you must call xml::entities() on them yourself
         </p><p class="note">
             If OO syntax is used, an object is returned instead of a normal hash reference.  add_item() can be called on that object to add sub items.
-        </p><h3>add_item</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             hashref item = menu::add_item([menu =&gt; string menu_id OR parent =&gt; hashref item][, require_children =&gt; bool], label =&gt; string label, url =&gt; string url)
         </pre><pre class="prototype">
             obj = obj-&gt;add_item([, require_children =&gt; bool], label =&gt; string label, url =&gt; string url)
@@ -110,7 +110,7 @@
             If the menu does not have a label -- set via menu::label -- the id is printed instead (as id="" instead of label="").
         </p><p class="note">
             Once finished, this deletes all data associated with the printed menu.
-        </p><h3>print_xml</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             bool was_anything_printed = menu::print_xml([string menu_id])
         </pre><pre class="prototype">
             bool was_anything_printed = obj-&gt;print_xml()

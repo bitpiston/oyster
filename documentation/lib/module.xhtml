@@ -55,31 +55,31 @@
             If the optional 'action_id' argument is not defined, the calling sub routine will be assumed.
         </p><p class="note">
             If only one optional argument is present, it is assumed to be the module name
-        </p><h3>print_start_xml</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::print_start_xml([string module_id][, string action_id]);
         </pre></div>
     <div class="function"><h2>print_end_xml</h2><p>
             A convenience function to print "\t&lt;/module_id&gt;\n"
         </p><p class="note">
             This uses the module name of the last call to module::print_start_xml()
-        </p><h3>print_end_xml</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::print_end_xml();
         </pre></div>
     <div class="function"><h2>get_available</h2><p>
             Retreives a list of all available modules.
-        </p><h3>get_available</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             array = module::get_available()
         </pre></div>
     <div class="function"><h2>get_enabled</h2><p>
             Retreives a list of enabled modules
-        </p><h3>get_enabled</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             array = module::get_enabled()
         </pre></div>
     <div class="function"><h2>order_by_dependencies</h2><p>
             Given a list of modules, orders them based on their dependencies
         </p><p class="note">
             This is susceptible to infinte looping if modules have circular dependencies
-        </p><h3>order_by_dependencies</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             array = module::order_by_dependencies(array)
         </pre></div>
     <div class="function"><h2>get_latest_revision</h2><p>
@@ -88,7 +88,7 @@
             returns 0 if no revisions.pl file is available
         </p><p class="note">
             throws a 'perl_error' exception on failure
-        </p><h3>get_latest_revision</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             int = module::get_latest_revision(string module_id)
         </pre></div>
     <div class="function"><h2>enable</h2><p>
@@ -97,7 +97,7 @@
             This does not load the module
         </p><p class="note">
             This does nothing if passed a non-existant module ID.
-        </p><h3>enable</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::enable(string module_id)
         </pre></div>
     <div class="function"><h2>disable</h2><p>
@@ -106,52 +106,52 @@
             This does not unload the module if it is currently loaded.
         </p><p class="note">
             This does nothing if passed a non-existant module ID.
-        </p><h3>disable</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::disable(string module_id)
         </pre></div>
     <div class="function"><h2>is_enabled</h2><p>
             Checks if a given module is enabled
-        </p><h3>is_enabled</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             bool = module::is_enabled(string module_id)
         </pre></div>
     <div class="function"><h2>is_registered</h2><p>
             Checks if a given module is registered
-        </p><h3>is_registered</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             bool = module::is_registered(string module_id)
         </pre></div>
     <div class="function"><h2>register</h2><p>
             Adds an entry to the modules table
         </p><p class="note">
             This does nothing and returns undef if the given module ID is already registered.
-        </p><h3>register</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::register(string module_id[, revision])
         </pre></div>
     <div class="function"><h2>unregister</h2><p>
             Removes a module's entry in the modules table
         </p><p class="note">
             This does nothing if passed a non-existant module ID.
-        </p><h3>unregister</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::unregister(string module_id)
         </pre></div>
     <div class="function"><h2>set_revision</h2><p>
             Sets a module's current revision
         </p><p class="note">
             Does nothing if the module is not registered
-        </p><h3>set_revision</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::set_revision(string module_id, int revision)
         </pre></div>
     <div class="function"><h2>get_revision</h2><p>
             Gets a module's revision number
         </p><p class="note">
             Returns 0 if a module is not registered
-        </p><h3>get_revision</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             int revision = module::get_revision(string module_name)
         </pre></div>
     <div class="function"><h2>get_meta</h2><p>
             Fetches meta information about a module
         </p><p class="note">
             throws a 'perl_error' exception on failure
-        </p><h3>get_meta</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             hashref = module::get_meta(string module_name)
         </pre></div>
     <div class="function"><h2>load</h2><p>
@@ -160,7 +160,7 @@
             If the module is already loaded, it is unloaded first.
         </p><p class="note">
             dies on failure
-        </p><h3>load</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::load(string module_id);
         </pre></div>
     <div class="function"><h2>load_config</h2><p/></div>
@@ -168,12 +168,12 @@
             Unloads a module
         </p><p class="note">
             This is not gauranteed to work -- and when it does, it may break other things.
-        </p><h3>unload</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             module::unload(string module_id);
         </pre></div>
     <div class="function"><h2>print_modules_xml</h2><p>
             Print modules in an xml-friendly manner.
-        </p><h3>print_modules_xml</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             print_module_xml()
         </pre></div>
 </div>

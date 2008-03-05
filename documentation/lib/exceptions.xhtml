@@ -73,9 +73,9 @@
         </p><p class="note">
             Exceptions thrown from inside handlers are treated as if the exception
             was thrown from the same scope that the original exception came from.
-        </p><h3>throw</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             throw(string exception_type[ =&gt; arguments to be passed to exception handler])
-        </pre><h3>throw</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             throw('validation_error', 'Title is too short') if length($INPUT{'title'}) &lt; 5;
         </pre><pre class="code">
             throw 'validation_error' =&gt; 'Title is too short' if length $INPUT{'title'} &lt; 5;
@@ -95,9 +95,9 @@
             If an exception is caught further up the stack than it was thrown, the
             handler can either abort at the level it was caught at or the level it
             was thrown at.  See abort() for more information.
-        </p><h3>catch</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             bool success = try { block } [ catch string exception_type, with { block } ... ];
-        </pre><h3>catch</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
         try {
             print "Hello";
                 throw 'error' =&gt; 'something went terribly wrong' if $armageddon;
@@ -122,16 +122,16 @@
             If no try blocks are active, returns false and does nothing.
         </p><p class="note">
             If called outside of a catch block, this will always act as abort(1).
-        </p><h3>abort</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             abort([bool only_current_block])
         </pre></div>
     <div class="function"><h2>trace</h2><p>
             
         </p><p class="note">
             
-        </p><h3>trace</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             
-        </pre><h3>trace</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
 </div>

@@ -65,12 +65,12 @@
         </p><p class="note">
             The optional second argument can be used to replace elements with
             something instead of merely stripping them.
-        </p><h3>strip_elements</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string = xml::strip_elements(string[, string replace_with])
         </pre></div>
     <div class="function"><h2>replace_entities</h2><p>
             Takes an XML-safe string and replaces XML entities with their plain ASCII equivalents
-        </p><h3>replace_entities</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string = xml::replace_entities(string)
         </pre></div>
     <div class="function"><h2>entities</h2><p>
@@ -84,18 +84,18 @@
             The 'proper_english' flag replaces various entities with their "proper"
             equivalents, including: ellipses, dashes, subtraction, hyphenation,
             single/double quotes, and apostrophes.
-        </p><h3>entities</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string = xml::entities(string[, 'safe'][, 'proper_english'])
-        </pre><h3>entities</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             print xml::entities($INPUT{'title'});
         </pre></div>
     <div class="function"><h2>bbcode</h2><p>
             Transforms BBcode into XHTML
         </p><p class="note">
             This function raises a validation_error if a problem is encountered.
-        </p><h3>bbcode</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string xhtml = xml::bbcode(string bbcode[, disabled_tags =&gt; hashref, allow_calls =&gt; bool, allow_includes =&gt; bool])
-        </pre><h3>bbcode</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             my $post = xml::bbcode($INPUT{'post'});
         </pre></div>
     <div class="function"><h2>_bbcode_parse_code</h2><p>
@@ -106,7 +106,7 @@
         </p><p class="note">
             This is used internally by bbcode(), modules should never need to
             call this; it is not exported by default.
-        </p><h3>_bbcode_parse_code</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             my ($bbcode, $xhtml) = _bbcode_parse_code($bbcode, $xhtml)
         </pre></div>
     <div class="function"><h2>_bbcode_inspect_stack</h2><p>
@@ -118,7 +118,7 @@
             not just that it is true.
         </p><p class="note">
             Offset defaults to zero.
-        </p><h3>_bbcode_inspect_stack</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             int position = _bbcode_inspect_stack(string tag_name[, int offset])
         </pre></div>
     <div class="function"><h2>validate_xhtml</h2><p>
@@ -137,7 +137,7 @@
         </p><p class="note">
             The permission level option allows you to only enable certain xhtml
             tags.
-        </p><h3>validate_xhtml</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string xml = xml::validate_xhtml(string xhtml[, permission_level =&gt; int level, allow_calls =&gt; bool, allow_includes =&gt; bool])
         </pre></div>
 </div>

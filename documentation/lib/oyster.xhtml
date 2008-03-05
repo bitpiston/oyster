@@ -74,7 +74,7 @@
                 Can optionally be passed an argument to be imported into a specific package instead of the caller.
             </p><p class="note">
                 Import sets: module, launcher, test, daemon (some are NYI or dont export anything)
-            </p><h4>import</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::import(string package_name[, string import_set])
             </pre><pre class="prototype">
                 use oyster [string import_set]
@@ -95,22 +95,22 @@
                 'load_request' determines whether Oyster should be prepared to serve page requests.
             </p><p class="note">
                 'load_modules' determines whether modules will be loaded.
-            </p><h4>load</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::load(hashref configuration[, db_connect =&gt; bool][, load_config =&gt; bool][, load_modules =&gt; bool][, load_libs =&gt; bool][, load_request =&gt; bool])
             </pre></div>
         <div class="function"><h3>_db_connect</h3><p>
                 Establishes a database connection if one isn't already active
-            </p><h4>_db_connect</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 _db_connect([bool force_reconnect])
             </pre></div>
         <div class="function"><h3>_load_config</h3><p>
                 Loads (or reloads) oyster configuration
-            </p><h4>_load_config</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 _load_config()
             </pre></div>
         <div class="function"><h3>_load_modules</h3><p>
                 Loads (or reloads) oyster modules
-            </p><h4>_load_modules</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 _load_modules()
             </pre></div>
     </p>
@@ -123,7 +123,7 @@
                 Called before each page request
             </p><p class="note">
                 This is primarily used to perform updates necessary to keep daemons in sync before the next page should be served.
-            </p><h4>request_pre</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::request_pre()
             </pre></div>
         <div class="function"><h3>request_handler</h3><p>
@@ -153,19 +153,19 @@
                     However, this will NOT help if the request requires SSXSLT.
                     There is currently no way to work around this.
                 
-            </p><h4>request_handler</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::request_handler()
             </pre></div>
         <div class="function"><h3>request_cleanup</h3><p>
                 Performed after request_handler, after the connection is closed
             </p><p class="note">
                 Hooking into request_cleanup is favorable to request_finish (unless you have a good reason), since request_finish hooks should not print anything anyways.
-            </p><h4>request_cleanup</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::request_cleanup()
             </pre></div>
         <div class="function"><h3>_load_exception_handlers</h3><p>
                 Prepares the exception handlers necessary to serve a page request.
-            </p><h4>_load_exception_handlers</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 _load_exception_handlers()
             </pre></div>
     </p>
@@ -178,21 +178,21 @@
                 Executes a script in the shared_path/script/ directory, under the current site ID.
             </p><p class="note">
                 The first argument is the filename without the .pl extension.
-            </p><h4>execute_script</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 string output = oyster::execute_script(string script_name[, array args])
-            </pre><h4>execute_script</h4><h3>Example:</h3><pre class="code">
+            </pre><h4>Example:</h4><pre class="code">
                 print execute_script('xslcompiler');
             </pre></div>
         <div class="function"><h3>restart</h3><p>
                 Restarts the current script.
-            </p><h4>restart</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::restart()
             </pre></div>
         <div class="function"><h3>perl_require</h3><p>
                 Performs a 'require' without Oyster's library search paths.
             </p><p class="note">
                 This cannot be used like 'require IO::Socket', you must use 'IO/Socket.pm' instead.
-            </p><h4>perl_require</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::perl_require(string filename)
             </pre></div>
         <div class="function"><h3>shell_escape</h3><p>
@@ -201,7 +201,7 @@
                 Currently only escapes double quotes.  The data passed to this function
                 assumes that it will be placed inside double quotes when it is passed to
                 the shell.
-            </p><h4>shell_escape</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 string escaped_string = oyster::shell_escape(string)
             </pre></div>
         <div class="function"><h3>dump</h3><p>
@@ -212,7 +212,7 @@
                 It is probably not a good idea to use this in production code, as it loads Data::Dumper once it is called, which requires a significant amount of memory.
             </p><p class="note">
                 Like Data::Dumper::Dumper, be sure to pass a ref.
-            </p><h4>dump</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 variable = oyster::dump(ref)
             </pre></div>
     </p>
@@ -226,17 +226,17 @@
                 calls abort().  If confirmation has been gotten, does nothing.
             </p><p class="note">
                 This uses the &lt;confirm&gt; xml node, styled in shared/styles/source.xsl
-            </p><h4>confirm</h4><h3>Prototype:</h3><pre class="prototype">
+            </p><h4>Prototype:</h4><pre class="prototype">
                 confirm(string message)
-            </pre><h4>confirm</h4><h3>Example:</h3><pre class="code">
+            </pre><h4>Example:</h4><pre class="code">
                 confirm("Are you sure you want to delete everything on your hard drive?");
                 `rm -f /*.*`;
             </pre></div>
     <div class="function"><h3>confirmation</h3><p>
             Prints a confirmation message.
-        </p><h4>confirmation</h4><h3>Prototype:</h3><pre class="prototype">
+        </p><h4>Prototype:</h4><pre class="prototype">
             confirmation(string confirmation_message[, forward_options])
-        </pre><h4>confirmation</h4><h3>Example:</h3><pre class="code">
+        </pre><h4>Example:</h4><pre class="code">
             confirmation('Something happened.', $BASE_URL =&gt; 'Return to the home page.');
         </pre></div>
     </p>

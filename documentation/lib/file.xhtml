@@ -53,7 +53,7 @@
     
     <div class="function"><h2>tmp_name</h2><p>
             Generates a name for a temporary file, returns the path to that file
-        </p><h3>tmp_name</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string file_path = file::tmp_name()
         </pre></div>
     <div class="function"><h2>tmp_web_name</h2><p>
@@ -62,16 +62,16 @@
         </p><p class="note">
             A single argument is optional, if specified, it will be used as the file
             extension.
-        </p><h3>tmp_web_name</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string file_path, string file_url = file::tmp_web_name([string extension])
         </pre></div>
     <div class="function"><h2>rename</h2><p>
             Move or rename a file
         </p><p class="note">
             throws a 'perl_error' exception on failure
-        </p><h3>rename</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             file::rename(string from_filename, string to_filename)
-        </pre><h3>rename</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             file::rename("foo.txt", "bar.txt");
         </pre></div>
     
@@ -82,23 +82,23 @@
             Copy a file or a directory
         </p><p class="note">
             throws a 'perl_error' exception on failure
-        </p><h3>copy</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             file::copy(string from_filename, string to_filename)
-        </pre><h3>copy</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             file::copy("foo.txt", "bar.txt");
         </pre></div>
     <div class="function"><h2>size</h2><p>
             Returns a file's size, in kilobytes
-        </p><h3>size</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             int fsize = file::size(string filename)
         </pre></div>
     <div class="function"><h2>slurp</h2><p>
             Quick and dirty file reading
         </p><p class="note">
             Throws a perl_error exception on failure
-        </p><h3>slurp</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             string file_contents = file::slurp(string filename)
-        </pre><h3>slurp</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
     
@@ -111,28 +111,28 @@
             The third optional argument, if true, will attempt to create any directories necessary to create to the file.
         </p><p class="note">
             Throws a perl_error exception on failure
-        </p><h3>write</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             file::write(string filename, string file_contents[, bool autocreate_directories])
         </pre></div>
     <div class="function"><h2>rmdir</h2><p>
             Recursively deletes a directory and everything inside it.
         </p><p class="note">
             Throws a perl_error exception on failure
-        </p><h3>rmdir</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             file::rmdir(string path)
         </pre></div>
     <div class="function"><h2>mkdir</h2><p>
             Recursively creates a directory and all directories leading up to it (if necessary)
-        </p><h3>mkdir</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             file::mkdir(string path)
         </pre></div>
     <div class="function"><h2>mtime</h2><p>
             Returns a file's last-modified time
         </p><p class="note">
             
-        </p><h3>mtime</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             
-        </pre><h3>mtime</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
 </div>

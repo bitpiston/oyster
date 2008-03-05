@@ -59,9 +59,9 @@
         </p><p class="note">
             Use default priority where possible.  Only define an explicit priority
             if absolutely necessary.
-        </p><h3>register_hook</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             event::register_hook(string event_name, string sub_name[, int priority])
-        </pre><h3>register_hook</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             event::register_hook('load', 'do_some_stuff', 64);
             sub do_some_stuff {
                 log::status('Did some stuff...');
@@ -81,9 +81,9 @@
         </p><p class="note">
             Once destroyed, the table cannot be restored without reloading Oyster,
             or at the very least, all code that registered any hooks.
-        </p><h3>destroy</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             event::destroy(string event_name)
-        </pre><h3>destroy</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             event::destroy('load');
         </pre></div>
     <div class="function"><h2>execute</h2><p>
@@ -93,9 +93,9 @@
         </p><p class="note">
             Returns an array containing the return values of all hook functions
             called.
-        </p><h3>execute</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             array return_values = event::execute(string event_name)
-        </pre><h3>execute</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             event::execute('load');
         </pre><pre class="code">
             my @return_values = event::execute('load', 'some argument');
@@ -108,12 +108,12 @@
         </p><p class="note">
             Returns an array containing the return values of all hook functions
             called.
-        </p><h3>execute_by_module</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             array return_values = event::execute_by_module(string event_name, string module_id)
-        </pre><h3>execute_by_module</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             my @return_values = event::execute_by_module('load', 'news', 'some argument');
         </pre></div>
-    <div class="function"><h2>execute_one</h2><p/><h3>execute_one</h3><h3>Prototype:</h3><pre class="prototype">
+    <div class="function"><h2>execute_one</h2><p/><h3>Prototype:</h3><pre class="prototype">
             array return_values = event::execute_one(string event_name)
         </pre></div>
     <div class="function"><h2>module_handles_event</h2><p>
@@ -121,9 +121,9 @@
         </p><p class="note">
             If event::destroy() has been called on the specified event, this will
             return false even if the module implements a handler.
-        </p><h3>module_handles_event</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             bool = event::module_handles_event(string module_name, string event_name)
-        </pre><h3>module_handles_event</h3><h3>Example:</h3><pre class="code">
+        </pre><h3>Example:</h3><pre class="code">
             $result = event::module_handles_event('news', 'load');
         </pre></div>
     <div class="function"><h2>delete_module_hooks</h2><p>
@@ -131,7 +131,7 @@
         </p><p class="note">
             Users should rarely need to call this, it is used when unloading or
             reloading a module.
-        </p><h3>delete_module_hooks</h3><h3>Prototype:</h3><pre class="prototype">
+        </p><h3>Prototype:</h3><pre class="prototype">
             event::delete_module_hooks(string module_id)
         </pre></div>
 </div>
