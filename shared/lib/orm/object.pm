@@ -261,7 +261,12 @@ sub delete {
     my $obj = $_[0];
 
     # if the object has been saved, remove it from the database
-    $oyster::DB->do("DELETE FROM $obj->{model}->{table} WHERE id = $obj->{id}") if exists $obj->{'id'};
+    if (exists $obj->{'id'}) {
+        $oyster::DB->do("DELETE FROM $obj->{model}->{table} WHERE id = $obj->{id}");
+
+        # relationships
+        #
+    }
 
     # destroy the object
     undef $_[0]; # gogo @_ aliases
