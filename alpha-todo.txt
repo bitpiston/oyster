@@ -18,6 +18,7 @@ CANNED
 
 DELAYED
 
++ functions that return true/false should use '1' and '0' to be sql bool compatible
 + Remove http.pm's reliance on IO::Socket -- it pulls in too much shit; just use Socket;
 + Possibly divide /scripts/ directory up to split up different categories of scripts
 + change exceptions to be OO
@@ -42,7 +43,7 @@ DELAYED
 
 ORM
 * objects created from the database need to NOT set the default value for fields, and need to properly store meta data to track whether the field was fetched or not
-- lazy field fetching
+* lazy field fetching
 
 COMPLETED
 
@@ -135,6 +136,6 @@ TODO
 	- move ajax stuff for main layout to either a <swaf:ajax_stuff /> element or a js call
 - replace some variables on /oyster/ with style-compile-time variables
 - all libs should 'use' all libs they require, in case they are imported without importing oyster.pm
-- remove bad uses of query()
-- functions that return true/false should use '1' and '0' to be pgsql compatible
+	- circular deps = bad?
+& remove bad uses of query()
 - queries to global tables need to use oyster::DB explicitely, and provide alternate implementations if the queries are currently using a join that would not work if $DB and $oyster::DB were not the same

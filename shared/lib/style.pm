@@ -460,8 +460,9 @@ sub _needs_compilation {
 
 sub _load {
 
-    # clear style data (for reloads)
     %styles = %{$oyster::DB->selectall_hashref("SELECT id, name, status FROM $oyster::CONFIG{db_prefix}styles", 'id')};
+
+    # clear style data (for reloads)
     #%styles = ();
 
     # populate style data
