@@ -172,7 +172,7 @@ sub save {
             # update the objects
             next if keys %values == 0;
             my $foreign_objs = $class->get_all(keys %values, 'where' => "$id_field = ?", $obj->{'id'});
-                while (my $foreign_bj = $foreign_objs->next()) {
+            while (my $foreign_obj = $foreign_objs->next()) {
                 for my $foreign_field_id (keys %values) {
                     my $foreign_field = $foreign_obj->$foreign_field_id;
                     $foreign_field->value_from_db($values{$foreign_field_id});
@@ -262,10 +262,56 @@ sub delete {
 
     # if the object has been saved, remove it from the database
     if (exists $obj->{'id'}) {
-        $oyster::DB->do("DELETE FROM $obj->{model}->{table} WHERE id = $obj->{id}");
+        my $model = $obj->{'model'};
+        $oyster::DB->do("DELETE FROM $model->{table} WHERE id = $obj->{id}");
 
         # relationships
-        #
+        my $relationships = $model->{'relationships'};
+        my $has_many      = $relationships->{'has_many'};
+        my $has_one       = $relationships->{'has_one'};
+
+        # has one
+        for my $class (keys %{$has_one}) {
+            my $fields = $has_one->{$class};
+
+            # find the key field in the foreign object
+            my $id_field;
+            for my $foreign_field_id (keys %{$fields}) {
+                my $foreign_field = $fields->{$foreign_field_id};
+
+                # if the field is from this object's fields
+                if (exists $foreign_field->{'this'} and $foreign_field->{'this'} eq 'id') {
+                    $id_field = $foreign_field_id;
+                    last;
+                }
+            }
+
+            # find and delete the object
+            $class->get($id_field, 'where' => ["$id_field = ?", $obj->{'id'}])->delete();
+        }
+
+        # has many
+        for my $class (keys %{$has_many}) {
+            my $fields = $has_many->{$class};
+
+            # find the key field in the foreign object
+            my $id_field;
+            for my $foreign_field_id (keys %{$fields}) {
+                my $foreign_field = $fields->{$foreign_field_id};
+
+                # if the field is from this object's fields
+                if (exists $foreign_field->{'this'} and $foreign_field->{'this'} eq 'id') {
+                    $id_field = $foreign_field_id;
+                    last;
+                }
+            }
+
+            # find and delete the objects
+            my $foreign_objs = $class->get_all($id_field, 'where' => "$id_field = ?", $obj->{'id'});
+            while (my $foreign_obj = $foreign_objs->next()) {
+                $foreign_obj->delete();
+            }
+        }
     }
 
     # destroy the object
