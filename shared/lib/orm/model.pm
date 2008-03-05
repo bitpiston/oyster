@@ -17,7 +17,7 @@ sub new_from_db {
 # note: limit defaults to 1, if it is set to anything else, a result set will be returned instead of a single object
 # note: arguments can be specified in any order
 # note: if a single argument numeric is passed, it is assumed to be get(where => ['id = ?', int object_id])
-# note: the where clause can also be a simple string or hashref (assumed AND, not OR) [NYI hashrefs]
+# note: the where clause can also be a simple string or hashref (assumed AND, not OR)
 # note: if limit is 0, no limit is assumed (use get_all to achieve this)
 sub get {
     my ($class, $limit, $offset, $where, @where_values, @columns) = (shift(), ' LIMIT 1');
@@ -36,7 +36,9 @@ sub get {
                 @where_values = @{ shift() };
                 $where        = ' WHERE ' . shift @where_values;
             } elsif (ref $_[0] eq 'HASH') {
-                # TODO
+                my $wherehash = shift;
+                $where = ' WHERE ' . join(' AND ', map "$_ = ?", keys %{$wherehash});
+                @where_values = values %{$wherehash};
             } else {
                 $where = ' WHERE ' . shift();
             }
