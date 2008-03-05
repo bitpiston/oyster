@@ -149,36 +149,34 @@
 			</xsl:for-each>
 			<xsl:if test="prototype">
 				<xsl:if test="count(prototype/ancestor::*) = '2'">
-					<h3><xsl:value-of select="@name" /></h3>
+					<h3>Prototype:</h3>
 				</xsl:if>
 				<xsl:if test="count(prototype/ancestor::*) = '3'">
-					<h4><xsl:value-of select="@name" /></h4>
+					<h4>Prototype:</h4>
 				</xsl:if>
 				<xsl:if test="count(prototype/ancestor::*) = '4'">
-					<h5><xsl:value-of select="@name" /></h5>
+					<h5>Prototype:</h5>
 				</xsl:if>
 				<xsl:if test="count(prototype/ancestor::*) = '5'">
-					<h6><xsl:value-of select="@name" /></h6>
-				</xsl:if>
-				<h3>Prototype:</h3>
+					<h6>Prototype:</h6>
+				</xsl:if>				
 				<xsl:for-each select="prototype">
 					<pre class="prototype"><xsl:value-of select="." /></pre>
 				</xsl:for-each>
 			</xsl:if>
 			<xsl:if test="example">
 				<xsl:if test="count(example/ancestor::*) = 2">
-					<h3><xsl:value-of select="@name" /></h3>
+					<h3>Example:</h3>
 				</xsl:if>
 				<xsl:if test="count(example/ancestor::*) = 3">
-					<h4><xsl:value-of select="@name" /></h4>
+					<h4>Example:</h4>
 				</xsl:if>
 				<xsl:if test="count(example/ancestor::*) = 4">
-					<h5><xsl:value-of select="@name" /></h5>
+					<h5>Example:</h5>
 				</xsl:if>
 				<xsl:if test="count(example/ancestor::*) = 5">
-					<h6><xsl:value-of select="@name" /></h6>
+					<h6>Example:</h6>
 				</xsl:if>
-				<h3>Example:</h3>
 				<xsl:for-each select="example">
 					<pre class="code"><xsl:value-of select="." /></pre>
 				</xsl:for-each>
