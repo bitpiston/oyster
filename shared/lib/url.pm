@@ -275,7 +275,7 @@ sub update {
     my $url_table = $oyster::CONFIG{'db_prefix'} . 'urls';
 
     # fetch the current url's data
-    my %url = %{$oyster::DB->selectrow_hashref("SELECT * FROM $url_table WHERE $update_by_field = ? LIMIT 1", $update_by_value)};
+    my %url = %{$oyster::DB->selectrow_hashref("SELECT * FROM $url_table WHERE $update_by_field = ? LIMIT 1", {}, $update_by_value)};
 
     # prepare columns to update, and only update them if necessary
     my %update;
@@ -411,7 +411,7 @@ sub unregister_by_id {
 
 sub is_registered {
     my $url = shift;
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1", hash::fast($url))->[0];
+    return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? LIMIT 1", {}, hash::fast($url))->[0];
 }
 
 =xml
@@ -427,7 +427,7 @@ sub is_registered {
 
 sub is_registered_by_id {
     my $id = shift;
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $id)->[0];
+    return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", {}, $id)->[0];
 }
 
 =xml
@@ -554,7 +554,7 @@ sub get_parent_by_id {
 
 sub has_children_by_id {
     my $id = shift;
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? LIMIT 1", $id)->[0];
+    return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? LIMIT 1", {}, $id)->[0];
 }
 
 =xml

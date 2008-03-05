@@ -231,7 +231,7 @@ sub disable {
 =cut
 
 sub is_enabled {
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ? LIMIT 1", $_[0])->[0];
+    return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM modules WHERE site_$oyster::CONFIG{site_id} = '1' and id = ? LIMIT 1", {}, $_[0])->[0];
 }
 
 =xml
@@ -246,7 +246,7 @@ sub is_enabled {
 =cut
 
 sub is_registered {
-    return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $_[0])->[0];
+    return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", {}, $_[0])->[0];
 }
 
 =xml
@@ -268,7 +268,7 @@ sub is_registered {
 
 sub register {
     my ($module_id, $revision) = @_;
-    return if $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", $module_id)->[0] == 1;
+    return if $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM modules WHERE id = ? LIMIT 1", {}, $module_id)->[0] == 1;
     $revision = 0 unless defined $revision;
     $oyster::DB->do("INSERT INTO modules (id, revision) VALUES (?, ?)", {}, $module_id, $revision);
 }
@@ -321,7 +321,7 @@ sub set_revision {
 =cut
 
 sub get_revision {
-    #return $oyster::DB->selectcol_arrayref("SELECT revision FROM modules WHERE id = ? LIMIT 1", $_[0])->[0];
+    #return $oyster::DB->selectrow_arrayref("SELECT revision FROM modules WHERE id = ? LIMIT 1", {}, $_[0])->[0];
     my $module_id = shift;
     my $rev       = 0;
     try {

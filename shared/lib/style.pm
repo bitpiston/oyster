@@ -134,7 +134,7 @@ sub disable {
 
 sub is_enabled {
     my $style_id = shift;
-    return $oyster::DB->selectcol_arrayref("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ?", $style_id)->[0];
+    return $oyster::DB->selectrow_arrayref("SELECT status FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", {}, $style_id)->[0];
 }
 
 =xml
@@ -150,7 +150,7 @@ sub is_enabled {
 
 sub is_registered {
     my $style_id = shift;
-    return if $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $style_id)->[0];
+    return if $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", {}, $style_id)->[0];
 }
 
 =xml
@@ -287,10 +287,10 @@ sub print_enabled_styles_xml {
 sub is_valid_style {
     if (scalar(@_) == 2) {
         my ($new_id, $current_id) = @_;
-        return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? and id != ? LIMIT 1", $new_id, $current_id)->[0];
+        return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? and id != ? LIMIT 1", {}, $new_id, $current_id)->[0];
     } else {
         my $id = shift;
-        return $oyster::DB->selectcol_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", $id)->[0];
+        return $oyster::DB->selectrow_arrayref("SELECT COUNT(*) FROM $oyster::CONFIG{db_prefix}styles WHERE id = ? LIMIT 1", {}, $id)->[0];
     }
 }
 
@@ -461,13 +461,14 @@ sub _needs_compilation {
 sub _load {
 
     # clear style data (for reloads)
-    %styles = ();
+    %styles = %{$oyster::DB->selectall_hashref("SELECT id, name, status FROM $oyster::CONFIG{db_prefix}styles", 'id')};
+    #%styles = ();
 
     # populate style data
-    my $query = $oyster::DB->query("SELECT id, name, status FROM $oyster::CONFIG{db_prefix}styles");
-    while (my $style = $query->fetchrow_hashref()) {
-        $styles{$style->{'id'}} = $style;
-    }
+    #my $query = $oyster::DB->query("SELECT id, name, status FROM $oyster::CONFIG{db_prefix}styles");
+    #while (my $style = $query->fetchrow_hashref()) {
+    #    $styles{$style->{'id'}} = $style;
+    #}
 }
 
 =xml

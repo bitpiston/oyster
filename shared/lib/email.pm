@@ -105,7 +105,7 @@ sub send_template {
     my ($template, $to, $vars) = @_;
 
     # grab the template
-    my ($subject, $body) = $oyster::DB->selectrow_arrayref("SELECT subject, body FROM $oyster::CONFIG{db_prefix}email_templates WHERE name = ? LIMIT 1", $template);
+    my ($subject, $body) = $oyster::DB->selectrow_arrayref("SELECT subject, body FROM $oyster::CONFIG{db_prefix}email_templates WHERE name = ? LIMIT 1", {}, $template);
 
     # remove returns
     $body =~ s/\r//g;
