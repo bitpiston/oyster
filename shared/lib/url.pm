@@ -483,6 +483,7 @@ sub get_by_id {
             </prototype>
         </function>
 =cut
+
 sub get_url_by_id {
     my $url_id = shift;
     my $query = $oyster::DB->query("SELECT url FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $url_id);
