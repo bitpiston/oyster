@@ -32,7 +32,8 @@ sub new {
 
 sub new_from_db {
     my $class  = shift;
-    my $values = shift()->fetchrow_hashref();
+    #my $values = shift()->fetchrow_hashref();
+    my $values = shift;
     my $model  = ${ $class . '::model' };
     my $obj    = bless {'id' => delete $values->{'id'}, 'model' => $model}, $class . '::object';
 
@@ -68,7 +69,17 @@ sub fetch_fields {
     my $obj_fields = $obj->{'fields'};
     my $i = 0;
     for my $field_id (@_) {
-        $obj_fields->{$field_id}->value_from_db($values[ $i++ ]);
+
+        # if the field already has an object, and just needs the value update
+        if (exists $obj->{'fields'}->{$field_id}) {
+            $obj->{'fields'}->{$field_id}->value_from_db($values[ $i++ ]);
+        }
+
+        # if the field needs to have an object created
+        else {
+            my $model_field = $obj->{'model'}->{'fields'}->{$field_id};
+            $obj->{'fields'}->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field, $values[ $i++ ], 'from_db');
+        }
     }
 }
 

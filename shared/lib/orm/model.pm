@@ -71,7 +71,7 @@ sub get {
     return orm::object::set::new($class, $model, $query) if $limit ne ' LIMIT 1';
 
     # a single row object should be returned
-    return $class->new_from_db($query);
+    return $class->new_from_db($query->fetchrow_hashref());
 }
 
 sub import {

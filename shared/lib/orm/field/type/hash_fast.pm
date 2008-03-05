@@ -38,7 +38,7 @@ sub was_updated {
         return $obj->{'orm_obj'}->{'fields'}->{ $obj->{'hash_field'} }->was_updated();
     }
 
-    # if this being called procedurally (although as a method)
+    # if this being called without an object
     else {
         my $orm_obj        = shift;
         my $field_id       = shift;
