@@ -40,6 +40,7 @@ sub was_updated {
 
     # if this being called without an object
     else {
+        shift;
         my $orm_obj        = shift;
         my $field_id       = shift;
         my $orm_obj_fields = $orm_obj->{'fields'};

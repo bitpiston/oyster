@@ -94,7 +94,7 @@ sub save {
 
         # figure out fields values to update
         my %update;
-        for my $field_id (keys %{$obj_fields}) {
+        for my $field_id (keys %{$model_fields}) {
             my $obj_field;
 
             # if the field has an object
@@ -111,7 +111,6 @@ sub save {
             }
 
             $update{$field_id} = $obj_field->get_save_value();
-            delete $obj_field->{'updated'};
         }
 
         # relationships
@@ -187,6 +186,11 @@ sub save {
         return if keys %update == 0;
         my $fields = join(' = ?, ', keys %update) . ' = ?';
         $oyster::DB->do("UPDATE $model->{table} SET $fields WHERE id = ?", {}, values %update, $obj->{'id'});
+
+        # register all fields as un-modified now that we've saved them
+        for my $field_id (keys %update) {
+            delete $obj_fields->{$field_id}->{'updated'};
+        }
     }
 
     # if the object has no ID, insert it
@@ -194,7 +198,7 @@ sub save {
 
         # figure out the field values to insert
         my %insert;
-        for my $field_id (keys %{$obj_fields}) {
+        for my $field_id (keys %{$model_fields}) {
             my $obj_field;
 
             # if the field has an object
@@ -211,11 +215,6 @@ sub save {
             }
 
             $insert{$field_id} = $obj_field->get_save_value();
-            delete $obj_field->{'updated'};
-
-            #my $obj_field = $obj_fields->{$field_id};
-            #next unless $obj_field->was_updated();
-            #$insert{$field_id} = $obj_field->get_save_value();
         }
         my $query;
 
@@ -229,6 +228,11 @@ sub save {
         # if there are no fields to insert, we still need to perform an insert to get an ID
         else {
             $query = $oyster::DB->query("INSERT INTO $model->{table}");
+        }
+
+        # register all fields as un-modified now that we've saved them
+        for my $field_id (keys %update) {
+            delete $obj_fields->{$field_id}->{'updated'};
         }
 
         # save the new object ID
