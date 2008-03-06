@@ -95,7 +95,6 @@ sub save {
         # figure out fields values to update
         my %update;
         for my $field_id (keys %{$obj_fields}) {
-            my $model_field = $model_fields->{$field_id};
             my $obj_field;
 
             # if the field has an object
@@ -106,11 +105,13 @@ sub save {
 
             # if the field does not have an object, and was updated, create an object for it
             else {
+                my $model_field = $model_fields->{$field_id};
                 next unless $model_field->{'type'}->was_updated($obj, $field_id);
                 $obj_field = $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
             }
 
             $update{$field_id} = $obj_field->get_save_value();
+            delete $obj_field->{'updated'};
         }
 
         # relationships
@@ -194,9 +195,27 @@ sub save {
         # figure out the field values to insert
         my %insert;
         for my $field_id (keys %{$obj_fields}) {
-            my $obj_field = $obj_fields->{$field_id};
-            next unless $obj_field->was_updated();
+            my $obj_field;
+
+            # if the field has an object
+            if (exists $obj_fields->{$field_id}) {
+                $obj_field = $obj_fields->{$field_id};
+                next unless $obj_field->was_updated();
+            }
+
+            # if the field does not have an object, and was updated, create an object for it
+            else {
+                my $model_field = $model_fields->{$field_id};
+                next unless $model_field->{'type'}->was_updated($obj, $field_id);
+                $obj_field = $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+            }
+
             $insert{$field_id} = $obj_field->get_save_value();
+            delete $obj_field->{'updated'};
+
+            #my $obj_field = $obj_fields->{$field_id};
+            #next unless $obj_field->was_updated();
+            #$insert{$field_id} = $obj_field->get_save_value();
         }
         my $query;
 
@@ -204,7 +223,7 @@ sub save {
         if (keys %insert != 0) {
             my $fields       = join(', ', keys %insert);
             my $placeholders = join(', ', map '?', values %insert);
-            $query           = $oyster::DB->query("INSERT INTO $model->{table} $fields VALUES $placeholders", values %insert);
+            $query           = $oyster::DB->query("INSERT INTO $model->{table} ($fields) VALUES ($placeholders)", values %insert);
         }
 
         # if there are no fields to insert, we still need to perform an insert to get an ID
@@ -213,7 +232,7 @@ sub save {
         }
 
         # save the new object ID
-        $obj->{'id'} = $query->insert_id($obj->{'model'}->{'table'} . '_id');
+        $obj->{'id'} = $oyster::DB->insert_id($obj->{'model'}->{'table'} . '_id');
 
         # relationships
         my $relationships = $model->{'relationships'};
@@ -244,7 +263,7 @@ sub save {
             if (keys %fetch != 0) {
                 $obj->fetch_fields(values %fetch);
                 for my $foreign_field_id (keys %fetch) {
-					$values{$foreign_field_id} = $obj_fields->{ $fetch{$foreign_field_id} }->get_save_value();
+                    $values{$foreign_field_id} = $obj_fields->{ $fetch{$foreign_field_id} }->get_save_value();
                 }
             }
 
@@ -308,8 +327,10 @@ sub delete {
 
             # find and delete the objects
             my $foreign_objs = $class->get_all($id_field, 'where' => "$id_field = ?", $obj->{'id'});
-            while (my $foreign_obj = $foreign_objs->next()) {
-                $foreign_obj->delete();
+            if ($foreign_objs) {
+                while (my $foreign_obj = $foreign_objs->next()) {
+                    $foreign_obj->delete();
+                }
             }
         }
     }

@@ -11,7 +11,7 @@ package database;
 use exceptions;
 
 push(@DBI::db::ISA, 'oyster::database::dbi::db');
-push(@DBI::st::ISA, 'oyster::database::dbi::st');
+#push(@DBI::st::ISA, 'oyster::database::dbi::st');
 
 sub handle_error {
     throw 'db_error' => $DBI::errstr;
@@ -172,9 +172,9 @@ sub query {
     <section title="Extensions to Statement Handles">
 =cut
 
-package oyster::database::dbi::st;
+#package oyster::database::dbi::st;
 
-=xml
+=xml2
     <function name="insert_id">
         <synopsis>
             An alias to $DB->insert_id()
@@ -182,9 +182,9 @@ package oyster::database::dbi::st;
     </function>
 =cut
 
-sub insert_id {
-    goto &oyster::database::dbi::db::insert_id;
-}
+#sub insert_id {
+#    goto &oyster::database::dbi::db::insert_id;
+#}
 
 =xml
     </section>

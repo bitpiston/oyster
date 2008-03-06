@@ -60,6 +60,7 @@ sub update_cache {
             </prototype>
         </function>
 =cut
+
 sub is_valid {
     $_[0] =~ m!^http://(?:[a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5}))(?::(?:\d+))?(?:(?:/[\S\s]+?)/?)?$!o;
     #$_[0] =~ m!^(?:ht|f)tps?://[a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5})(?::\d+)?(?:/[\S\s]+?)?/?$!o
