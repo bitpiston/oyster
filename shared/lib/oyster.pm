@@ -806,7 +806,7 @@ sub shell_escape {
                 Like Data::Dumper::Dumper, be sure to pass a ref.
             </note>
             <prototype>
-                variable = oyster::dump(ref)
+                string = oyster::dump(ref)
             </prototype>
         </function>
 =cut
