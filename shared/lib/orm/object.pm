@@ -289,7 +289,7 @@ sub delete {
             }
 
             # find and delete the object
-            $class->get($id_field, 'where' => ["$id_field = ?", $obj->{'id'}])->delete();
+            &{ $class . '::get' }($id_field, 'where' => ["$id_field = ?", $obj->{'id'}])->delete();
         }
 
         # has many
@@ -309,7 +309,7 @@ sub delete {
             }
 
             # find and delete the objects
-            my $foreign_objs = $class->get_all($id_field, 'where' => "$id_field = ?", $obj->{'id'});
+            my $foreign_objs = &{ $class . '::get_all'}($id_field, 'where' => ["$id_field = ?", $obj->{'id'}]);
             if ($foreign_objs) {
                 while (my $foreign_obj = $foreign_objs->next()) {
                     $foreign_obj->delete();
