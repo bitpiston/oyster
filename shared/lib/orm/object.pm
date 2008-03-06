@@ -89,29 +89,30 @@ sub save {
     my $model        = $obj->{'model'};
     my $model_fields = $model->{'fields'};
 
+    # figure out fields values to update
+    my %values;
+    my @fields = keys %{$model_fields};
+    while (@fields) {
+        my $field_id = shift @fields;
+        my $obj_field;
+
+        # if the field has an object
+        if (exists $obj_fields->{$field_id}) {
+            $obj_field = $obj_fields->{$field_id};
+            next unless $obj_field->was_updated();
+        }
+
+        # if the field does not have an object, and was updated, create an object for it
+        else {
+            my $model_field = $model_fields->{$field_id};
+            next unless $model_field->{'type'}->was_updated($obj, $field_id);
+            $obj_field = $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
+        }
+        $obj_field->get_save_value(\%values, $field_id, \@fields);
+    }
+
     # if the object has an ID, update it
     if (exists $obj->{'id'}) {
-
-        # figure out fields values to update
-        my %update;
-        for my $field_id (keys %{$model_fields}) {
-            my $obj_field;
-
-            # if the field has an object
-            if (exists $obj_fields->{$field_id}) {
-                $obj_field = $obj_fields->{$field_id};
-                next unless $obj_field->was_updated();
-            }
-
-            # if the field does not have an object, and was updated, create an object for it
-            else {
-                my $model_field = $model_fields->{$field_id};
-                next unless $model_field->{'type'}->was_updated($obj, $field_id);
-                $obj_field = $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-            }
-
-            $update{$field_id} = $obj_field->get_save_value();
-        }
 
         # relationships
         my $relationships = $model->{'relationships'};
@@ -123,7 +124,7 @@ sub save {
             my $fields = $has_one->{$class};
 
             # assemble values for the new object
-            my ($id_field, %values);
+            my ($id_field, %foreign_values);
             for my $foreign_field_id (keys %{$fields}) {
                 my $foreign_field = $fields->{$foreign_field_id};
 
@@ -133,17 +134,17 @@ sub save {
                     if ($field_id eq 'id') {
                         $id_field = $foreign_field_id;
                     } elsif (exists $update{$value_id}) {
-                        $values{$foreign_field_id} = $update{$field_id};
+                        $foreign_values{$foreign_field_id} = $values{$field_id};
                     }
                 }
             }
 
             # update the object
-            next if keys %values == 0;
-            my $foreign_obj = $class->get(keys %values, 'where' => "$id_field = ?", $obj->{'id'});
-            for my $foreign_field_id (keys %values) {
+            next if keys %foreign_values == 0;
+            my $foreign_obj = $class->get(keys %foreign_values, 'where' => "$id_field = ?", $obj->{'id'});
+            for my $foreign_field_id (keys %foreign_values) {
                 my $foreign_field = $foreign_obj->$foreign_field_id;
-                $foreign_field->value_from_db($values{$foreign_field_id});
+                $foreign_field->value_from_db($foreign_values{$foreign_field_id});
                 $foreign_field->{'updated'} = undef;
             }
             $foreign_obj->save();
@@ -154,7 +155,7 @@ sub save {
             my $fields = $has_many->{$class};
 
             # assemble values for the new object
-            my ($id_field, %values);
+            my ($id_field, %foreign_values);
             for my $foreign_field_id (keys %{$fields}) {
                 my $foreign_field = $fields->{$foreign_field_id};
 
@@ -164,18 +165,18 @@ sub save {
                     if ($field_id eq 'id') {
                         $id_field = $foreign_field_id;
                     } elsif (exists $update{$value_id}) {
-                        $values{$foreign_field_id} = $update{$field_id};
+                        $foreign_values{$foreign_field_id} = $values{$field_id};
                     }
                 }
             }
 
             # update the objects
-            next if keys %values == 0;
-            my $foreign_objs = $class->get_all(keys %values, 'where' => "$id_field = ?", $obj->{'id'});
+            next if keys %foreign_values == 0;
+            my $foreign_objs = $class->get_all(keys %foreign_values, 'where' => "$id_field = ?", $obj->{'id'});
             while (my $foreign_obj = $foreign_objs->next()) {
-                for my $foreign_field_id (keys %values) {
+                for my $foreign_field_id (keys %foreign_values) {
                     my $foreign_field = $foreign_obj->$foreign_field_id;
-                    $foreign_field->value_from_db($values{$foreign_field_id});
+                    $foreign_field->value_from_db($foreign_values{$foreign_field_id});
                     $foreign_field->{'updated'} = undef;
                 }
                 $foreign_obj->save();
@@ -183,55 +184,34 @@ sub save {
         }
 
         # update the object
-        return if keys %update == 0;
-        my $fields = join(' = ?, ', keys %update) . ' = ?';
-        $oyster::DB->do("UPDATE $model->{table} SET $fields WHERE id = ?", {}, values %update, $obj->{'id'});
+        return if keys %values == 0;
+        my $fields = join(' = ?, ', keys %values) . ' = ?';
+        $oyster::DB->do("UPDATE $model->{table} SET $fields WHERE id = ?", {}, values %values, $obj->{'id'});
 
         # register all fields as un-modified now that we've saved them
-        for my $field_id (keys %update) {
+        for my $field_id (keys %values) {
             delete $obj_fields->{$field_id}->{'updated'};
         }
     }
 
     # if the object has no ID, insert it
     else {
-
-        # figure out the field values to insert
-        my %insert;
-        for my $field_id (keys %{$model_fields}) {
-            my $obj_field;
-
-            # if the field has an object
-            if (exists $obj_fields->{$field_id}) {
-                $obj_field = $obj_fields->{$field_id};
-                next unless $obj_field->was_updated();
-            }
-
-            # if the field does not have an object, and was updated, create an object for it
-            else {
-                my $model_field = $model_fields->{$field_id};
-                next unless $model_field->{'type'}->was_updated($obj, $field_id);
-                $obj_field = $obj_fields->{$field_id} = $model_field->{'type'}->new($obj, $field_id, $model_field);
-            }
-
-            $insert{$field_id} = $obj_field->get_save_value();
-        }
         my $query;
 
         # if there are fields to be inserted
-        if (keys %insert != 0) {
-            my $fields       = join(', ', keys %insert);
-            my $placeholders = join(', ', map '?', values %insert);
-            $query           = $oyster::DB->query("INSERT INTO $model->{table} ($fields) VALUES ($placeholders)", values %insert);
+        if (keys %values != 0) {
+            my $fields       = join(', ', keys %values);
+            my $placeholders = join(', ', map '?', values %values);
+            $query           = $oyster::DB->query("INSERT INTO $model->{table} ($fields) VALUES ($placeholders)", values %values);
         }
 
         # if there are no fields to insert, we still need to perform an insert to get an ID
         else {
-            $query = $oyster::DB->query("INSERT INTO $model->{table}");
+            $query = $oyster::DB->query("INSERT INTO $model->{table}"); # TODO: this is not valid.
         }
 
         # register all fields as un-modified now that we've saved them
-        for my $field_id (keys %update) {
+        for my $field_id (keys %values) {
             delete $obj_fields->{$field_id}->{'updated'};
         }
 
@@ -240,7 +220,6 @@ sub save {
 
         # relationships
         my $relationships = $model->{'relationships'};
-        #my $has_many      = $relationships->{'has_many'};
         my $has_one       = $relationships->{'has_one'};
 
         # has one
@@ -248,7 +227,7 @@ sub save {
             my $fields = $has_one->{$class};
 
             # assemble values for the new object
-            my (%fetch, %values);
+            my (%fetch, %foreign_values);
             for my $foreign_field_id (keys %{$fields}) {
                 my $foreign_field = $fields->{$foreign_field_id};
 
@@ -256,7 +235,7 @@ sub save {
                 if (exists $foreign_field->{'this'}) {
                     my $field_id = $foreign_field->{'this'};
                     if (exists $obj_fields->{$field_id}) {
-                        $values{$foreign_field_id} = $obj_fields->{$field_id}->get_save_value();
+                        $foreign_values{$foreign_field_id} = $obj_fields->{$field_id}->get_save_value();
                     } else {
                         $fetch{$foreign_field_id} = $field_id;
                     }
@@ -267,12 +246,12 @@ sub save {
             if (keys %fetch != 0) {
                 $obj->fetch_fields(values %fetch);
                 for my $foreign_field_id (keys %fetch) {
-                    $values{$foreign_field_id} = $obj_fields->{ $fetch{$foreign_field_id} }->get_save_value();
+                    $foreign_values{$foreign_field_id} = $obj_fields->{ $fetch{$foreign_field_id} }->get_save_value();
                 }
             }
 
             # create and save the object
-            $class->new(%values)->save();
+            $class->new(%foreign_values)->save();
         }
     }
 

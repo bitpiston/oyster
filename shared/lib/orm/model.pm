@@ -24,7 +24,7 @@ sub get {
     my $model = ${ $class . '::model' };
 
     # if there is only one argument, and it's a number, they just want to fetch by ID
-    $where = ' WHERE id = ' . shift() if (@_ == 1 && $_[0] !~ /[^0-9]/o);
+    $where = ' WHERE id = ' . shift() if (@_ == 1 and $_[0] !~ /[^0-9]/o);
 
     # parse arguments
     while (@_) {

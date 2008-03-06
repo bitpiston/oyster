@@ -50,7 +50,11 @@ sub value_from_db {
 
 # used to perform any processing necessary to get the value to insert into the database
 sub get_save_value {
-    return $_[0]->value();
+    my $obj      = shift; # this object
+    my $values   = shift; # the values to insert/update (hashref)
+    my $field_id = shift; # the id of this field (convenience; same as $obj->{'field_id'})
+    my $fields   = shift; # an arrayref of fields that save() is iterating over to get values
+    $values->{$field_id} = $obj->value();
 }
 
 # returns true if the field needs to be updated/inserted

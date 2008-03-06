@@ -3,7 +3,10 @@ package orm::field::type::url;
 use base 'orm::field::type';
 
 sub get_save_value {
-    my $obj = shift;
+    my $obj      = shift; # this object
+    my $values   = shift; # the values to insert/update (hashref)
+    my $field_id = shift; # the id of this field (convenience; same as $obj->{'field_id'})
+    my $fields   = shift; # an arrayref of fields that save() is iterating over to get values
 
     # uniquify the url
     my $url = url::unique($obj->{'value'});;
@@ -26,10 +29,12 @@ sub get_save_value {
 
     # set the parent id field
     # TODO: this is specific to the url model!
+    # this WORKS but sets the parent id too late! object.pm has already inserted its value into %insert/update
     $obj->{'orm_obj'}->parent_id->value($parent_id);
+    push @{$fields}, 'parent_id';
 
     # return the uniqified url
-    return $obj->{'value'} = $url;
+    $values->{$field_id} = $url;
 }
 
 1;

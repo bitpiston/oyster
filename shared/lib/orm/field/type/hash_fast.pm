@@ -25,10 +25,6 @@ sub value {
     hash::fast( $obj->{'orm_obj'}->{'fields'}->{ $obj->{'hash_field'} }->value() );
 }
 
-sub get_save_value {
-    return $_[0]->value();
-}
-
 sub was_updated {
 
     # if this being called OO
