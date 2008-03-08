@@ -133,7 +133,7 @@ sub save {
                     my $field_id = $foreign_field->{'this'};
                     if ($field_id eq 'id') {
                         $id_field = $foreign_field_id;
-                    } elsif (exists $update{$value_id}) {
+                    } elsif (exists $values{$value_id}) {
                         $foreign_values{$foreign_field_id} = $values{$field_id};
                     }
                 }
@@ -164,7 +164,7 @@ sub save {
                     my $field_id = $foreign_field->{'this'};
                     if ($field_id eq 'id') {
                         $id_field = $foreign_field_id;
-                    } elsif (exists $update{$value_id}) {
+                    } elsif (exists $values{$value_id}) {
                         $foreign_values{$foreign_field_id} = $values{$field_id};
                     }
                 }
@@ -227,28 +227,23 @@ sub save {
             my $fields = $has_one->{$class};
 
             # assemble values for the new object
-            my (%fetch, %foreign_values);
+            my ($id_field, %foreign_values);
             for my $foreign_field_id (keys %{$fields}) {
                 my $foreign_field = $fields->{$foreign_field_id};
 
                 # if the field is from this object's fields
                 if (exists $foreign_field->{'this'}) {
                     my $field_id = $foreign_field->{'this'};
-                    if (exists $obj_fields->{$field_id}) {
-                        $foreign_values{$foreign_field_id} = $obj_fields->{$field_id}->get_save_value();
-                    } else {
-                        $fetch{$foreign_field_id} = $field_id;
+                    if ($field_id eq 'id') {
+                        $id_field = $foreign_field_id;
+                    } elsif (exists $values{$value_id}) {
+                        $foreign_values{$foreign_field_id} = $values{$field_id};
                     }
                 }
             }
 
-            # grab any values in the fetch queue
-            if (keys %fetch != 0) {
-                $obj->fetch_fields(values %fetch);
-                for my $foreign_field_id (keys %fetch) {
-                    $foreign_values{$foreign_field_id} = $obj_fields->{ $fetch{$foreign_field_id} }->get_save_value();
-                }
-            }
+            # add the id field
+            $foreign_values{$id_field} = $obj->{'id'};
 
             # create and save the object
             $class->new(%foreign_values)->save();
