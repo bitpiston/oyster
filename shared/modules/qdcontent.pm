@@ -101,6 +101,27 @@ url::register_once('url' => 'admin/qdcontent/edit', 'function' => 'edit');
 sub edit {
     user::require_permission('qdcontent_admin');
 
+    # validate page
+    throw 'validation_error' => 'The selected page does not exist.' unless -e $module_path . $INPUT{'page'} . '-page.xsl';
+
+    # fetch the url associated with this page
+    my $url = $DB->selectrow_hashref("SELECT * FROM ${DB_PREFIX}urls WHERE module = ? and params = ? LIMIT 1", 'qdcontent', $INPUT{'page'});
+
+    # if the user is trying to save the page
+    my $success = try {
+
+    } if $ENV{'REQUEST_METHOD'} eq 'POST';
+
+    # display the edit page form
+    unless ($success) {
+        module::print_start_xml();
+        xml::print_var('page', $INPUT{'page'});
+        xml::print_var('url',           exists $INPUT{'url'}           ? $INPUT{'url'}           : $url->{'url'});
+        xml::print_var('show_nav_link', exists $INPUT{'show_nav_link'} ? $INPUT{'show_nav_link'} : $url->{'show_nav_link'});
+        xml::print_var('title',         exists $INPUT{'title'}         ? $INPUT{'title'}         : $url->{'title'});
+        xml::print_var('template',      exists $INPUT{'template'}      ? $INPUT{'template'}      : file::read($module_path . $INPUT{'page'} . '-page.xsl'));
+        module::print_end_xml();
+    }
 }
 
 url::register_once('url' => 'admin/qdcontent/delete', 'function' => 'delete');
