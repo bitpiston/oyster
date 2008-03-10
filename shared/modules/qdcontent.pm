@@ -12,10 +12,19 @@ user::add_permission_once('qdcontent_admin');
 sub view_page {
     my $filename = shift;
 
-    # if an xsl file exists for this url, use it!
+    # if an xsl file exists for this url, use it
     if (-e $module_path . $filename . '-page.xsl') {
+
+        # include the template and print a hook for the xsl
         style::include_template($filename . '-page');
         print qq~\t<qdcontent />\n~;
+
+        # contextual admin menu
+        if ($PERMISSIONS{'qdcontent_admin'}) {
+            my $item = menu::add_item('menu' => 'admin', 'label' => 'This Page', 'url' => $REQUEST{'url'});
+            menu::add_item('parent' => $item, 'label' => 'Edit',   'url' => $module_admin_base_url . 'edit/?page=' . $filename);
+            menu::add_item('parent' => $item, 'label' => 'Delete', 'url' => $module_admin_base_url . 'delete/?page=' . $filename);
+        }
     }
 
     # otherwise, throw a 404
@@ -91,6 +100,13 @@ sub create {
 url::register_once('url' => 'admin/qdcontent/edit', 'function' => 'edit');
 sub edit {
     user::require_permission('qdcontent_admin');
+
+}
+
+url::register_once('url' => 'admin/qdcontent/delete', 'function' => 'delete');
+sub delete {
+    user::require_permission('qdcontent_admin');
+
 }
 
 #

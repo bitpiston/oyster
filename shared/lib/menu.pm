@@ -18,7 +18,7 @@ sub add_item {
 
 package menu;
 
-my (%menus, %menu_labels, %menu_descriptions, $default_menu);
+my (%menus, %menu_labels, %menu_descriptions, %menu_urls, $default_menu);
 
 =xml
     <function name="new">
@@ -83,6 +83,29 @@ sub description {
     my $menu  = scalar @_ == 2 ? shift : $default_menu ;
     $menu = ${$menu} if ref $menu; # allow OO syntax
     $menu_descriptions{$menu} = shift;
+}
+
+=xml
+    <function name="url">
+        <synopsis>
+            Sets the corresponding url for a menu ID.
+        </synopsis>
+        <note>
+            If no menu ID is specified, the default menu ID is used.
+        </note>
+        <prototype>
+            menu::url([string menu_id], string menu_url)
+        </prototype>
+        <prototype>
+            obj->description(string menu_url)
+        </prototype>
+    </function>
+=cut
+
+sub url {
+    my $menu  = scalar @_ == 2 ? shift : $default_menu ;
+    $menu = ${$menu} if ref $menu; # allow OO syntax
+    $menu_urls{$menu} = shift;
 }
 
 =xml
@@ -226,6 +249,7 @@ sub print_xml {
     if (length $xml) {
         my $attrs;
         $attrs .= exists $menu_labels{$menu} ? qq~ label="$menu_labels{$menu}"~ : qq~ id="$menu"~ ;
+        $attrs .= qq~ url="$menu_urls{$menu}"~ if exists $menu_urls{$menu};
         $attrs .= qq~ description="$menu_descriptions{$menu}"~ if exists $menu_descriptions{$menu};
         print qq~\t<menu$attrs>\n$xml\t</menu>\n~;
         $menu_printed = 1;
@@ -270,11 +294,13 @@ sub delete_menu {
     my $menu = scalar @_ == 1 ? shift : $default_menu ;
     delete $menus{$menu};
     delete $menu_labels{$menu};
+    delete $menu_urls{$menu};
 }
 
 sub delete_menus {
     %menus       = ();
     %menu_labels = ();
+    %menu_urls   = ();
 }
 
 =xml

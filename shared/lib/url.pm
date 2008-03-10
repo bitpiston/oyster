@@ -217,7 +217,7 @@ sub register {
     }
 
     # return url id and url
-    return $query->insert_id($url_table . '_id'), $update{'url'};
+    return $oyster::DB->insert_id($url_table . '_id'), $update{'url'};
 }
 
 =xml
