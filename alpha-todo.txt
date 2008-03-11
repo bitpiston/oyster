@@ -119,6 +119,7 @@ Finished but need testing
 	* maybe build user rendering engine/version number detection into oyster instead of putting it into ssxslt.pm
 * bug with ssxslt, $disable_ssxslt is not set soon enough when lazily loading the libs
 * Spec out the new admin module and begin writing it
+* make sure admin center contextual menus are consistent
 
 TODO
 
@@ -127,7 +128,6 @@ TODO
 	& module creation walkthrough
 	- admin/menu api integration
 	- runloop diagram
-- make sure admin center contextual menus are consistent
 - possibly add user list to user admin
 - qdcontent (rename static_content?)
 - ssxslt needs version checks for various rendering engines
@@ -139,3 +139,4 @@ TODO
 - all libs should 'use' all libs they require, in case they are imported without importing oyster.pm
 	- circular deps = bad?
 & remove bad uses of query()
+- user login/out is completely b0rked
