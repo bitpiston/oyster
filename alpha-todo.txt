@@ -120,6 +120,7 @@ Finished but need testing
 * bug with ssxslt, $disable_ssxslt is not set soon enough when lazily loading the libs
 * Spec out the new admin module and begin writing it
 * make sure admin center contextual menus are consistent
+* user login/out is completely b0rked
 
 TODO
 
@@ -139,4 +140,4 @@ TODO
 - all libs should 'use' all libs they require, in case they are imported without importing oyster.pm
 	- circular deps = bad?
 & remove bad uses of query()
-- user login/out is completely b0rked
+

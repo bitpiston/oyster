@@ -141,7 +141,7 @@ sub save {
 
             # update the object
             next if keys %foreign_values == 0;
-            my $foreign_obj = $class->get(keys %foreign_values, 'where' => "$id_field = ?", $obj->{'id'});
+            my $foreign_obj = &{ $class . '::get' }(keys %foreign_values, 'where' => "$id_field = ?", $obj->{'id'});
             for my $foreign_field_id (keys %foreign_values) {
                 my $foreign_field = $foreign_obj->$foreign_field_id;
                 $foreign_field->value_from_db($foreign_values{$foreign_field_id});
@@ -172,7 +172,7 @@ sub save {
 
             # update the objects
             next if keys %foreign_values == 0;
-            my $foreign_objs = $class->get_all(keys %foreign_values, 'where' => "$id_field = ?", $obj->{'id'});
+            my $foreign_objs = &{ $class . '::get_all' }(keys %foreign_values, 'where' => "$id_field = ?", $obj->{'id'});
             while (my $foreign_obj = $foreign_objs->next()) {
                 for my $foreign_field_id (keys %foreign_values) {
                     my $foreign_field = $foreign_obj->$foreign_field_id;

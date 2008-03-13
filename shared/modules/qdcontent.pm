@@ -100,12 +100,13 @@ sub create {
 url::register_once('url' => 'admin/qdcontent/edit', 'function' => 'edit');
 sub edit {
     user::require_permission('qdcontent_admin');
+    style::include_template('edit');
 
     # validate page
     throw 'validation_error' => 'The selected page does not exist.' unless -e $module_path . $INPUT{'page'} . '-page.xsl';
 
     # fetch the url associated with this page
-    my $url = $DB->selectrow_hashref("SELECT * FROM ${DB_PREFIX}urls WHERE module = ? and params = ? LIMIT 1", 'qdcontent', $INPUT{'page'});
+    my $url = $DB->selectrow_hashref("SELECT * FROM ${DB_PREFIX}urls WHERE module = ? and params = ? LIMIT 1", {}, 'qdcontent', $INPUT{'page'});
 
     # if the user is trying to save the page
     my $success = try {
