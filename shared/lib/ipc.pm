@@ -10,7 +10,7 @@ package ipc;
 
 use exceptions;
 
-our ($last_fetch_id, $insert_ipc, $fetch_ipc);
+our ($last_fetch_id, $insert_ipc, $fetch_ipc, $last_sync_time);
 
 event::register_hook('load_lib', '_ipc_load');
 sub _ipc_load {
@@ -98,12 +98,14 @@ sub global_do {
 =cut
 
 sub update {
+    return if $last_sync_time == -1 or time() - $last_sync_time < $oyster::CONFIG{'sync_time'};
     $fetch_ipc->execute($last_fetch_id);
     while (my $task = $fetch_ipc->fetchrow_arrayref()) {
         my ($id, $module, $func, $args) = @{$task};
         &{ $module . '::' . $func }(split("\0", $args));
         $last_fetch_id = $id;
     }
+    $last_sync_time = time();
 }
 
 # Copyright BitPiston 2008

@@ -81,6 +81,11 @@ $config{'shared'}{'development'} = {
     #  Note: This should be disabled for production environments.  Use:
     #  `perl script/xslcompiler.pl` instead.
     'compile_styles'   => 1,
+
+    # Sync Time
+    #  The minimum time, in seconds, that daemons will check to ensure they are
+    #  synced.  Set to -1 to disable.
+    'sync_time'        => 60,
 };
 
 # ----------------------------------------------------------------------------
