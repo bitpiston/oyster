@@ -83,7 +83,7 @@
 	</xsl:template>
 	
 	<xsl:template match="/document">
-		<h1><xsl:value-of select="@title" /></h1>
+		<h1><span><xsl:value-of select="@index" /> </span><xsl:value-of select="@title" /></h1>
 		
 		<xsl:if test="/document/todo">
 			<div class="todo">
@@ -109,19 +109,19 @@
 	
 	<xsl:template match="section">
 		<xsl:if test="count(ancestor::*) = '1'">
-			<h2><xsl:value-of select="@title" /></h2>
+			<h2 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}"><xsl:value-of select="@title" /></a></h2>
 		</xsl:if>
 		<xsl:if test="count(ancestor::*) = '2'">
-			<h3><xsl:value-of select="@title" /></h3>
+			<h3 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}"><xsl:value-of select="@title" /></a></h3>
 		</xsl:if>
 		<xsl:if test="count(ancestor::*) = '3'">
-			<h4><xsl:value-of select="@title" /></h4>
+			<h4 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}"><xsl:value-of select="@title" /></a></h4>
 		</xsl:if>
 		<xsl:if test="count(ancestor::*) = '4'">
-			<h5><xsl:value-of select="@title" /></h5>
+			<h5 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}"><xsl:value-of select="@title" /></a></h5>
 		</xsl:if>
 		<xsl:if test="count(ancestor::*) = '5'">
-			<h6><xsl:value-of select="@title" /></h6>
+			<h6 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}"><xsl:value-of select="@title" /></a></h6>
 		</xsl:if>
 		<p><xsl:apply-templates /></p>
 	</xsl:template>
@@ -129,19 +129,19 @@
 	<xsl:template match="function">
 		<div class="function">
 			<xsl:if test="count(ancestor::*) = '1'">
-				<h2><xsl:value-of select="@name" /></h2>
+				<h2 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}" rel="bookmark"><xsl:value-of select="@name" /></a></h2>
 			</xsl:if>
 			<xsl:if test="count(ancestor::*) = '2'">
-				<h3><xsl:value-of select="@name" /></h3>
+				<h3 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}" rel="bookmark"><xsl:value-of select="@name" /></a></h3>
 			</xsl:if>
 			<xsl:if test="count(ancestor::*) = '3'">
-				<h4><xsl:value-of select="@name" /></h4>
+				<h4 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}" rel="bookmark"><xsl:value-of select="@name" /></a></h4>
 			</xsl:if>
 			<xsl:if test="count(ancestor::*) = '4'">
-				<h5><xsl:value-of select="@name" /></h5>
+				<h5 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}" rel="bookmark"><xsl:value-of select="@name" /></a></h5>
 			</xsl:if>
 			<xsl:if test="count(ancestor::*) = '5'">
-				<h6><xsl:value-of select="@name" /></h6>
+				<h6 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}" rel="bookmark"><xsl:value-of select="@name" /></a></h6>
 			</xsl:if>
 			<p><xsl:value-of select="synopsis" /></p>
 			<xsl:for-each select="note">

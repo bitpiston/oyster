@@ -20,7 +20,7 @@ thead, tr, th, td {
 }
 
 /* Basic Elements */
-html {
+html {	
 	background-color: #E8ECD4; 
 	font: normal 14px/1.5 Georgia, Times, serif; 
 	color: #3d3931; /* 4d4942 */
@@ -55,6 +55,9 @@ a.next {
 
 /* Images */
 img { vertical-align: top; }
+
+/* Headers */
+h1, h2, h3, h4, h5, h6 { font: normal 1em/1.5 inherit;}
 
 /* Text */
 p { margin: 0 0 1.5em; }
@@ -188,7 +191,7 @@ div.wrapper {
 	display: block;
 	outline: none;
 	background: url("./images/header.logo.png") 0 0 no-repeat;
-    min-height: 106px;
+    height: 106px;
 	width: 350px;
 }
 #title:hover { background-position: 0 -149px; }
@@ -235,7 +238,7 @@ div.wrapper {
 	display: block;
 	outline: none;
 	background: url("./images/footer.bitpiston.png") 0 0 no-repeat;
-    min-height: 38px;
+    height: 38px;
 	width: 162px;
 }
 #bitpiston:hover { background-position: 0 -50px; }
@@ -272,8 +275,8 @@ div.section div {
 	border-left: 1px solid #CED8B9;
 	padding: 0 0 0 0.85em;
 }
-div.section div p, div.section div p { margin: 1.5em 0 0; }
-div.section div p:first-child, div.section div p:first-child { margin: 0; }
+div.section div p { margin: 1.5em 0 0; }
+div.section div p:first-child { margin: 0; }
 div.section ul.related {
 	width: 13.6em;
 	float: left;
@@ -406,9 +409,9 @@ body.download h2 { width: 7.7em; }
 body.download div.section div { width: 38.19em; }
 
 /* Content - Documentation */
-body.documentation #content-primary { width: 39.55em; }
-body.documentation { min-width: 68.5em; }
 body.documentation div.wrapper { width: 62em; }
+body.documentation { min-width: 68.5em; }
+body.documentation #content-primary { width: 39.55em; }
 body.documentation #content, body.documentation #header, body.documentation #footer, 
 body.documentation #navigation {
 	padding-left: 5em;
