@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>String Functions</h1>
+<div id="content-primary"><h1><span>2.20</span><a href="./">String Functions</a></h1>
     <p>
         String related stuff -- some general, some Oyster specific.
     </p>
-    <div class="function"><h2>get_first_words</h2><p>
+    <div class="function"><h2 id="get_first_words"><span/><a href="get_first_words" rel="bookmark">get_first_words</a></h2><p>
             Given a string and a number of words, returns the first X words from a string.
         </p><p class="note">
             This does include punctuation, but it does not count towards the word count.
@@ -56,12 +56,12 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             string = string::get_first_words(string, int num_words)
         </pre></div>
-    <div class="function"><h2>proper_caps</h2><p>
+    <div class="function"><h2 id="proper_caps"><span/><a href="proper_caps" rel="bookmark">proper_caps</a></h2><p>
             Takes a string and capitalizes the first letter of each word.
         </p><h3>Prototype:</h3><pre class="prototype">
             string = string::proper_caps(string)
         </pre></div>
-    <div class="function"><h2>pad</h2><p>
+    <div class="function"><h2 id="pad"><span/><a href="pad" rel="bookmark">pad</a></h2><p>
             Pads a string with spaces to a given length.
         </p><p class="note">
             If the string is too long, chops the beginning off and prepends with ...
@@ -71,12 +71,12 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             string = string::pad(string, int length[, bool chop_end])
         </pre></div>
-    <div class="function"><h2>urlify</h2><p>
+    <div class="function"><h2 id="urlify"><span/><a href="urlify" rel="bookmark">urlify</a></h2><p>
              Takes a string and turns it into something url-friendly
         </p><h3>Prototype:</h3><pre class="prototype">
             string = string::urlify(string)
         </pre></div>
-    <div class="function"><h2>random</h2><p>
+    <div class="function"><h2 id="random"><span/><a href="random" rel="bookmark">random</a></h2><p>
             Generate a random alphanumeric string
         </p><p class="note">
             The default length is 32

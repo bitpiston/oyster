@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>XML Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.24</span><a href="./">XML Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Possibly make include/call syntax more strict so the regex parsing is
         faster.
     </li><li>
@@ -57,7 +57,7 @@
     </p>
     
     
-    <div class="function"><h2>strip_elements</h2><p>
+    <div class="function"><h2 id="strip_elements"><span/><a href="strip_elements" rel="bookmark">strip_elements</a></h2><p>
             Takes an xml-safe string and strips xml elements (aka tags/nodes)
         </p><p class="note">
             The 'xml-safe' part is important! If the string contains '&lt;' or '&gt;',
@@ -68,12 +68,12 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             string = xml::strip_elements(string[, string replace_with])
         </pre></div>
-    <div class="function"><h2>replace_entities</h2><p>
+    <div class="function"><h2 id="replace_entities"><span/><a href="replace_entities" rel="bookmark">replace_entities</a></h2><p>
             Takes an XML-safe string and replaces XML entities with their plain ASCII equivalents
         </p><h3>Prototype:</h3><pre class="prototype">
             string = xml::replace_entities(string)
         </pre></div>
-    <div class="function"><h2>entities</h2><p>
+    <div class="function"><h2 id="entities"><span/><a href="entities" rel="bookmark">entities</a></h2><p>
             Takes a string and makes it XML-safe.
         </p><p class="note">
             The 'safe' flag, if set, will not re-entify things that already look
@@ -89,7 +89,7 @@
         </pre><h3>Example:</h3><pre class="code">
             print xml::entities($INPUT{'title'});
         </pre></div>
-    <div class="function"><h2>bbcode</h2><p>
+    <div class="function"><h2 id="bbcode"><span/><a href="bbcode" rel="bookmark">bbcode</a></h2><p>
             Transforms BBcode into XHTML
         </p><p class="note">
             This function raises a validation_error if a problem is encountered.
@@ -98,7 +98,7 @@
         </pre><h3>Example:</h3><pre class="code">
             my $post = xml::bbcode($INPUT{'post'});
         </pre></div>
-    <div class="function"><h2>_bbcode_parse_code</h2><p>
+    <div class="function"><h2 id="_bbcode_parse_code"><span/><a href="_bbcode_parse_code" rel="bookmark">_bbcode_parse_code</a></h2><p>
             Parses BBcode until a [/code] tag is found
         </p><p class="note">
             This function properly keeps track of embedded [code] tags and only
@@ -109,7 +109,7 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             my ($bbcode, $xhtml) = _bbcode_parse_code($bbcode, $xhtml)
         </pre></div>
-    <div class="function"><h2>_bbcode_inspect_stack</h2><p>
+    <div class="function"><h2 id="_bbcode_inspect_stack"><span/><a href="_bbcode_inspect_stack" rel="bookmark">_bbcode_inspect_stack</a></h2><p>
             Allows you to inspect the bbcode tag stack
         </p><p class="note">
             This function returns undef if the tag is not found, this means
@@ -121,7 +121,7 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             int position = _bbcode_inspect_stack(string tag_name[, int offset])
         </pre></div>
-    <div class="function"><h2>validate_xhtml</h2><p>
+    <div class="function"><h2 id="validate_xhtml"><span/><a href="validate_xhtml" rel="bookmark">validate_xhtml</a></h2><p>
             Validates xhtml and returns the xml-compatible equivalent
         </p><p class="note">
             This may potentially change the xhtml, transforming some entities to be

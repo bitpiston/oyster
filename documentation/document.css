@@ -464,10 +464,12 @@ div.todo ul {
 }
 body.documentation h2 span { padding-right: 0.438em; } 
 body.documentation h3 span { width: 4.5em; }
+/*
 body.documentation div.function h3 {
 	margin-left: 0;
 	display: block;
 }
+*/
 body.documentation #content-secondary h2 { margin-left: 0; }
 body.documentation #content-secondary h2 span { width: auto; }
 body.documentation #content-secondary ul {

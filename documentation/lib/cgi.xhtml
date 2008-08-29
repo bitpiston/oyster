@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Common Gateway Interface Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.2</span><a href="./">Common Gateway Interface Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         clean up multipart parsing, check out cgi::lite to cover weird corner cases
     </li><li>
         clean up this api a bit, some things are needlessly put into functions
@@ -56,21 +56,21 @@
     
     
     
-    <div class="function"><h2>start</h2><p>
+    <div class="function"><h2 id="start"><span/><a href="start" rel="bookmark">start</a></h2><p>
            Begins a CGI request, processes POST, GET, and COOKIES 
         </p><p class="note">
             Modules should never need to call this function directly, it is called automatically each request.
         </p><h3>Prototype:</h3><pre class="prototype">
             cgi::start()
         </pre></div>
-    <div class="function"><h2>end</h2><p>
+    <div class="function"><h2 id="end"><span/><a href="end" rel="bookmark">end</a></h2><p>
             Ends a CGI request, cleans up after cgi::start()
         </p><p class="note">
             Modules should never need to call this function directly, it is called automatically each request.
         </p><h3>Prototype:</h3><pre class="prototype">
             cgi::end()
         </pre></div>
-    <div class="function"><h2>_process_namespaces</h2><p>
+    <div class="function"><h2 id="_process_namespaces"><span/><a href="_process_namespaces" rel="bookmark">_process_namespaces</a></h2><p>
             Processes namespaces from the url
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
@@ -81,28 +81,28 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             _process_namespaces()
         </pre></div>
-    <div class="function"><h2>_process_form_post</h2><p>
+    <div class="function"><h2 id="_process_form_post"><span/><a href="_process_form_post" rel="bookmark">_process_form_post</a></h2><p>
             Processes POST data
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
         </p><h3>Prototype:</h3><pre class="prototype">
             _process_form_post()
         </pre></div>
-    <div class="function"><h2>_process_form_get</h2><p>
+    <div class="function"><h2 id="_process_form_get"><span/><a href="_process_form_get" rel="bookmark">_process_form_get</a></h2><p>
             Processes GET data
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
         </p><h3>Prototype:</h3><pre class="prototype">
             _process_form_get()
         </pre></div>
-    <div class="function"><h2>_process_cookies</h2><p>
+    <div class="function"><h2 id="_process_cookies"><span/><a href="_process_cookies" rel="bookmark">_process_cookies</a></h2><p>
             Processes cookie data
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.
         </p><h3>Prototype:</h3><pre class="prototype">
             _process_cookies()
         </pre></div>
-    <div class="function"><h2>set_cookie</h2><p>
+    <div class="function"><h2 id="set_cookie"><span/><a href="set_cookie" rel="bookmark">set_cookie</a></h2><p>
             Sets a cookie
         </p><p class="note">
             If no expiration time is set, the cookie is usually removed when the browser window is closed.
@@ -111,7 +111,7 @@
         </pre><h3>Example:</h3><pre class="code">
             cgi::set_cookie('last_page_view_time', gmtime(), 60);
         </pre></div>
-    <div class="function"><h2>_cookie_date</h2><p>
+    <div class="function"><h2 id="_cookie_date"><span/><a href="_cookie_date" rel="bookmark">_cookie_date</a></h2><p>
             Returns a date formatted to be used in a cookie expiration date
         </p><p class="note">
             This is a private function used internally by the Oyster library. Modules should never need to call this function.

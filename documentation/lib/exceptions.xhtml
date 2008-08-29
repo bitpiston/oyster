@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Exception Handling Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.9</span><a href="./">Exception Handling Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Handle modules that throw stringifiable objects (use Error;)
     </li><li>
         FIXME! If an exception is thrown from a catch block, it should NOT be thrown from the same level it was caught, but one below
@@ -59,7 +59,7 @@
     
     
     
-    <div class="function"><h2>throw</h2><p>
+    <div class="function"><h2 id="throw"><span/><a href="throw" rel="bookmark">throw</a></h2><p>
             Throws an exception to be caught by a catch handler.
         </p><p class="note">
             The perl here is can be pretty tough to understand, it is heavily
@@ -80,7 +80,7 @@
         </pre><pre class="code">
             throw 'validation_error' =&gt; 'Title is too short' if length $INPUT{'title'} &lt; 5;
         </pre></div>
-    <div class="function"><h2>catch</h2><p>
+    <div class="function"><h2 id="catch"><span/><a href="catch" rel="bookmark">catch</a></h2><p>
             Executes a block of code, trapping exceptions.  Returns true if the block
             executed successfully without exceptions, false otherwise.
         </p><p class="note">
@@ -110,7 +110,7 @@
                abort();
             };
         </pre></div>
-    <div class="function"><h2>abort</h2><p>
+    <div class="function"><h2 id="abort"><span/><a href="abort" rel="bookmark">abort</a></h2><p>
             Ends execution of a try block.
         </p><p class="note">
             Calling abort() with no arguments will end all blocks up to where the
@@ -125,7 +125,7 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             abort([bool only_current_block])
         </pre></div>
-    <div class="function"><h2>trace</h2><p>
+    <div class="function"><h2 id="trace"><span/><a href="trace" rel="bookmark">trace</a></h2><p>
             
         </p><p class="note">
             

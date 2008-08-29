@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Image Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.13</span><a href="./">Image Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Allow alternatives to ImageMagick
     </li></ul></div>
     <div class="warning"><strong>Warning</strong><p>
@@ -54,7 +54,7 @@
         lightweight version of perlmagick that can potentially use other backends.
     </p>
     
-    <div class="function"><h2>identify</h2><p>
+    <div class="function"><h2 id="identify"><span/><a href="identify" rel="bookmark">identify</a></h2><p>
             Inspect an image and return the type, width, and height.
         </p><p class="note">
             Returns a undef if an error occured
@@ -63,14 +63,14 @@
         </pre><h3>Example:</h3><pre class="code">
             throw 'validation_error' =&gt; "File is not an image!" unless image::identify($INPUT{'some_upload'}-&gt;{'tmp_name'})
         </pre></div>
-    <div class="function"><h2>thumbnail</h2><p>
+    <div class="function"><h2 id="thumbnail"><span/><a href="thumbnail" rel="bookmark">thumbnail</a></h2><p>
             Create a thumbnail of an image
         </p><p class="note">
             Returns undef on failure, 1 on success.
         </p><h3>Prototype:</h3><pre class="prototype">
             image::thumbnail(string source_filename, string dest_filename, int width[, int height])
         </pre></div>
-    <div class="function"><h2>watermark</h2><p>
+    <div class="function"><h2 id="watermark"><span/><a href="watermark" rel="bookmark">watermark</a></h2><p>
             Overlays one image on top of another
         </p><p class="note">
             If no destination filename is provided, the second argument is

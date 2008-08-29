@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Oyster</h1>
+<div id="content-primary"><h1><span>2.18</span><a href="./">Oyster</a></h1>
     <p>
         This is a lightweight web application framework, focusing on: speed, flexibility, scalability, and ease of development.  For more information, visit the official Oyster website.
     </p>
-    <h2>Global Variables</h2><p>
+    <h2 id=""><span/><a href="">Global Variables</a></h2>
         <p>
             These are exported to modules.
         </p>
@@ -63,12 +63,12 @@
             %CONFIG
             The Oyster configuration, a combination of config.pl, information from the database, and some values added when Oyster is loaded
         
-    </p>
-    <h2>Internals</h2><p>
+    
+    <h2 id=""><span/><a href="">Internals</a></h2>
         <p>
             These are functions used to run oyster, rarely called by external code (except for launchers).
         </p>
-        <div class="function"><h3>import</h3><p>
+        <div class="function"><h3 id="import"><span/><a href="import" rel="bookmark">import</a></h3><p>
                 Exports Oyster variables
             </p><p class="note">
                 Can optionally be passed an argument to be imported into a specific package instead of the caller.
@@ -81,7 +81,7 @@
             </pre><pre class="prototype">
                 oyster-&gt;import([string import_set])
             </pre></div>
-        <div class="function"><h3>load</h3><p>
+        <div class="function"><h3 id="load"><span/><a href="load" rel="bookmark">load</a></h3><p>
                 Load Oyster and prepares the oyster environment
             </p><p class="note">
                 The optional arguments can be used to tell Oyster to only load certain things.  This can be useful for certain scripts that only need a minimal Oyster environment.
@@ -98,35 +98,35 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::load(hashref configuration[, db_connect =&gt; bool][, load_config =&gt; bool][, load_modules =&gt; bool][, load_libs =&gt; bool][, load_request =&gt; bool])
             </pre></div>
-        <div class="function"><h3>_db_connect</h3><p>
+        <div class="function"><h3 id="_db_connect"><span/><a href="_db_connect" rel="bookmark">_db_connect</a></h3><p>
                 Establishes a database connection if one isn't already active
             </p><h4>Prototype:</h4><pre class="prototype">
                 _db_connect([bool force_reconnect])
             </pre></div>
-        <div class="function"><h3>_load_config</h3><p>
+        <div class="function"><h3 id="_load_config"><span/><a href="_load_config" rel="bookmark">_load_config</a></h3><p>
                 Loads (or reloads) oyster configuration
             </p><h4>Prototype:</h4><pre class="prototype">
                 _load_config()
             </pre></div>
-        <div class="function"><h3>_load_modules</h3><p>
+        <div class="function"><h3 id="_load_modules"><span/><a href="_load_modules" rel="bookmark">_load_modules</a></h3><p>
                 Loads (or reloads) oyster modules
             </p><h4>Prototype:</h4><pre class="prototype">
                 _load_modules()
             </pre></div>
-    </p>
     
-    <h2>Request Handling</h2><p>
+    
+    <h2 id=""><span/><a href="">Request Handling</a></h2>
         <p>
             These functions deal with handling page requests.  Like the above internal functions, should rarely be called by outside code (except for launchers).
         </p>
-        <div class="function"><h3>request_pre</h3><p>
+        <div class="function"><h3 id="request_pre"><span/><a href="request_pre" rel="bookmark">request_pre</a></h3><p>
                 Called before each page request
             </p><p class="note">
                 This is primarily used to perform updates necessary to keep daemons in sync before the next page should be served.
             </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::request_pre()
             </pre></div>
-        <div class="function"><h3>request_handler</h3><p>
+        <div class="function"><h3 id="request_handler"><span/><a href="request_handler" rel="bookmark">request_handler</a></h3><p>
                 Called to handle each page request
             </p><p class="note">
                 
@@ -156,25 +156,25 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::request_handler()
             </pre></div>
-        <div class="function"><h3>request_cleanup</h3><p>
+        <div class="function"><h3 id="request_cleanup"><span/><a href="request_cleanup" rel="bookmark">request_cleanup</a></h3><p>
                 Performed after request_handler, after the connection is closed
             </p><p class="note">
                 Hooking into request_cleanup is favorable to request_finish (unless you have a good reason), since request_finish hooks should not print anything anyways.
             </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::request_cleanup()
             </pre></div>
-        <div class="function"><h3>_load_exception_handlers</h3><p>
+        <div class="function"><h3 id="_load_exception_handlers"><span/><a href="_load_exception_handlers" rel="bookmark">_load_exception_handlers</a></h3><p>
                 Prepares the exception handlers necessary to serve a page request.
             </p><h4>Prototype:</h4><pre class="prototype">
                 _load_exception_handlers()
             </pre></div>
-    </p>
+    
 
-    <h2>Public API</h2><p>
+    <h2 id=""><span/><a href="">Public API</a></h2>
         <p>
             The oyster API is a set of functions available to all oyster code and oyster modules.
         </p>
-        <div class="function"><h3>execute_script</h3><p>
+        <div class="function"><h3 id="execute_script"><span/><a href="execute_script" rel="bookmark">execute_script</a></h3><p>
                 Executes a script in the shared_path/script/ directory, under the current site ID.
             </p><p class="note">
                 The first argument is the filename without the .pl extension.
@@ -183,19 +183,19 @@
             </pre><h4>Example:</h4><pre class="code">
                 print execute_script('xslcompiler');
             </pre></div>
-        <div class="function"><h3>restart</h3><p>
+        <div class="function"><h3 id="restart"><span/><a href="restart" rel="bookmark">restart</a></h3><p>
                 Restarts the current script.
             </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::restart()
             </pre></div>
-        <div class="function"><h3>perl_require</h3><p>
+        <div class="function"><h3 id="perl_require"><span/><a href="perl_require" rel="bookmark">perl_require</a></h3><p>
                 Performs a 'require' without Oyster's library search paths.
             </p><p class="note">
                 This cannot be used like 'require IO::Socket', you must use 'IO/Socket.pm' instead.
             </p><h4>Prototype:</h4><pre class="prototype">
                 oyster::perl_require(string filename)
             </pre></div>
-        <div class="function"><h3>shell_escape</h3><p>
+        <div class="function"><h3 id="shell_escape"><span/><a href="shell_escape" rel="bookmark">shell_escape</a></h3><p>
                 Escapes characters to avoid injection when executing shell commands.
             </p><p class="note">
                 Currently only escapes double quotes.  The data passed to this function
@@ -204,7 +204,7 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 string escaped_string = oyster::shell_escape(string)
             </pre></div>
-        <div class="function"><h3>dump</h3><p>
+        <div class="function"><h3 id="dump"><span/><a href="dump" rel="bookmark">dump</a></h3><p>
                 Uses Data::Dumper to return a dump of a variable.
             </p><p class="note">
                 This is simply here for convenience.
@@ -215,13 +215,13 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 variable = oyster::dump(ref)
             </pre></div>
-    </p>
+    
 
-    <h2>Exported Functions</h2><p>
+    <h2 id=""><span/><a href="">Exported Functions</a></h2>
         <p>
             Similar in purpose to the Oyster API, but these are automatically exported to modules.
         </p>
-        <div class="function"><h3>confirm</h3><p>
+        <div class="function"><h3 id="confirm"><span/><a href="confirm" rel="bookmark">confirm</a></h3><p>
                 Prompts a user for confirmation.  If confirmation has not been gotten,
                 calls abort().  If confirmation has been gotten, does nothing.
             </p><p class="note">
@@ -232,14 +232,14 @@
                 confirm("Are you sure you want to delete everything on your hard drive?");
                 `rm -f /*.*`;
             </pre></div>
-    <div class="function"><h3>confirmation</h3><p>
+    <div class="function"><h3 id="confirmation"><span/><a href="confirmation" rel="bookmark">confirmation</a></h3><p>
             Prints a confirmation message.
         </p><h4>Prototype:</h4><pre class="prototype">
             confirmation(string confirmation_message[, forward_options])
         </pre><h4>Example:</h4><pre class="code">
             confirmation('Something happened.', $BASE_URL =&gt; 'Return to the home page.');
         </pre></div>
-    </p>
+    
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

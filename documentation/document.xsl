@@ -83,7 +83,7 @@
 	</xsl:template>
 	
 	<xsl:template match="/document">
-		<h1><span><xsl:value-of select="@index" /> </span><xsl:value-of select="@title" /></h1>
+		<h1><span><xsl:value-of select="@index" /> </span><a href="./"><xsl:value-of select="@title" /></a></h1>
 		
 		<xsl:if test="/document/todo">
 			<div class="todo">
@@ -123,7 +123,7 @@
 		<xsl:if test="count(ancestor::*) = '5'">
 			<h6 id="{@name}"><span><xsl:value-of select="@index" /> </span><a href="{@name}"><xsl:value-of select="@title" /></a></h6>
 		</xsl:if>
-		<p><xsl:apply-templates /></p>
+		<xsl:apply-templates />
 	</xsl:template>
 	
 	<xsl:template match="function">

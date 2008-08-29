@@ -43,146 +43,146 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>User Module</h1>
+<div id="content-primary"><h1><span>3.3</span><a href="./">User Module</a></h1>
     <p>
         This module encapsulates the current user's data/permissions and all user-related actions.
     </p>
-    <h2>Initialization</h2><p>
+    <h2 id=""><span/><a href="">Initialization</a></h2>
 
-        <div class="function"><h3>hook_load</h3><p>
+        <div class="function"><h3 id="hook_load"><span/><a href="hook_load" rel="bookmark">hook_load</a></h3><p>
                 Loads user group data and prepares queries to be used later.
             </p><p class="note">
                 This uses event::register_hook() to execute at the right times.
             </p></div>
-        <div class="function"><h3>import</h3><p>
+        <div class="function"><h3 id="import"><span/><a href="import" rel="bookmark">import</a></h3><p>
                 Called by other modules to export %USER and %PERMISSIONS
             </p></div>
-    </p>
+    
 
-    <h2>Actions</h2><p>
+    <h2 id=""><span/><a href="">Actions</a></h2>
 
-        <div class="function"><h3>recover</h3><p>
+        <div class="function"><h3 id="recover"><span/><a href="recover" rel="bookmark">recover</a></h3><p>
                 Recovers a lost account by sending an email to a user that allows them to reset their password.
             </p><p class="note">
                 This is registered to the url 'user/recover'.
             </p></div>
-        <div class="function"><h3>edit_settings</h3><p>
+        <div class="function"><h3 id="edit_settings"><span/><a href="edit_settings" rel="bookmark">edit_settings</a></h3><p>
                 Edits a user's settings
             </p><p class="note">
                 This is registered to the url 'user/settings'.
             </p></div>
-        <div class="function"><h3>confirm_email</h3><p>
+        <div class="function"><h3 id="confirm_email"><span/><a href="confirm_email" rel="bookmark">confirm_email</a></h3><p>
                 Confirms an email address update
             </p><p class="note">
                 This is registered to the url 'user/confirm_email'.
             </p></div>
-        <div class="function"><h3>confirm_account</h3><p>
+        <div class="function"><h3 id="confirm_account"><span/><a href="confirm_account" rel="bookmark">confirm_account</a></h3><p>
                 Confirms a newly registered account
             </p><p class="note">
                 This is registered to the url 'user/confirm'.
             </p></div>
-        <div class="function"><h3>register</h3><p>
+        <div class="function"><h3 id="register"><span/><a href="register" rel="bookmark">register</a></h3><p>
                 Registers a new account
             </p><p class="note">
                 This is registered to the url 'register'.
             </p></div>
-        <div class="function"><h3>admin</h3><p>
+        <div class="function"><h3 id="admin"><span/><a href="admin" rel="bookmark">admin</a></h3><p>
                 The administration menu
             </p><p class="note">
                 This is registered to the url 'admin/user'.
             </p></div>
-        <div class="function"><h3>admin_config</h3><p>
+        <div class="function"><h3 id="admin_config"><span/><a href="admin_config" rel="bookmark">admin_config</a></h3><p>
                 Manages the user module's configuration
             </p><p class="note">
                 This is registered to the url 'admin/user/config'.
             </p></div>
-        <div class="function"><h3>admin_delete_group</h3><p>
+        <div class="function"><h3 id="admin_delete_group"><span/><a href="admin_delete_group" rel="bookmark">admin_delete_group</a></h3><p>
                 Deletes a user group
             </p><p class="note">
                 This is registered to the url 'admin/user/groups/delete'.
             </p></div>
-        <div class="function"><h3>admin_edit_group</h3><p>
+        <div class="function"><h3 id="admin_edit_group"><span/><a href="admin_edit_group" rel="bookmark">admin_edit_group</a></h3><p>
                 Modifies a user group
             </p><p class="note">
                 This is registered to the url 'admin/user/groups/edit'.
             </p></div>
-        <div class="function"><h3>admin_create_group</h3><p>
+        <div class="function"><h3 id="admin_create_group"><span/><a href="admin_create_group" rel="bookmark">admin_create_group</a></h3><p>
                 Creates a user group
             </p><p class="note">
                 This is registered to the url 'admin/user/groups/create'.
             </p></div>
-        <div class="function"><h3>admin_groups</h3><p>
+        <div class="function"><h3 id="admin_groups"><span/><a href="admin_groups" rel="bookmark">admin_groups</a></h3><p>
                 The manage user groups menu
             </p><p class="note">
                 This is registered to the url 'admin/user/groups'.
             </p></div>
-        <div class="function"><h3>admin_manage</h3><p>
+        <div class="function"><h3 id="admin_manage"><span/><a href="admin_manage" rel="bookmark">admin_manage</a></h3><p>
                 Manage individual users
             </p><p class="note">
                 This is registered to the url 'admin/user/manage'.
             </p></div>
-        <div class="function"><h3>login</h3><p>
+        <div class="function"><h3 id="login"><span/><a href="login" rel="bookmark">login</a></h3><p>
                 Logs a user into the web site
             </p><p class="note">
                 This is registered to the url 'login'.
             </p></div>
-        <div class="function"><h3>logout</h3><p>
+        <div class="function"><h3 id="logout"><span/><a href="logout" rel="bookmark">logout</a></h3><p>
                 Logs a user out of the web site
             </p><p class="note">
                 This is registered to the url 'logout'.
             </p></div>
-    </p>
+    
 
-    <h2>Event Hooks</h2><p>
-    </p>
+    <h2 id=""><span/><a href="">Event Hooks</a></h2>
+    
 
-    <h2>Helper Functions</h2><p>
-    </p>
+    <h2 id=""><span/><a href="">Helper Functions</a></h2>
+    
 
-    <h2>Public API</h2><p>
+    <h2 id=""><span/><a href="">Public API</a></h2>
 
-        <div class="function"><h3>require_permission</h3><p>
+        <div class="function"><h3 id="require_permission"><span/><a href="require_permission" rel="bookmark">require_permission</a></h3><p>
                 Throws a 'permission_error' exception if a user does not meet a certain permission requirement
             </p><p class="note">
                 'minimum_level' defaults to 1.
             </p><h4>Prototype:</h4><pre class="prototype">
                 user::require_permission(string permission_id[, int minimum_level])
             </pre></div>
-        <div class="function"><h3>add_permission</h3><p>
+        <div class="function"><h3 id="add_permission"><span/><a href="add_permission" rel="bookmark">add_permission</a></h3><p>
                 Adds a permission to the current site's user groups table
             </p><p class="note">
                 'default_permission_level' defaults to 0.
             </p><h4>Prototype:</h4><pre class="prototype">
                 user::add_permission(string permission_id[, int default_permission_level])
             </pre></div>
-        <div class="function"><h3>delete_permission</h3><p>
+        <div class="function"><h3 id="delete_permission"><span/><a href="delete_permission" rel="bookmark">delete_permission</a></h3><p>
                 Deletes a permission from the current site's user groups table
             </p><h4>Prototype:</h4><pre class="prototype">
                 user::delete_permission(string permission_id)
             </pre></div>
-        <div class="function"><h3>get_email</h3><p>
+        <div class="function"><h3 id="get_email"><span/><a href="get_email" rel="bookmark">get_email</a></h3><p>
                 Retreives a user's email address based on their ID.
             </p><p class="note">
                 user_id defaults to the current user ID (if any), and if fetching the current user's email, adds it to the %USER hash.
             </p><h4>Prototype:</h4><pre class="prototype">
                 string = user::get_email([int user_id])
             </pre></div>
-        <div class="function"><h3>get_name</h3><p>
+        <div class="function"><h3 id="get_name"><span/><a href="get_name" rel="bookmark">get_name</a></h3><p>
                 Retreives a user's name based on their ID.
             </p><h4>Prototype:</h4><pre class="prototype">
                 string = user::get_name(int user_id)
             </pre></div>
-        <div class="function"><h3>find</h3><p>
+        <div class="function"><h3 id="find"><span/><a href="find" rel="bookmark">find</a></h3><p>
                 Returns an entry from the user table by id, email, or username
             </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = user::find(int user_id or string username or string email)
             </pre></div>
-        <div class="function"><h3>is_username_taken</h3><p>
+        <div class="function"><h3 id="is_username_taken"><span/><a href="is_username_taken" rel="bookmark">is_username_taken</a></h3><p>
                 Checks if a given username is taken
             </p><h4>Prototype:</h4><pre class="prototype">
                 bool = user::is_username_taken(string username)
             </pre></div>
-        <div class="function"><h3>get_module_permissions</h3><p>
+        <div class="function"><h3 id="get_module_permissions"><span/><a href="get_module_permissions" rel="bookmark">get_module_permissions</a></h3><p>
                 Fetches permissions information about a module
             </p><p class="note">
                 Returns undef if no permission information is available
@@ -191,7 +191,7 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = user::get_module_permissions(string module_id)
             </pre></div>
-    </p>
+    
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

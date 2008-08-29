@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Coding Conventions</h1>
+<div id="content-primary"><h1><span>1</span><a href="./">Coding Conventions</a></h1>
 	<p>
 		This document outlines the coding practices we follow when developing Oyster.  You do not have to follow these guidelines, these are merely the guidelines for official Oyster code.
 	</p>
-	<h2>General</h2><p>
+	<h2 id=""><span/><a href="">General</a></h2>
 		
 			Perl Best Practices is mostly adhered to.
 			{ should not occur on its own line.
@@ -55,31 +55,31 @@
 			Entire-line comments (aka, not on the same line as code) should have one line of whitespace above them, unless the previous line was also a comment.
 			1/0 should be used to indicate true/false, everywhere, including xml. undef (or an empty list where applicable) is also acceptable as false in perl code.
 		
-	</p>
-	<h2>Package/Variable/Function Naming</h2><p>
+	
+	<h2 id=""><span/><a href="">Package/Variable/Function Naming</a></h2>
 		
 			lowercase_and_underscores for everything
 			nouns should be last, not first (aka, delete_file instead of file_delete); if you have a set of functions that you feel should share a common prefix, consider putting them in their own package (like is done with file::delete)
 		
-	</p>
-	<h2>Indentation</h2><p>
+	
+	<h2 id=""><span/><a href="">Indentation</a></h2>
 		Use four spaces for perl, tabs for xml/css.  For embedded documentation, which is xml, use four spaces.  Literal tabs should never appear in perl source code files.
 
-	</p>
-	<h2>Indicating Success or Failure</h2><p>
+	
+	<h2 id=""><span/><a href="">Indicating Success or Failure</a></h2>
 		Use exceptions where it makes sense, true/false (as documented earlier) otherwise.
-	</p>
-	<h2>Abbreviations</h2><p>
+	
+	<h2 id=""><span/><a href="">Abbreviations</a></h2>
 		In general, don't use them unless they are common outside of the scope of the code you are writing (for example: url, orm, misc).
 		<p class="note">'description' should always be 'description', not 'desc'.</p>
-	</p>
-	<h2>Object Orientation</h2><p>
+	
+	<h2 id=""><span/><a href="">Object Orientation</a></h2>
 		OO should only be used when necessary, when you would actually need multiple objects of a given type or when it provides a superior api -- no OO for OO's sake, it's slower.
 		<p class="note">$obj (or a more context-sensitive variable, such as $parser for a parser class) should be used instead of $self or $this</p>
-	</p>
-	<h2>Inline Documentation</h2><p>
+	
+	<h2 id=""><span/><a href="">Inline Documentation</a></h2>
 		
-	</p>
+	
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

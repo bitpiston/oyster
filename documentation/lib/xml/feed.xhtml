@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>XML Feed Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.23.1</span><a href="./">XML Feed Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Documentation
     </li></ul></div>
     <div class="warning"><strong>Warning</strong><p>
@@ -63,15 +63,15 @@
         documents, check this module's source out.
     </p>
     
-    <h2>Object Properties</h2><p>
+    <h2 id=""><span/><a href="">Object Properties</a></h2>
         
             arrayref items
             string feed_type
             string title
         
-    </p>
+    
 
-    <div class="function"><h2>new</h2><p>
+    <div class="function"><h2 id="new"><span/><a href="new" rel="bookmark">new</a></h2><p>
             Creates a new xml::feed object.
         </p><p class="note">
             'until_url_hash' is used by imfeedr.  If anything, imfeedr should
@@ -82,7 +82,7 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             $feed = xml::feed-&gt;new(['num_items' =&gt; int max_num_of_items][, 'until_url_hash' =&gt; string title_hash])
         </pre></div>
-    <div class="function"><h2>parse_url</h2><p>
+    <div class="function"><h2 id="parse_url"><span/><a href="parse_url" rel="bookmark">parse_url</a></h2><p>
             
         </p><p class="note">
             
@@ -91,7 +91,7 @@
         </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
-    <div class="function"><h2>_node_start_handler</h2><p>
+    <div class="function"><h2 id="_node_start_handler"><span/><a href="_node_start_handler" rel="bookmark">_node_start_handler</a></h2><p>
             Catches root node and analyzes it to detect the feed type and implement
             the proper handlers.
         </p><p class="note">
@@ -101,9 +101,9 @@
         </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
-    <h2>RDF/RSS Handlers</h2><p>
+    <h2 id=""><span/><a href="">RDF/RSS Handlers</a></h2>
     
-        <div class="function"><h3>_rss_node_start_handler</h3><p>
+        <div class="function"><h3 id="_rss_node_start_handler"><span/><a href="_rss_node_start_handler" rel="bookmark">_rss_node_start_handler</a></h3><p>
                 
             </p><p class="note">
                 
@@ -112,7 +112,7 @@
             </pre><h4>Example:</h4><pre class="code">
                 
             </pre></div>
-        <div class="function"><h3>_rss_node_end_handler</h3><p>
+        <div class="function"><h3 id="_rss_node_end_handler"><span/><a href="_rss_node_end_handler" rel="bookmark">_rss_node_end_handler</a></h3><p>
                 
             </p><p class="note">
                 
@@ -121,11 +121,11 @@
             </pre><h4>Example:</h4><pre class="code">
                 
             </pre></div>
-    </p>
     
-    <h2>Atom Handlers</h2><p>
     
-        <div class="function"><h3>_atom_node_start_handler</h3><p>
+    <h2 id=""><span/><a href="">Atom Handlers</a></h2>
+    
+        <div class="function"><h3 id="_atom_node_start_handler"><span/><a href="_atom_node_start_handler" rel="bookmark">_atom_node_start_handler</a></h3><p>
                 
             </p><p class="note">
                 
@@ -134,7 +134,7 @@
             </pre><h4>Example:</h4><pre class="code">
                 
             </pre></div>
-        <div class="function"><h3>_atom_node_end_handler</h3><p>
+        <div class="function"><h3 id="_atom_node_end_handler"><span/><a href="_atom_node_end_handler" rel="bookmark">_atom_node_end_handler</a></h3><p>
                 
             </p><p class="note">
                 
@@ -143,7 +143,7 @@
             </pre><h4>Example:</h4><pre class="code">
                 
             </pre></div>
-    </p>
+    
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

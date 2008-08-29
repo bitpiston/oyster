@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>HTTP Functions</h1>
+<div id="content-primary"><h1><span>2.12</span><a href="./">HTTP Functions</a></h1>
     <p>
         Various functions that don't (yet) warrant their own categories
     </p>
-    <div class="function"><h2>get</h2><p>
+    <div class="function"><h2 id="get"><span/><a href="get" rel="bookmark">get</a></h2><p>
             Fetches a remote file and saves it locally.
         </p><p class="note">
             Throws a 'validation_error' if the file could not be fetched.
@@ -70,15 +70,15 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             http::get(string url, ['file' =&gt; string local_file][, 'max_size' =&gt; int max_size_in_kb][, 'data_handler' =&gt; subref])
         </pre></div>
-    <div class="function"><h2>header</h2><p>
+    <div class="function"><h2 id="header"><span/><a href="header" rel="bookmark">header</a></h2><p>
             Prints an http header.
         </p><h3>Prototype:</h3><pre class="prototype">
             http::header(string header)
         </pre><h3>Example:</h3><pre class="code">
             http::header("Content-Type: text/plain");
         </pre></div>
-    <div class="function"><h2>clear_headers</h2><p/></div>
-    <div class="function"><h2>print_headers</h2><p/></div>
+    <div class="function"><h2 id="clear_headers"><span/><a href="clear_headers" rel="bookmark">clear_headers</a></h2><p/></div>
+    <div class="function"><h2 id="print_headers"><span/><a href="print_headers" rel="bookmark">print_headers</a></h2><p/></div>
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

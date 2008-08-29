@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Paypal API</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.19</span><a href="./">Paypal API</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Paypal account details should be in a config
     </li><li>
         Needs more documentation
@@ -56,7 +56,7 @@
     </p>
     
     
-    <h2>Public Functions</h2><p>
+    <h2 id=""><span/><a href="">Public Functions</a></h2>
         <p class="note">
             All functions take either a single argument or a hash of arguments (NOT
             a hashref).
@@ -64,8 +64,8 @@
         <p class="note">
             All functions return hashrefs containing the nvp response.
         </p>
-        <div class="function"><h3>new</h3><p/></div>
-        <div class="function"><h3>pdt</h3><p>
+        <div class="function"><h3 id="new"><span/><a href="new" rel="bookmark">new</a></h3><p/></div>
+        <div class="function"><h3 id="pdt"><span/><a href="pdt" rel="bookmark">pdt</a></h3><p>
                 Sends a Payment Data Transfer request to Paypal
             </p><p class="note">
                 For an explanation of the variables returned by this, see
@@ -79,24 +79,24 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = obj-&gt;pdt(string transaction_id)
             </pre></div>
-        <div class="function"><h3>get_transaction_details</h3><p/></div>
-        <div class="function"><h3>transaction_search</h3><p/></div>
-        <div class="function"><h3>parsed_transaction_search</h3><p>
+        <div class="function"><h3 id="get_transaction_details"><span/><a href="get_transaction_details" rel="bookmark">get_transaction_details</a></h3><p/></div>
+        <div class="function"><h3 id="transaction_search"><span/><a href="transaction_search" rel="bookmark">transaction_search</a></h3><p/></div>
+        <div class="function"><h3 id="parsed_transaction_search"><span/><a href="parsed_transaction_search" rel="bookmark">parsed_transaction_search</a></h3><p>
                 A wrapper for transaction_search() that parses the results and puts them
                 into a more meaningful data structure.
             </p></div>
-        <div class="function"><h3>validate_ipn</h3><p/></div>
-    </p>
+        <div class="function"><h3 id="validate_ipn"><span/><a href="validate_ipn" rel="bookmark">validate_ipn</a></h3><p/></div>
     
-    <h2>Private Functions</h2><p>
+    
+    <h2 id=""><span/><a href="">Private Functions</a></h2>
 
-        <div class="function"><h3>_send_msg</h3><p>
+        <div class="function"><h3 id="_send_msg"><span/><a href="_send_msg" rel="bookmark">_send_msg</a></h3><p>
                 This is the main work horse of this library, this sends an NVP message and
                 returns the response.
             </p><h4>Prototype:</h4><pre class="prototype">
                  $obj-&gt;_send_msg(string method, hashref params)
             </pre></div>
-    </p>
+    
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

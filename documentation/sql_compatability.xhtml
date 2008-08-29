@@ -43,18 +43,18 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>SQL Compatability</h1>
+<div id="content-primary"><h1><span>6</span><a href="./">SQL Compatability</a></h1>
 	<p>While Oyster currently only supports MySQL, we plan to implement PgSQL support as well.  This document outlines various imcompatibilities between the two, so that code written now will require minimal changes to be made compatible later.</p>
-	<h2>Reserved Words</h2><p>
+	<h2 id=""><span/><a href="">Reserved Words</a></h2>
 		MySQL and PostgreSQL have different sets of reserved words.  Choose column names carefully.
-	</p>
-	<h2>Booleans</h2><p>
+	
+	<h2 id=""><span/><a href="">Booleans</a></h2>
 		MySQL does not have a boolean type, use tinyint(1) instead.  Use '1' or '0' when inserting into the value into the database.  The quotes are important, PgSQL will interpret the STRINGS '1' and '0' as true/false but NOT the integers 1 and 0.
-	</p>
-	<h2>The LIMIT clause</h2><p>
+	
+	<h2 id=""><span/><a href="">The LIMIT clause</a></h2>
 		PgSQL only supports LIMIT on SELECT queries.
-	</p>
-	<h2>INSERT syntax</h2><p>
+	
+	<h2 id=""><span/><a href="">INSERT syntax</a></h2>
 		PgSQL does not support the following syntax:
 		
 			INSERT INTO table_name SET column1 = "value1", colum2 = "value2"
@@ -63,19 +63,19 @@
 		
 			INSERT INTO table_name (column1, column2) VALUES ("value1", "value2")
 		
-	</p>
-	<h2>Auto Incrementing/Sequences</h2><p>
+	
+	<h2 id=""><span/><a href="">Auto Incrementing/Sequences</a></h2>
 		MySQL and PgSQL handle creating automatically incrementing columns differently.  Oyster's DBI wrapper provides a neutral interface to retreive the value of the last incremented column:
 		
 			$query-&gt;insert_id(string sequence_name)
 		
 		The sequence_name is ignored on MySQL, but will be used to correspond to the proper sequence on PgSQL.
 		<p class="note">The standard naming scheme for sequences is 'tablename_columname_seq'.</p>
-	</p>
-	<h2>Miscellaneous</h2><p>
+	
+	<h2 id=""><span/><a href="">Miscellaneous</a></h2>
 		
 		PgSQL's DBI driver does not support the rows() method on anything but SELECT queries.
-	</p>
+	
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

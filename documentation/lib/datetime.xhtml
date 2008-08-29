@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Date &amp; Time Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.6</span><a href="./">Date &amp; Time Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         add a wrapper for Time::HiRes so that it can be made optional (just
         fallback to time() if Time::HiRes isn't available, and put 'less than one
         second' for times less than a second)
@@ -53,15 +53,15 @@
         and time.
     </p>
     
-    <div class="function"><h2>is_valid_format</h2><p>
+    <div class="function"><h2 id="is_valid_format"><span/><a href="is_valid_format" rel="bookmark">is_valid_format</a></h2><p>
             Checks if a given string is a valid date format
         </p></div>
-    <div class="function"><h2>print_date_formats_xml</h2><p>
+    <div class="function"><h2 id="print_date_formats_xml"><span/><a href="print_date_formats_xml" rel="bookmark">print_date_formats_xml</a></h2><p>
             Prints available date formats in an xml-friendly manner
         </p><h3>Prototype:</h3><pre class="prototype">
             datetime::print_date_formats_xml()
         </pre></div>
-    <div class="function"><h2>days_in_month</h2><p>
+    <div class="function"><h2 id="days_in_month"><span/><a href="days_in_month" rel="bookmark">days_in_month</a></h2><p>
             Returns the number of days in a given month
         </p><p class="note">
             Month is 1-12, NOT 0-11.
@@ -70,31 +70,31 @@
         </pre><h3>Example:</h3><pre class="code">
             my $num_days = datetime::days_in_month(2006, 5);
         </pre></div>
-    <div class="function"><h2>gmtime</h2><p>
+    <div class="function"><h2 id="gmtime"><span/><a href="gmtime" rel="bookmark">gmtime</a></h2><p>
             Returns the unix epoch time in GMT
         </p><h3>Prototype:</h3><pre class="prototype">
             int = datetime::gmtime()
         </pre><h3>Example:</h3><pre class="code">
             my $gmtime = datetime::gmtime();
         </pre></div>
-    <div class="function"><h2>is_valid_time_offset</h2><p>
+    <div class="function"><h2 id="is_valid_time_offset"><span/><a href="is_valid_time_offset" rel="bookmark">is_valid_time_offset</a></h2><p>
             Returns true if a given string is a valid time offset, false otherwise
         </p><h3>Prototype:</h3><pre class="prototype">
             bool = datetime::is_valid_time_offset(int time_offset)
         </pre></div>
-    <div class="function"><h2>get_gmt_offset</h2><p>
+    <div class="function"><h2 id="get_gmt_offset"><span/><a href="get_gmt_offset" rel="bookmark">get_gmt_offset</a></h2><p>
             Calculates the GMT offset of the server
         </p><h3>Prototype:</h3><pre class="prototype">
             int time_offset = datetime::get_gmt_offset()
         </pre></div>
-    <div class="function"><h2>from_unixtime</h2><p>
+    <div class="function"><h2 id="from_unixtime"><span/><a href="from_unixtime" rel="bookmark">from_unixtime</a></h2><p>
             emulates mysql's FROM_UNIXTIME() function
         </p><p class="note">
             This expects a unix epoch timestamp with the server's current offset
         </p><h3>Prototype:</h3><pre class="prototype">
             string mysql_datetime = datetime::from_unixtime(int unix_time)
         </pre></div>
-    <div class="function"><h2>from_unixtime_gmt</h2><p>
+    <div class="function"><h2 id="from_unixtime_gmt"><span/><a href="from_unixtime_gmt" rel="bookmark">from_unixtime_gmt</a></h2><p>
             emulates mysql's FROM_UNIXTIME() function
         </p><p class="note">
             This expects a unix epoch timestamp in gmt

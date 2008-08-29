@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Event Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.8</span><a href="./">Event Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         The execute* functions are called a lot! Could possibly gain significant speed
         if we used AUTOLOAD and generated a function to run each event dynamically
         with only the code necessary for that event.
@@ -52,7 +52,7 @@
         These functions allow the creation of events that modules can hook into.
     </p>
     
-    <div class="function"><h2>register_hook</h2><p>
+    <div class="function"><h2 id="register_hook"><span/><a href="register_hook" rel="bookmark">register_hook</a></h2><p>
             Registers a sub routine to be called when a certain event is triggered
         </p><p class="note">
             Priority defaults to 50.
@@ -67,13 +67,13 @@
                 log::status('Did some stuff...');
             }
         </pre></div>
-    <div class="function"><h2>_rebuild</h2><p>
+    <div class="function"><h2 id="_rebuild"><span/><a href="_rebuild" rel="bookmark">_rebuild</a></h2><p>
             Rebuilds an event table based on priority
         </p><p class="note">
             This is used internally by the Oyster library, modules should never need
             to call this function.
         </p></div>
-    <div class="function"><h2>destroy</h2><p>
+    <div class="function"><h2 id="destroy"><span/><a href="destroy" rel="bookmark">destroy</a></h2><p>
             Destroys a lookup table for a particular event
         </p><p class="note">
             This can be used to free up some memory for events that are only
@@ -86,7 +86,7 @@
         </pre><h3>Example:</h3><pre class="code">
             event::destroy('load');
         </pre></div>
-    <div class="function"><h2>execute</h2><p>
+    <div class="function"><h2 id="execute"><span/><a href="execute" rel="bookmark">execute</a></h2><p>
             Executes all handlers associated with a particular event
         </p><p class="note">
             Any extra arguments are passed to the hook functions.
@@ -100,7 +100,7 @@
         </pre><pre class="code">
             my @return_values = event::execute('load', 'some argument');
         </pre></div>
-    <div class="function"><h2>execute_by_module</h2><p>
+    <div class="function"><h2 id="execute_by_module"><span/><a href="execute_by_module" rel="bookmark">execute_by_module</a></h2><p>
             Executes handlers associated with a particular event owned by a particular
             module
         </p><p class="note">
@@ -113,10 +113,10 @@
         </pre><h3>Example:</h3><pre class="code">
             my @return_values = event::execute_by_module('load', 'news', 'some argument');
         </pre></div>
-    <div class="function"><h2>execute_one</h2><p/><h3>Prototype:</h3><pre class="prototype">
+    <div class="function"><h2 id="execute_one"><span/><a href="execute_one" rel="bookmark">execute_one</a></h2><p/><h3>Prototype:</h3><pre class="prototype">
             array return_values = event::execute_one(string event_name)
         </pre></div>
-    <div class="function"><h2>module_handles_event</h2><p>
+    <div class="function"><h2 id="module_handles_event"><span/><a href="module_handles_event" rel="bookmark">module_handles_event</a></h2><p>
             Returns true if a module has one or more handlers for a particular event
         </p><p class="note">
             If event::destroy() has been called on the specified event, this will
@@ -126,7 +126,7 @@
         </pre><h3>Example:</h3><pre class="code">
             $result = event::module_handles_event('news', 'load');
         </pre></div>
-    <div class="function"><h2>delete_module_hooks</h2><p>
+    <div class="function"><h2 id="delete_module_hooks"><span/><a href="delete_module_hooks" rel="bookmark">delete_module_hooks</a></h2><p>
             Removes all hooks created by a particular module.
         </p><p class="note">
             Users should rarely need to call this, it is used when unloading or

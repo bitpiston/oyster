@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>File Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.10</span><a href="./">File Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Size and mtime should throw exceptions if the file does not exist.
     </li></ul></div>
     <p>
@@ -51,12 +51,12 @@
         implementation of several File::* CPAN modules.
     </p>
     
-    <div class="function"><h2>tmp_name</h2><p>
+    <div class="function"><h2 id="tmp_name"><span/><a href="tmp_name" rel="bookmark">tmp_name</a></h2><p>
             Generates a name for a temporary file, returns the path to that file
         </p><h3>Prototype:</h3><pre class="prototype">
             string file_path = file::tmp_name()
         </pre></div>
-    <div class="function"><h2>tmp_web_name</h2><p>
+    <div class="function"><h2 id="tmp_web_name"><span/><a href="tmp_web_name" rel="bookmark">tmp_web_name</a></h2><p>
             Generates a name for a temporary file in a web accessible directory,
             returns both the path and url to that file
         </p><p class="note">
@@ -65,7 +65,7 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             string file_path, string file_url = file::tmp_web_name([string extension])
         </pre></div>
-    <div class="function"><h2>rename</h2><p>
+    <div class="function"><h2 id="rename"><span/><a href="rename" rel="bookmark">rename</a></h2><p>
             Move or rename a file
         </p><p class="note">
             throws a 'perl_error' exception on failure
@@ -75,10 +75,10 @@
             file::rename("foo.txt", "bar.txt");
         </pre></div>
     
-    <div class="function"><h2>move</h2><p/><p class="note">
+    <div class="function"><h2 id="move"><span/><a href="move" rel="bookmark">move</a></h2><p/><p class="note">
             file::move is an alias for file::rename
         </p></div>
-    <div class="function"><h2>copy</h2><p>
+    <div class="function"><h2 id="copy"><span/><a href="copy" rel="bookmark">copy</a></h2><p>
             Copy a file or a directory
         </p><p class="note">
             throws a 'perl_error' exception on failure
@@ -87,12 +87,12 @@
         </pre><h3>Example:</h3><pre class="code">
             file::copy("foo.txt", "bar.txt");
         </pre></div>
-    <div class="function"><h2>size</h2><p>
+    <div class="function"><h2 id="size"><span/><a href="size" rel="bookmark">size</a></h2><p>
             Returns a file's size, in kilobytes
         </p><h3>Prototype:</h3><pre class="prototype">
             int fsize = file::size(string filename)
         </pre></div>
-    <div class="function"><h2>slurp</h2><p>
+    <div class="function"><h2 id="slurp"><span/><a href="slurp" rel="bookmark">slurp</a></h2><p>
             Quick and dirty file reading
         </p><p class="note">
             Throws a perl_error exception on failure
@@ -102,10 +102,10 @@
             
         </pre></div>
     
-    <div class="function"><h2>read</h2><p/><p class="note">
+    <div class="function"><h2 id="read"><span/><a href="read" rel="bookmark">read</a></h2><p/><p class="note">
             file::read is an alias for file::slurp
         </p></div>
-    <div class="function"><h2>write</h2><p>
+    <div class="function"><h2 id="write"><span/><a href="write" rel="bookmark">write</a></h2><p>
             Quick and dirty file writing
         </p><p class="note">
             The third optional argument, if true, will attempt to create any directories necessary to create to the file.
@@ -114,19 +114,19 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             file::write(string filename, string file_contents[, bool autocreate_directories])
         </pre></div>
-    <div class="function"><h2>rmdir</h2><p>
+    <div class="function"><h2 id="rmdir"><span/><a href="rmdir" rel="bookmark">rmdir</a></h2><p>
             Recursively deletes a directory and everything inside it.
         </p><p class="note">
             Throws a perl_error exception on failure
         </p><h3>Prototype:</h3><pre class="prototype">
             file::rmdir(string path)
         </pre></div>
-    <div class="function"><h2>mkdir</h2><p>
+    <div class="function"><h2 id="mkdir"><span/><a href="mkdir" rel="bookmark">mkdir</a></h2><p>
             Recursively creates a directory and all directories leading up to it (if necessary)
         </p><h3>Prototype:</h3><pre class="prototype">
             file::mkdir(string path)
         </pre></div>
-    <div class="function"><h2>mtime</h2><p>
+    <div class="function"><h2 id="mtime"><span/><a href="mtime" rel="bookmark">mtime</a></h2><p>
             Returns a file's last-modified time
         </p><p class="note">
             

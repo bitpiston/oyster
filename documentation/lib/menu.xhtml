@@ -43,22 +43,22 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Menu</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.16</span><a href="./">Menu</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Add icons?
     </li></ul></div>
     <p>
         The menu API provides an easy way to create complex menus and print their corresponding XML easily.
     </p>
     
-    <h2>Implementation Details</h2><p>
+    <h2 id=""><span/><a href="">Implementation Details</a></h2>
         As a side effect of allowing both OO and procedural syntaxes, this actually uses inside-out objects for menus (although items are still self-contained, since they were a hash ref anyways).
-    </p>
-    <div class="function"><h2>new</h2><p>
+    
+    <div class="function"><h2 id="new"><span/><a href="new" rel="bookmark">new</a></h2><p>
             Allows OO-style access to the menu API.
         </p><h3>Prototype:</h3><pre class="prototype">
             obj = menu-&gt;new(string label[, string description])
         </pre></div>
-    <div class="function"><h2>label</h2><p>
+    <div class="function"><h2 id="label"><span/><a href="label" rel="bookmark">label</a></h2><p>
             Sets the corresponding proper label for a menu ID.
         </p><p class="note">
             If no menu ID is specified, the default menu ID is used.
@@ -67,7 +67,7 @@
         </pre><pre class="prototype">
             obj-&gt;label(string menu_label)
         </pre></div>
-    <div class="function"><h2>description</h2><p>
+    <div class="function"><h2 id="description"><span/><a href="description" rel="bookmark">description</a></h2><p>
             Sets the corresponding description for a menu ID.
         </p><p class="note">
             If no menu ID is specified, the default menu ID is used.
@@ -76,14 +76,14 @@
         </pre><pre class="prototype">
             obj-&gt;description(string menu_description)
         </pre></div>
-    <div class="function"><h2>set_default_menu</h2><p>
+    <div class="function"><h2 id="set_default_menu"><span/><a href="set_default_menu" rel="bookmark">set_default_menu</a></h2><p>
             Sets the default menu ID to be assumed if none is specified.
         </p><h3>Prototype:</h3><pre class="prototype">
             menu::set_default_menu(string menu_id)
         </pre><pre class="prototype">
             obj-&gt;set_default_menu()
         </pre></div>
-    <div class="function"><h2>add_item</h2><p>
+    <div class="function"><h2 id="add_item"><span/><a href="add_item" rel="bookmark">add_item</a></h2><p>
             Adds an item to a menu
         </p><p class="note">
             To add sub-items to an existing item, specify the 'parent' argument instead of 'menu'.
@@ -100,7 +100,7 @@
         </pre><pre class="prototype">
             obj = obj-&gt;add_item([, require_children =&gt; bool], label =&gt; string label, url =&gt; string url)
         </pre></div>
-    <div class="function"><h2>print_xml</h2><p>
+    <div class="function"><h2 id="print_xml"><span/><a href="print_xml" rel="bookmark">print_xml</a></h2><p>
             Prints a menu's XML
         </p><p class="note">
             If no menu ID is specified, the default menu ID is used.

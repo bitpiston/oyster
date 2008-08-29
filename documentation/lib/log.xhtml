@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Logging Functions</h1>
+<div id="content-primary"><h1><span>2.15</span><a href="./">Logging Functions</a></h1>
     <p>
         Functions associated with reading or writing log data.
     </p>
-    <div class="function"><h2>status</h2><p>
+    <div class="function"><h2 id="status"><span/><a href="status" rel="bookmark">status</a></h2><p>
             Saves a message to the status log
         </p><p class="note">
             If a database connection is available, this message is written to the
@@ -57,7 +57,7 @@
         </pre><h3>Example:</h3><pre class="code">
             log::status('Something happened');
         </pre></div>
-    <div class="function"><h2>error</h2><p>
+    <div class="function"><h2 id="error"><span/><a href="error" rel="bookmark">error</a></h2><p>
             Saves a message to the error log
         </p><p class="note">
             If a database connection is available, this message is written to the
@@ -67,7 +67,7 @@
         </pre><h3>Example:</h3><pre class="code">
             log::error("We're all gonna die!");
         </pre></div>
-    <div class="function"><h2>_message</h2><p>
+    <div class="function"><h2 id="_message"><span/><a href="_message" rel="bookmark">_message</a></h2><p>
             Saves a message to a log.
         </p><p class="note">
             If a database connection is available, this message is written to the

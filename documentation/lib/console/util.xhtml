@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Console Utility Functions</h1>
+<div id="content-primary"><h1><span>2.4.1</span><a href="./">Console Utility Functions</a></h1>
     <p>
         Functions used by various Oyster console applications
     </p>
-    <div class="function"><h2>process_args</h2><p>
+    <div class="function"><h2 id="process_args"><span/><a href="process_args" rel="bookmark">process_args</a></h2><p>
             Quick and dirty command line argument processing.  This treats any string prefixed with - or -- as a 'key' and any string directly after it as a value for that key.  If no key is available, the value is stored with the key ''.
         </p><p class="note">
             If you include config.pl (or it was included for you), you do not need to call this, the results will be stored in %oyster::config::args.

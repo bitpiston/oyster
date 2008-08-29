@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Output Buffering Functions</h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.1</span><a href="./">Output Buffering Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Rename to ob_?  There is more than one kind of buffer.
     </li></ul></div>
     <p>
@@ -59,26 +59,26 @@
         print "Hello World";
         would not.
     </p>
-    <div class="function"><h2>start</h2><p>
+    <div class="function"><h2 id="start"><span/><a href="start" rel="bookmark">start</a></h2><p>
             Begins an output buffer
         </p><h3>Prototype:</h3><pre class="prototype">
             buffer::start()
         </pre></div>
-    <div class="function"><h2>end</h2><p>
+    <div class="function"><h2 id="end"><span/><a href="end" rel="bookmark">end</a></h2><p>
             Ends the current output buffer and prints the contents of the buffer
         </p><p class="note">
             Does nothing if no buffers are active
         </p><h3>Prototype:</h3><pre class="prototype">
             buffer::end()
         </pre></div>
-    <div class="function"><h2>end_all</h2><p>
+    <div class="function"><h2 id="end_all"><span/><a href="end_all" rel="bookmark">end_all</a></h2><p>
             Ends all output buffers and prints their contents
         </p><p class="note">
             Does nothing if no buffers are active
         </p><h3>Prototype:</h3><pre class="prototype">
             buffer::end_all()
         </pre></div>
-    <div class="function"><h2>end_clean</h2><p>
+    <div class="function"><h2 id="end_clean"><span/><a href="end_clean" rel="bookmark">end_clean</a></h2><p>
             Ends the current output buffer and returns the contents of the buffer
         </p><p class="note">
             Does nothing if no buffers are active
@@ -87,7 +87,7 @@
         </pre><h3>Example:</h3><pre class="code">
             $output = buffer::end_clean();
         </pre></div>
-    <div class="function"><h2>end_all_clean</h2><p>
+    <div class="function"><h2 id="end_all_clean"><span/><a href="end_all_clean" rel="bookmark">end_all_clean</a></h2><p>
             Ends all output buffers and returns their contents
         </p><p class="note">
             Does nothing if no buffers are active

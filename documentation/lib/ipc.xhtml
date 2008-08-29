@@ -43,12 +43,12 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>IPC Functions</h1>
+<div id="content-primary"><h1><span>2.14</span><a href="./">IPC Functions</a></h1>
     <p>
         Functions that allow daemons to communicate.  These are mainly used to force
         daemons to reload cached data when one of them updates it.
     </p>
-    <div class="function"><h2>do</h2><p>
+    <div class="function"><h2 id="do"><span/><a href="do" rel="bookmark">do</a></h2><p>
             Issues a command for all daemons of the current site to execute
         </p><p class="note">
             'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
@@ -57,7 +57,7 @@
         </pre><h3>Example:</h3><pre class="code">
             ipc::do('news', 'load_category', $category_id);
         </pre></div>
-    <div class="function"><h2>global_do</h2><p>
+    <div class="function"><h2 id="global_do"><span/><a href="global_do" rel="bookmark">global_do</a></h2><p>
             Issues a command for all daemons to execute
         </p><p class="note">
             'args' must be simple scalars, refs/objects/filehandles/etc cannot be passed
@@ -66,7 +66,7 @@
         </pre><h3>Example:</h3><pre class="code">
             ipc::global_do('oyster', '_load_config');
         </pre></div>
-    <div class="function"><h2>update</h2><p>
+    <div class="function"><h2 id="update"><span/><a href="update" rel="bookmark">update</a></h2><p>
             Executes all waiting tasks in the ipc queue
         </p><p class="note">
             This function is not exported by default, to use it you must call it by

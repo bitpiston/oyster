@@ -43,11 +43,11 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Email Functions</h1>
+<div id="content-primary"><h1><span>2.7</span><a href="./">Email Functions</a></h1>
     <p>
         Functions associated with email.
     </p>
-    <div class="function"><h2>is_valid_email</h2><p>
+    <div class="function"><h2 id="is_valid_email"><span/><a href="is_valid_email" rel="bookmark">is_valid_email</a></h2><p>
             Validates a possible email address
         </p><h3>Prototype:</h3><pre class="prototype">
             bool is_valid = email::is_valid_email(string email_address)
@@ -59,7 +59,7 @@
                print "$email is not a valid email address\n";
             }
         </pre></div>
-    <div class="function"><h2>send</h2><p>
+    <div class="function"><h2 id="send"><span/><a href="send" rel="bookmark">send</a></h2><p>
             Sends an email
         </p><p class="note">
             If no path to sendmail is configured, the email will be printed in a
@@ -69,7 +69,7 @@
         </pre><h3>Example:</h3><pre class="code">
             email::send(to =&gt; 'ShaneCalimlim@gmail.com', subject =&gt; 'Hello!', 'You suck!');
         </pre></div>
-    <div class="function"><h2>send_template</h2><p>
+    <div class="function"><h2 id="send_template"><span/><a href="send_template" rel="bookmark">send_template</a></h2><p>
             Sends an email using a template from the database
         </p><p class="note">
             Templates are stored in site_email_templates
@@ -78,7 +78,7 @@
         </pre><h3>Example:</h3><pre class="code">
             email::send_template('user_registration', 'ShaneCalimlim@gmail.com', {'username' =&gt; 'ShaneC'});
         </pre></div>
-    <div class="function"><h2>add_template</h2><p/></div>
+    <div class="function"><h2 id="add_template"><span/><a href="add_template" rel="bookmark">add_template</a></h2><p/></div>
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">

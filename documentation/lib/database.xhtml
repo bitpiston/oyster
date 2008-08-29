@@ -43,17 +43,17 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1>Database Functions</h1>
+<div id="content-primary"><h1><span>2.5</span><a href="./">Database Functions</a></h1>
     <p>
         Extensions to DBI functionality (mostly driver neutral access to insert_ids
         and prepared statements)
     </p>
-    <div class="function"><h2>connect</h2><p>
+    <div class="function"><h2 id="connect"><span/><a href="connect" rel="bookmark">connect</a></h2><p>
             Establishes a database connection and tells it to use Oyster exceptions.
         </p><h3>Prototype:</h3><pre class="prototype">
             obj = database::connect(, driver =&gt; string driver, host =&gt; string hostname, user =&gt; string username, password =&gt; string password, database =&gt; string database)
         </pre></div>
-    <div class="function"><h2>compress_metadata</h2><p>
+    <div class="function"><h2 id="compress_metadata"><span/><a href="compress_metadata" rel="bookmark">compress_metadata</a></h2><p>
             
         </p><p class="note">
             
@@ -62,7 +62,7 @@
         </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
-    <div class="function"><h2>expand_metadata</h2><p>
+    <div class="function"><h2 id="expand_metadata"><span/><a href="expand_metadata" rel="bookmark">expand_metadata</a></h2><p>
             
         </p><p class="note">
             
@@ -71,13 +71,13 @@
         </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
-    <h2>Extensions to Database Handle</h2><p>
-        <div class="function"><h3>insert_id</h3><p>
+    <h2 id=""><span/><a href="">Extensions to Database Handle</a></h2>
+        <div class="function"><h3 id="insert_id"><span/><a href="insert_id" rel="bookmark">insert_id</a></h3><p>
                 Returns the unique ID of the last row inserted into the database.
             </p><h4>Prototype:</h4><pre class="prototype">
                 int = $DBH-&gt;insert_id(string sequence_name)
             </pre></div>
-        <div class="function"><h3>server_prepare</h3><p>
+        <div class="function"><h3 id="server_prepare"><span/><a href="server_prepare" rel="bookmark">server_prepare</a></h3><p>
                 Prepares a query and caches it server side.
             </p><p class="note">
                 This calls ordinary prepare() on mysql, its DB driver does not allow
@@ -85,18 +85,18 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 object statement_handle = $DBH-&gt;server_prepare(string statement)
             </pre></div>
-    <div class="function"><h3>query</h3><p>
+    <div class="function"><h3 id="query"><span/><a href="query" rel="bookmark">query</a></h3><p>
             Prepares and executes a query in one command, returns the query object
         </p><h4>Prototype:</h4><pre class="prototype">
             object statement_handle = $DBH-&gt;query(string statement[, bind variables]);
         </pre></div>
-    </p>
     
-    <h2>Extensions to Statement Handles</h2><p>
-    <div class="function"><h3>insert_id</h3><p>
+    
+    <h2 id=""><span/><a href="">Extensions to Statement Handles</a></h2>
+    <div class="function"><h3 id="insert_id"><span/><a href="insert_id" rel="bookmark">insert_id</a></h3><p>
             An alias to $DBH-&gt;insert_id()
         </p></div>
-    </p>
+    
 </div>
 <div id="content-secondary">
 <form id="search" method="get" action="/search/">
