@@ -102,7 +102,7 @@ sub recover {
         if ($INPUT{'user'} =~ /^\d+$/) {         # if they are inputting a user id
             $where_field = 'id';
         }
-        elsif (is_valid_email($INPUT{'user'})) { # if they are inputting an email address
+        elsif (email::is_valid_email($INPUT{'user'})) { # if they are inputting an email address
             $where_field = 'email';
         } else {                                 # it must be a username
             $where_field = 'name';

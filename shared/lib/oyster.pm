@@ -142,6 +142,17 @@ sub import {
     # script
     elsif ($import_set eq 'script') {
         $exceptions::disable_logging = 1;
+
+        # global variables
+        *{ $pkg . '::BASE_URL'       } = \$CONFIG{'url'};
+        *{ $pkg . '::DB_PREFIX'      } = \$CONFIG{'db_prefix'};
+        *{ $pkg . '::TMP_PATH'       } = \$CONFIG{'tmp_path'};
+        *{ $pkg . '::REQUEST'        } = \%REQUEST;
+        *{ $pkg . '::COOKIES'        } = \%COOKIES;
+        *{ $pkg . '::INPUT'          } = \%INPUT;
+        ${ $pkg . '::DB'             } = $DB;
+        *{ $pkg . '::CONFIG'         } = \%CONFIG;
+        ${ $pkg . '::ADMIN_BASE_URL' } = "$CONFIG{url}admin/";
     }
 
     # daemon
@@ -634,6 +645,7 @@ sub _load_exception_handlers {
         event::execute('request_start');
         print "\t<error status=\"404\" />\n";
         event::execute('request_end');
+        print "\t<url hash=\"" . hash::fast($REQUEST{'url'}) . "\">\n";
         style::print_footer();
         event::execute('request_finish');
         abort();
