@@ -120,7 +120,7 @@ else {
     *{"${pkg}::SITE_ID"}          = \$oyster::CONFIG{'site_id'};
     *{"${pkg}::DB_PREFIX"}        = \$oyster::CONFIG{'db_prefix'};
     ${"${pkg}::MODULE_PATH"}      = "./modules/$module_id/";
-    ${"${pkg}::MODULE_DB_PREFIX"} = "$oyster::CONFIG{db_prefix}${module_id}_";
+    ${"${pkg}::MODULE_DB_PREFIX"} = "$oyster::CONFIG{db_prefix}${module}_";
     ${"${pkg}::DB"}               = $oyster::DB;
     *{"${pkg}::CONFIG"}           = \%oyster::CONFIG;
 
