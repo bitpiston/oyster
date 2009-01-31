@@ -645,7 +645,7 @@ sub _load_exception_handlers {
         event::execute('request_start');
         print "\t<error status=\"404\" />\n";
         event::execute('request_end');
-        print "\t<url hash=\"" . hash::fast($REQUEST{'url'}) . "\">\n";
+        #print "\t<url hash=\"" . hash::fast($REQUEST{'url'}) . "\">\n";
         style::print_footer();
         event::execute('request_finish');
         abort();
