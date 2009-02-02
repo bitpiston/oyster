@@ -194,6 +194,7 @@ sub print_header {
 
     # assemble and print oyster header xml
     my $attrs = ' title="' .  $oyster::CONFIG{'site_name'} . '"'
+              . ' page_title="' . $oyster::REQUEST{'current_url'}->{'title'} . '"'
               . ' base="' .   $oyster::CONFIG{'url'} . '"'
               . ' styles="' . $oyster::CONFIG{'styles_url'} . '"'
               . ' style="' .  $oyster::REQUEST{'style'} . '"'
@@ -580,6 +581,19 @@ sub _compile_style {
         # return the xml/xslt to be inserted in place of the tag
         $insert;
     }eg;
+
+    # replace configuration variables
+    $stylesheet =~ s/{\$oyster::config::([a-z_]+)}/
+        my ($var)  = ($1);
+        my $insert = '';
+
+        if ($var eq '') {
+            #
+        }
+
+        $insert;
+    /eg;
+
 
     return $stylesheet;
 }
