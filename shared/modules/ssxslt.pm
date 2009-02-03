@@ -59,7 +59,8 @@ sub hook_request_init {
 
     # figure out of the user's engine and version can handle xml/xslt
     my ($engine, $version)  = @REQUEST{ 'ua_render_engine', 'ua_render_engine_version' };
-    if    ($engine eq 'msie'  and $version > 5.5) { return }
+    if    (exists $INPUT{'ssxslt'}) { $REQUEST{'server_side_xslt'} = 1 } # developer ssxslt override
+    elsif ($engine eq 'msie'  and $version > 5.5) { return }
     elsif ($engine eq 'opera' and $version >= 9)  { return }
     elsif ($engine eq 'gecko')                    { return }
     elsif ($engine eq 'applewebkit')              { return }
