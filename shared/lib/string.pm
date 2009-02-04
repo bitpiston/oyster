@@ -150,6 +150,38 @@ sub random {
 }
 
 =xml
+    <function name="is_numeric">
+        <synopsis>
+            Check if a string is numeric
+        </synopsis>
+        <note>
+            Returns 1 or undef
+        </note>
+        <prototype>
+            string = string::is_numeric(string)
+        </prototype>
+    </function>
+=cut
+
+sub is_numeric { $_[0] =~ /^-?[0-9]+$/ }
+
+=xml
+    <function name="is_float">
+        <synopsis>
+            Check if a string is a decimal
+        </synopsis>
+        <note>
+            Returns 1 or undef
+        </note>
+        <prototype>
+            string = string::is_float(string)
+        </prototype>
+    </function>
+=cut
+
+sub is_float { $_[0] =~ /^-?[0-9]+(?:\.[0-9]+)?$/ }
+
+=xml
 </document>
 =cut
 
