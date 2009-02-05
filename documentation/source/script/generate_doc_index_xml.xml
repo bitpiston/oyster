@@ -1,8 +1,0 @@
-<document title="Generate Documentation Index XML" extract_time="2008-02-28 07:29:59" source="./script/generate_doc_index_xml.pl" path="script/" index="5.7" depth="../" file="generate_doc_index_xml">
-    <synopsis>
-        Iterates through the documentation source directory and creates the XML necessary to create the doc index.
-    </synopsis>
-    <section title="Command Line Arguments">
-        Expects one argument, the documentation source directory.
-    </section>
-</document>

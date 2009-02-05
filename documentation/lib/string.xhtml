@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1><span>2.20</span><a href="./">String Functions</a></h1>
+<div id="content-primary"><h1><span>2.21</span><a href="./">String Functions</a></h1>
     <p>
         String related stuff -- some general, some Oyster specific.
     </p>
@@ -84,6 +84,20 @@
             string = string::random([int length])
         </pre><h3>Example:</h3><pre class="code">
             print string::random(100);
+        </pre></div>
+    <div class="function"><h2 id="is_numeric"><span/><a href="is_numeric" rel="bookmark">is_numeric</a></h2><p>
+            Check if a string is numeric
+        </p><p class="note">
+            Returns 1 or undef
+        </p><h3>Prototype:</h3><pre class="prototype">
+            string = string::is_numeric(string)
+        </pre></div>
+    <div class="function"><h2 id="is_float"><span/><a href="is_float" rel="bookmark">is_float</a></h2><p>
+            Check if a string is a decimal
+        </p><p class="note">
+            Returns 1 or undef
+        </p><h3>Prototype:</h3><pre class="prototype">
+            string = string::is_float(string)
         </pre></div>
 </div>
 <div id="content-secondary">

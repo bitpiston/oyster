@@ -1,8 +1,0 @@
-<document title="Installation Utility" extract_time="2008-02-28 07:29:59" source="./script/install.pl" path="script/" index="5.9" depth="../" file="install">
-    <warning>
-        INCOMPLETE! DONT RUN THIS!
-    </warning>
-    <synopsis>
-        This will create a new config.pl for you and then run the update utility.
-    </synopsis>
-</document>

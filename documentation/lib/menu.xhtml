@@ -43,7 +43,7 @@
 <hr/>
 <div id="content">
 <div class="wrapper">
-<div id="content-primary"><h1><span>2.16</span><a href="./">Menu</a></h1><div class="todo"><strong>Todo</strong><ul><li>
+<div id="content-primary"><h1><span>2.17</span><a href="./">Menu</a></h1><div class="todo"><strong>Todo</strong><ul><li>
         Add icons?
     </li></ul></div>
     <p>
@@ -75,6 +75,15 @@
             menu::description([string menu_id], string menu_description)
         </pre><pre class="prototype">
             obj-&gt;description(string menu_description)
+        </pre></div>
+    <div class="function"><h2 id="url"><span/><a href="url" rel="bookmark">url</a></h2><p>
+            Sets the corresponding url for a menu ID.
+        </p><p class="note">
+            If no menu ID is specified, the default menu ID is used.
+        </p><h3>Prototype:</h3><pre class="prototype">
+            menu::url([string menu_id], string menu_url)
+        </pre><pre class="prototype">
+            obj-&gt;description(string menu_url)
         </pre></div>
     <div class="function"><h2 id="set_default_menu"><span/><a href="set_default_menu" rel="bookmark">set_default_menu</a></h2><p>
             Sets the default menu ID to be assumed if none is specified.

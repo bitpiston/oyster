@@ -71,11 +71,11 @@
         </pre><h3>Example:</h3><pre class="code">
             
         </pre></div>
-    <h2 id=""><span/><a href="">Extensions to Database Handle</a></h2>
+    <h2 id=""><span/><a href="">Extensions to Database Handles</a></h2>
         <div class="function"><h3 id="insert_id"><span/><a href="insert_id" rel="bookmark">insert_id</a></h3><p>
                 Returns the unique ID of the last row inserted into the database.
             </p><h4>Prototype:</h4><pre class="prototype">
-                int = $DBH-&gt;insert_id(string sequence_name)
+                int = $DB-&gt;insert_id(string sequence_name)
             </pre></div>
         <div class="function"><h3 id="server_prepare"><span/><a href="server_prepare" rel="bookmark">server_prepare</a></h3><p>
                 Prepares a query and caches it server side.
@@ -83,18 +83,18 @@
                 This calls ordinary prepare() on mysql, its DB driver does not allow
                 specifying it per-query, only per connection.
             </p><h4>Prototype:</h4><pre class="prototype">
-                object statement_handle = $DBH-&gt;server_prepare(string statement)
+                object statement_handle = $DB-&gt;server_prepare(string statement)
             </pre></div>
     <div class="function"><h3 id="query"><span/><a href="query" rel="bookmark">query</a></h3><p>
             Prepares and executes a query in one command, returns the query object
         </p><h4>Prototype:</h4><pre class="prototype">
-            object statement_handle = $DBH-&gt;query(string statement[, bind variables]);
+            object statement_handle = $DB-&gt;query(string statement[, bind variables]);
         </pre></div>
     
     
     <h2 id=""><span/><a href="">Extensions to Statement Handles</a></h2>
     <div class="function"><h3 id="insert_id"><span/><a href="insert_id" rel="bookmark">insert_id</a></h3><p>
-            An alias to $DBH-&gt;insert_id()
+            An alias to $DB-&gt;insert_id()
         </p></div>
     
 </div>
