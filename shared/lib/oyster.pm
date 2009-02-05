@@ -25,6 +25,7 @@ use http;
 use image;
 use ipc;
 use log;
+use math;
 use menu;
 use module;
 use string;
