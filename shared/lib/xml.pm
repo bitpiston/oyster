@@ -21,7 +21,9 @@ use exceptions;
 use event;
 
 my %bbcode = (
-    'img'   => {},
+    'img'   => {
+        'xhtml_tag' => 'img',
+    },
     's'     => {
         'xhtml_tag' => 'del',
     },
@@ -39,6 +41,7 @@ my %bbcode = (
         'xhtml_tag'            => 'div',
         'consume_post_newline' => 1,
         'consume_pre_newline'  => 1,
+        'extra'                => ' class="quote"',
     },
     'url'   => {
         'xhtml_tag' => 'a',
@@ -57,7 +60,7 @@ my %bbcode = (
         'xhtml_tag'            => 'pre',
         'consume_post_newline' => 1,
         'consume_pre_newline'  => 1,
-        'extra'                => ' class="quote"',
+        'extra'                => ' class="code"',
     }
 );
 
@@ -289,6 +292,9 @@ sub bbcode {
     my @lists;        # holds list data
     my @call_data;    # if calls are allowed, the array storing the call data
     my @stack; # bbcode tag stack
+     
+    # Remove evil \r before new lines
+    $text =~ s/\r//og;
 
     # optimization for include shorthand so the parser does not have do so many tests each pass
     $text =~ s/\[include#(\d+)\]/\[include file file: $1\]/og if $options{'allow_includes'};
@@ -330,7 +336,7 @@ sub bbcode {
 
         # match bbcode tags
         elsif ($text =~ /^((\n)?\[(\/)?(\w+?)(?:=(.+?))?\](\n)?)/o) {
-            my ($tag_full, $pre_newline, $is_end, $tag, $param, $post_newline) = ($1, $2, $3, $4, $5, $6);
+            my ($tag_full, $pre_newline, $is_end, $tag, $param, $post_newline) = ($1, $2, $3, lc($4), $5, $6);
             $remove_len = length $tag_full;
             $replace_post_newline = 1 if ($post_newline and !$bbcode{$tag}->{'consume_post_newline'});
             $replace_pre_newline  = 1 if ($pre_newline  and !$bbcode{$tag}->{'consume_pre_newline'});
@@ -349,10 +355,28 @@ sub bbcode {
                     my $xhtml_tag = $bbcode{$tag}->{'xhtml_tag'} ? $bbcode{$tag}->{'xhtml_tag'} : $end_of->{'tag'} ;
                     my $extra     = $bbcode{$tag}->{'extra'}     ? $bbcode{$tag}->{'extra'}     : '' ;
 
+                    # if this is a block element, close any open paragraphs
+                    if ($in_p == 1 and $bbcode{$end_of->{'tag'}}->{'is_block'}) { 
+                        $post .= '</p>' if (scalar @lists == 0 and $end_of->{'tag'} ne 'list'); # needs both checks because you just popped @lists if the tag was a list
+                        $in_p = 0;
+                    }
+                    
+                    # if this item consumed a newline needlessly properly place the <br> or <p> tag before the opening tag
+                    if ($end_of->{'pre_offset'}) { 
+                        $pre .= substr($post, 0, $end_of->{'pre_offset'}, "");
+                    }
+                    
                     # urls
                     if ($end_of->{'tag'} eq 'url') {
                         my $url = $end_of->{'param'} ? entities($end_of->{'param'}) : entities($post) ;
-                        $extra = " href=\"$url\" title=\"$url\"";
+                        $extra .= " href=\"$url\" title=\"$url\"";
+                    }
+                    
+                    # images
+                    elsif ($end_of->{'tag'} eq 'img') {
+                        my $img = entities($post);
+                        $extra .= " src=\"$img\" alt=\"\"";
+                        $post = '';
                     }
 
                     # list
@@ -362,15 +386,8 @@ sub bbcode {
                         $post .= '</li>';
                         pop @lists;
                     }
-
+                    
                     # add html
-                    if ($in_p == 1 and $bbcode{$end_of->{'tag'}}->{'is_block'}) { # if this is a block element, close any open paragraphs
-                        $post .= '</p>' if (scalar @lists == 0 and $end_of->{'tag'} ne 'list'); # needs both checks because you just popped @lists if the tag was a list
-                        $in_p = 0;
-                    }
-                    if ($end_of->{'pre_offset'}) { # if this item consumed a newline needlessly properly place the <br> or <p> tag before the opening tag
-                        $pre .= substr($post, 0, $end_of->{'pre_offset'}, "");
-                    }
                     $xhtml = $pre . '<' . $xhtml_tag . $extra . ( $post ? '>' . $post . '</' .  $xhtml_tag . '>' : ' />' );
                 }
 
@@ -465,33 +482,33 @@ sub bbcode {
         #elsif (!defined($inspect_stack->('url')) and $text =~ s!^(www\.google\.com)![url]$1[/url]!) { next }
 
         # match anything not a bbcode tags
-        #else {
-        #    my $char = substr($text, 0, 1, '');
-        #    if ($in_p == 0 and scalar @lists == 0) {
-        #        $xhtml .= '<p>';
-        #        $in_p = 1;
-        #    }
-        #    $xhtml .= $entities{$char} ? "&#$entities{$char};" : $char; # faster than a call to entities and this works fine for single characters # TODO: does it? with the new xml::entities
-        #}
+        else {
+            my $char = substr($text, 0, 1, '');
+            if ($in_p == 0 and scalar @lists == 0) {
+                $xhtml .= '<p>';
+                $in_p = 1;
+            }
+            $xhtml .= exists $entities{$char} ? "&#$entities{$char};" : $char; # faster than a call to entities and this works fine for single characters # TODO: does it? with the new xml::entities
+        }
 
         # anything before a [, this is necessary for entities() to pick up anything longer than 1 char
-        elsif ($text =~ /^([\s\S]+?)(?=\[)/o) {
-            my $chunk = $1;
-            $remove_len = length $chunk;
-            $xhtml .= entities($chunk, 'proper_english');
-        }
+        #elsif ($text =~ /^([\s\S]+?)(?=\[)/o) {
+        #    my $chunk = $1;
+        #    $remove_len = length $chunk;
+        #    $xhtml .= entities($chunk, 'proper_english');
+        #}
 
         # nothing has matched a [ yet it must just be a plain [
-        elsif (substr($text, 0, 1) eq '[') {
-            $remove_len = 1;
-            $xhtml .= '&lt;';
-        }
+        #elsif (substr($text, 0, 1) eq '[') {
+        #    $remove_len = 1;
+        #    $xhtml .= '&lt;';
+        #}
 
         # no more ['s, so there must not be any more bbcode tags, entity the rest of the text
-        else {
-            $remove_len = length $text;
-            $xhtml .= entities($text, 'proper_english');
-        }
+        #else {
+        #    $remove_len = length $text;
+        #    $xhtml .= entities($text, 'proper_english');
+        #}
 
         # remove parsed text from $text
         $text = substr($text, $remove_len);
@@ -558,14 +575,14 @@ sub _bbcode_parse_code {
     while (length $text != 0) {
 
         # begin a code block
-        if ($text =~ /^\[code\]/o) {
+        if ($text =~ /^\[code\]/io) {
             $depth++;
             $xhtml .= '[code]';
             $replace_len = 6;
         }
 
         # end a code block
-        elsif ($text =~ /^\[\/code\]/o) {
+        elsif ($text =~ /^\[\/code\]/io) {
             $depth-=1;
             if ($depth == 0) {
                 return $text, $xhtml;
@@ -576,7 +593,7 @@ sub _bbcode_parse_code {
         }
 
         # anything before a [, this is necessary for entities() to pick up anything longer than 1 char
-        elsif ($text =~ /^([\s\S]+?)(?=\[)/o) {
+        elsif ($text =~ /^([\s\S]+?)(?=\[)/io) {
             my $chunk = $1;
             $replace_len = length $chunk;
             $xhtml .= entities($chunk);
