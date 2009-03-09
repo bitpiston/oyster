@@ -980,7 +980,25 @@ sub hook_request_init {
 # called before the footer is printed
 event::register_hook('request_end', 'hook_request_end', 0);
 sub hook_request_end {
-    print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}" />\n~;
+    
+    # Print the user node with permissions child-node if request flag set
+    if (exists $REQUEST{'user'}{'print_permissions'}) {
+        my $attributes;
+        
+        # Print as an attribute if the permission exists
+        for my $permission (keys %{ $REQUEST{'user'}{'print_permissions'} }) {
+            $attributes .= $permission . '="' . $PERMISSIONS{ $permission } . '" ' if exists $PERMISSIONS{ $permission };
+        }
+        
+        print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}">\n~;
+        print qq~\t\t<permissions $attributes/>\n~;
+        print qq~\t</user>\n~;
+    }
+    
+    # Otherwise just print the user node sans permissions.
+    else {
+        print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}" />\n~;
+    }
 }
 
 # called after the request is finished
@@ -1294,6 +1312,96 @@ sub get_module_permissions {
     return $permissions;
 }
 
+=xml
+        <function name="print_permissions">
+            <synopsis>
+                Prints user permissions exactly matching requested strings as a user child-node
+            </synopsis>
+            <note>
+                Prints all permissions if no string is present
+            </note>
+            <prototype>
+                user::print_permissions([string permission_name ...])
+            </prototype>
+            <example>
+                user::print_permissions;
+            </example>
+            <example>
+                user::print_permissions('user_admin_config', 'user_admin_groups');
+            </example>
+        </function>
+=cut
+
+sub print_permissions {
+    my @permissions = @_;
+    
+    if (scalar @permissions > 0) {
+        for my $permission (@permissions) {
+            $REQUEST{'user'}{'print_permissions'}{ $permission } = 1 if exists $PERMISSIONS{ $permission };
+        }
+    }
+    else {
+        for my $permission (keys %PERMISSIONS) {
+            $REQUEST{'user'}{'print_permissions'}{ $permission } = 1 unless ($permission =~ /^name|id/o);
+        }
+    }
+}
+
+=xml
+        <function name="print_permissions_regex">
+            <synopsis>
+                Prints user permissions matching requested strings as a user child-node
+            </synopsis>
+            <note>
+                Matches permissions starting with the provided string(s)
+            </note>
+            <prototype>
+                user::print_permissions_regex(string permission_partial_name [, string permission_partial_name ...])
+            </prototype>
+            <example>
+                user::print_permissions_regex('user_admin_');
+            </example>
+        </function>
+=cut
+
+sub print_permissions_regex {
+    my @permissions = @_;
+    
+    for my $regex (@permissions) {
+        for my $permission (keys %PERMISSIONS) {
+            $REQUEST{'user'}{'print_permissions'}{ $permission } = 1 if ($permission =~ /^$regex/); 
+        }
+    }        
+}
+
+=xml
+        <function name="print_module_permissions">
+            <synopsis>
+                Prints all user permissions for requested modules as a user child-node
+            </synopsis>
+            <prototype>
+                user::print_module_permissions(string module_name [, string module_name ...])
+            </prototype>
+            <example>
+                user::print_module_permissions('user');
+            </example>
+        </function>
+=cut
+
+sub print_module_permissions {
+    my @permissions = @_;
+    my $regex;
+    my $module_permissions;
+    
+    for my $module (@permissions) {
+        $regex = $module . '_';        
+        $module_permissions = get_module_permissions($module);
+        
+        for my $permission (keys %PERMISSIONS) {
+            $REQUEST{'user'}{'print_permissions'}{ $permission } = 1 if ( $permission =~ /^$regex/ and exists $module_permissions->{ $permission } ); 
+        }
+    }
+}
 
 =xml
     </section>
