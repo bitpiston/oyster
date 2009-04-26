@@ -346,9 +346,9 @@ sub bbcode {
 
                 # end tags
                 if ($is_end) {
-                    throw 'validation_error' => "End tag with no start tag: $tag"  if scalar @stack == 0;
+                    throw 'validation_error' => "Closing tag with no opening tag: $tag"  if scalar @stack == 0;
                     my $end_of = pop @stack;
-                    throw 'validation_error' => "Expected end tag: $end_of->{tag}" unless $end_of->{'tag'} eq $tag;
+                    throw 'validation_error' => "Expected closing tag: $end_of->{tag}" unless $end_of->{'tag'} eq $tag;
 
                     my $pre       = substr($xhtml, 0, $end_of->{'offset'});
                     my $post      = substr($xhtml, $end_of->{'offset'});
@@ -534,7 +534,7 @@ sub bbcode {
     if (scalar @stack != 0) {
         my @unended;
         push(@unended, $_->{'tag'}) for @stack;
-        throw 'validation_error' => 'Unended tag(s): ' . join(', ', @unended);
+        throw 'validation_error' => 'Unclosed tag(s): ' . join(', ', @unended);
     }
 
     # clear @stack (since it is not lexical to just this sub)
@@ -613,7 +613,7 @@ sub _bbcode_parse_code {
         }
         substr($text, 0, $replace_len, '');
     }
-    throw 'validation_error' => 'Unended code tag.';
+    throw 'validation_error' => 'Unclosed code tag.';
 }
 
 =xml
@@ -758,7 +758,7 @@ sub validate_xhtml {
                 next ITER_XHTML; # TODO: is this whole ignore tag stuff necessary? just add the above if statement to the elsif
             }
             $replace_len = length $match;
-            throw 'validation_error' => "Mismatched end tag: $tag." unless pop @stack eq $tag;
+            throw 'validation_error' => "Mismatched closing tag: $tag." unless pop @stack eq $tag;
             $xml .= "</$tag>";
         }
 
@@ -803,7 +803,7 @@ sub validate_xhtml {
     }
 
     # check for unended tags
-    throw 'validation_error' => 'Unended tag(s): ' . join(', ', @stack) if scalar @stack != 0;
+    throw 'validation_error' => 'Unclosed tag(s): ' . join(', ', @stack) if scalar @stack != 0;
 
     # return xmlified xhtml
     if ($options{'allow_calls'}) {

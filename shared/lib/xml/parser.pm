@@ -155,7 +155,7 @@ sub parse_chunk {
     if ($eof) {
 
         # check for unended nodes
-        throw 'validation_error' => 'Unended nodes: ' . join(', ', @{$self->{'stack'}}) . '.' if @{$self->{'stack'}} and !$self->{'finish'};
+        throw 'validation_error' => 'Unclosed nodes: ' . join(', ', @{$self->{'stack'}}) . '.' if @{$self->{'stack'}} and !$self->{'finish'};
     }
 
     return 1; # success
