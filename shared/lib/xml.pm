@@ -28,7 +28,7 @@ my %bbcode = (
         'xhtml_tag' => 'del',
     },
     'size'  => {},
-    'color' => {},
+    #'color' => {},
     'u'     => {
         'xhtml_tag' => 'span',
         'extra'     => ' class="underline"',
@@ -338,9 +338,11 @@ sub bbcode {
         elsif ($text =~ /^((\n)?\[(\/)?(\w+?)(?:=(.+?))?\](\n)?)/o) {
             my ($tag_full, $pre_newline, $is_end, $tag, $param, $post_newline) = ($1, $2, $3, lc($4), $5, $6);
             $remove_len = length $tag_full;
-            $replace_post_newline = 1 if ($post_newline and !$bbcode{$tag}->{'consume_post_newline'});
-            $replace_pre_newline  = 1 if ($pre_newline  and !$bbcode{$tag}->{'consume_pre_newline'});
-
+            if (exists $bbcode{$tag}) {
+                $replace_post_newline = 1 if ($post_newline and !$bbcode{$tag}->{'consume_post_newline'});
+                $replace_pre_newline  = 1 if ($pre_newline  and !$bbcode{$tag}->{'consume_pre_newline'});
+            }
+            
             # the tag encountered is an enabled bbcode tag
             if (exists $bbcode{$tag} and !$options{'disabled_tags'}->{$tag}) {
 
