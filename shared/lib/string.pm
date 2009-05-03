@@ -3,6 +3,9 @@
     <synopsis>
         String related stuff -- some general, some Oyster specific.
     </synopsis>
+    <todo>
+        string::count_words
+    </todo>
 =cut
 
 package string;

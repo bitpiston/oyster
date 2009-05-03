@@ -27,7 +27,7 @@ my %bbcode = (
     's'     => {
         'xhtml_tag' => 'del',
     },
-    'size'  => {},
+    #'size'  => {},
     #'color' => {},
     'u'     => {
         'xhtml_tag' => 'span',
@@ -38,10 +38,11 @@ my %bbcode = (
     },
     'quote' => {
         'is_block'             => 1,
-        'xhtml_tag'            => 'div',
+        #'xhtml_tag'            => 'div',
+        'xhtml_tag'            => 'blockquote',
         'consume_post_newline' => 1,
         'consume_pre_newline'  => 1,
-        'extra'                => ' class="quote"',
+        #'extra'                => ' class="quote"',
     },
     'url'   => {
         'xhtml_tag' => 'a',
@@ -387,6 +388,11 @@ sub bbcode {
                         throw 'validation_error' => 'Empty list.' unless $end_of->{'num_items'};
                         $post .= '</li>';
                         pop @lists;
+                    }
+                    # If a quote block
+                    # Semantics... Cite should only be for a title/uri and not author?
+                    if ($end_of->{'tag'} eq 'quote') {
+                        $pre .= '<cite><strong>'. $end_of->{'param'} .'</strong> wrote:</cite>' if $end_of->{'param'};
                     }
                     
                     # add html
