@@ -102,7 +102,7 @@
 				<link rel="stylesheet" type="text/css" media="screen, projection" href="{@styles}{@style}/base.css" />
 
 				<!-- mootools library -->
-				<script src="{@styles}mootools.js" type="text/javascript"></script>
+				<script src="{@styles}mootools-old.js" type="text/javascript"></script>
 
 				<!-- oyster library -->
 				<script src="{@styles}oyster.js" type="text/javascript"></script>
