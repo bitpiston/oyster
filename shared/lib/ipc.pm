@@ -144,6 +144,7 @@ sub do_periodic {
     </function>
 =cut
 
+event::register_hook('request_pre', 'update', 90);
 sub update {
     return if $last_sync_time == -1 or time() - $last_sync_time < $oyster::CONFIG{'sync_time'};
     $fetch_ipc->execute($last_fetch_id);
@@ -177,6 +178,7 @@ sub update {
     </function>
 =cut
 
+event::register_hook('request_cleanup', 'update_periodic', 90);
 sub update_periodic {
     $fetch_ipc_periodic->execute(datetime::gmtime);
     while (my $task = $fetch_ipc_periodic->fetchrow_arrayref()) {

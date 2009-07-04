@@ -392,7 +392,9 @@ sub _load_modules {
 =cut
 
 sub request_pre {
-    ipc::update();
+
+    # signal the request_pre hook
+    event::execute('request_pre');
 }
 
 =xml
@@ -582,9 +584,6 @@ sub request_cleanup {
 
     # clear the request hash
     %REQUEST = ();
-    
-    # perform periodic tasks
-    ipc::update_periodic();
 }
 
 =xml
