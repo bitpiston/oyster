@@ -31,17 +31,14 @@ $revision[1]{'up'}{'shared'} = sub {
         `name_hash` varchar(10) NOT NULL default '',
         `password` varchar(64) NOT NULL default '',
         `email` tinytext NOT NULL,
-        `session` varchar(32) NOT NULL default '',
-        `ip` tinytext NOT NULL,
         `time_offset` tinyint(4) NOT NULL default '0',
         `date_format` tinytext NOT NULL,
-        `restrict_ip` tinyint(1) NOT NULL default '0',
         `style` tinytext NOT NULL,
         UNIQUE KEY `user_id` (`id`),
         KEY `session` (`session`)
         ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
-    $DB->query(qq~INSERT INTO `users` (`name`, `name_hash`, `password`, `email`, `session`, `ip`, `time_offset`, `date_format`, `restrict_ip`, `style`) VALUES
-        ('test', ?, ?, 'test\@test.com', '', '', 0, '%B %e, %Y %i:%M %p', 0, '')~, hash::fast('test'), hash::secure('test'));
+    $DB->query(qq~INSERT INTO `users` (`name`, `name_hash`, `password`, `email`, `time_offset`, `date_format`, `style`) VALUES
+        ('test', ?, ?, 'test\@test.com', 0, '%B %e, %Y %i:%M %p', '')~, hash::fast('test'), hash::secure('test'));
 
     # Create email change table
     $DB->query(qq~CREATE TABLE IF NOT EXISTS `user_email_changes` (
@@ -111,6 +108,17 @@ $revision[1]{'up'}{'site'} = sub {
         UNIQUE KEY `user_id` (`user_id`)
         ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
     $DB->query(qq~INSERT INTO `${MODULE_DB_PREFIX}permissions` (`user_id`, `group_id`) VALUES(1, 4)~);
+    
+    # Create sessions table
+    $DB->query(qq~CREATE TABLE IF NOT EXISTS `${MODULE_DV_PREFIX}sessions` (
+        `session_id` VARCHAR( 32 ) NOT NULL ,
+        `user_id` INT( 11 ) NOT NULL ,
+        `ip` TINYTEXT NOT NULL ,
+        `access_ctime` INT( 11 ) NOT NULL ,
+        `restrict_ip` TINYINT( 1 ) NOT NULL ,
+        UNIQUE KEY `session_id` ( `session_id` ),
+        KEY `user_id` (`user_id`)
+        ) ENGINE = MYISAM~);
 
     # Register email templates
     email::add_template('user_registration', 'Welcome to {site_name}', 'Blah blah blah..\r\n\r\n{confirm_url}');

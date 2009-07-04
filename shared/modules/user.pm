@@ -29,13 +29,20 @@ event::register_hook('load', 'hook_load', 90);
 sub hook_load {
 
     # cache queries
-    our $select_group_by_id       = $DB->server_prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1");
-    our $select_user_by_session   = $DB->server_prepare("SELECT users.id, users.name, users.time_offset, users.date_format, users.ip, users.restrict_ip, users.style, ${DB_PREFIX}user_permissions.group_id FROM users, ${DB_PREFIX}user_permissions WHERE users.session = ? and ${DB_PREFIX}user_permissions.user_id = users.id LIMIT 1");
-    our $update_user_session      = $DB->server_prepare("UPDATE users SET session = ?, ip = ?, restrict_ip = ? WHERE name_hash = ? and password = ?"); # TODO: should this by ..._by_name_hash_and_password ? that's awfully long
-    our $select_permissions_count = $DB->server_prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions, users WHERE users.session = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
+    our $select_group_by_id             = $DB->server_prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1"); 
+    #our $select_user_by_session         = $DB->server_prepare("SELECT ${module_db_prefix}sessions.user_id, ${module_db_prefix}sessions.ip, ${module_db_prefix}sessions.restrict_ip, users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM ${module_db_prefix}sessions, users, ${module_db_prefix}permissions WHERE ${module_db_prefix}sessions.session_id = ? and users.id = ${module_db_prefix}sessions.user_id and ${module_db_prefix}permissions.user_id = ${module_db_prefix}sessions.user_id LIMIT 1");
+    our $select_user_by_id              = $DB->server_prepare("SELECT users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM users, ${module_db_prefix}permissions WHERE users.id = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
+    our $select_user_id_by_session      = $DB->server_prepare("SELECT user_id, ip, restrict_ip FROM ${module_db_prefix}sessions WHERE session_id = ? LIMIT 1");
+    our $select_user_id_by_credentials  = $DB->server_prepare("SELECT id FROM users WHERE name_hash = ? and password = ? LIMIT 1");
+    #our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET session_id = ?, ip = ?, restrict_ip = ?, access_ctime = ? WHERE user_id = ? LIMIT 1");
+    our $insert_user_session            = $DB->server_prepare("INSERT INTO ${module_db_prefix}sessions (user_id, session_id, ip, restrict_ip, access_ctime) VALUES (?, ?, ?, ?, ?)");
+    our $select_permissions_count       = $DB->server_prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions WHERE ${module_db_prefix}permissions.user_id = ? LIMIT 1");
 
     # load user groups
     _load_groups();
+    
+    # every 15 minutes clean up expired sessions 
+    ipc::do_periodic(900, 'user', '_clean_sessions');
 }
 
 =xml
@@ -852,30 +859,29 @@ sub login {
     print "\t<user action=\"login\" referer=\"" . xml::entities($ENV{'HTTP_REFERER'}) . "\" user=\"" . xml::entities($INPUT{'user'}) . "\"  />\n";
 
     # executed at request_init if the login form is submitted
-    sub _login_init {
-        my $new_session = string::random(32);
+    sub _login_init {        
         my $restrict_ip = $INPUT{'restrict_ip'} ? '1' : '0' ; # PostgreSQL must have string 1/0 to translate it to a bool true/false
 
-        # update user's session
-        $update_user_session->execute($new_session, $ENV{'REMOTE_ADDR'}, $restrict_ip, hash::fast(lc($INPUT{'user'})), hash::secure($INPUT{'password'}));
-
-        # if a user was updated
-        if ($update_user_session->rows()) {
+        # get the user id by login credentials
+        $select_user_id_by_credentials->execute(hash::fast(lc($INPUT{'user'})), hash::secure($INPUT{'password'}));
+        $user_id = $select_user_id_by_credentials->fetchrow_arrayref()->[0] if $select_user_id_by_credentials->rows();
+        
+        # if the login was successful
+        if (defined $user_id) {
+            
+            # remove the any existing session for the user_id from the database
+            $DB->do("DELETE FROM ${module_db_prefix}sessions WHERE user_id = $user_id LIMIT 1");
+            
+            my $new_session = _create_session($user_id, $restrict_ip, $ENV{'REMOTE_ADDR'});
+            
             $USER{'session'} = $new_session;
+            
             my $how_long = ($INPUT{'how_long'} and $INPUT{'how_long'} =~ /^\d+$/) ? $INPUT{'how_long'} : 0 ; # 0 = remove at end of browser session
             cgi::set_cookie('session', $USER{'session'}, $how_long, $config{'cookie_path'}, $config{'cookie_domain'});
 
             # check if the user is set up in a group on this site, if not, put them in the default group
-            $select_permissions_count->execute($USER{'session'});
-            if ($select_permissions_count->fetchrow_arrayref()->[0] == 0) {
-
-                # figure out the user's id
-                my $query   = $DB->query('SELECT id FROM users WHERE session = ? LIMIT 1', $USER{'session'});
-                my $user_id = $query->fetchrow_arrayref()->[0];
-
-                # insert an entry into this site's permissions table for them
-                $DB->do("INSERT INTO ${module_db_prefix}permissions (user_id, group_id) VALUES ($user_id, $config{default_group})");
-            }
+            $select_permissions_count->execute($user_id);
+            $DB->do("INSERT INTO ${module_db_prefix}permissions (user_id, group_id) VALUES ('$user_id', '$config{default_group}')") if $select_permissions_count->fetchrow_arrayref()->[0] == 0;
         }
     }
 }
@@ -897,9 +903,9 @@ sub logout {
 
     # executed at request_init
     sub _logout_init {
-
-        # remove session from the database
-        $DB->do("UPDATE users SET session = '' WHERE id = $USER{id}");
+        
+        # remove the session from the database
+        $DB->do("DELETE FROM ${module_db_prefix}sessions WHERE user_id = $USER{id} LIMIT 1");
 
         # remove the existing id from this request's user data (to turn the user into a guest)
         $USER{'id'} = 0;
@@ -922,6 +928,7 @@ sub logout {
 # called before the header is printed
 event::register_hook('request_init', 'hook_request_init', 95);
 sub hook_request_init {
+    my $is_guest_session;
 
     # login stuff
     if ($REQUEST{'module'} eq 'user' and $REQUEST{'action'} eq 'login' and $ENV{'REQUEST_METHOD'} eq 'POST') {
@@ -936,42 +943,65 @@ sub hook_request_init {
     # if a session id is set
     if (exists $USER{'session'} and length $USER{'session'} == 32) {
 
-        # fetch user data from the db
-        $select_user_by_session->execute($USER{'session'});
+        # fetch user id and session info from the db
+        $select_user_id_by_session->execute($USER{'session'});
 
         # if the user is logged in
-        if ($select_user_by_session->rows()) {
-            my ($id, $name, $time_offset, $date_format, $ip, $restrict_ip, $style, $group) = @{$select_user_by_session->fetchrow_arrayref()};
-            if (($ip eq $ENV{'REMOTE_ADDR'} and $restrict_ip) or !$restrict_ip) {
-                %USER = (
-                    'id'          => $id,
-                    'name'        => $name,
-                    'group'       => $group, # TODO: should be group_id ?
-                    'time_offset' => $time_offset,
-                    'date_format' => $date_format,
-                    'session'     => $USER{'session'},
-                    'style'       => $config{'customizable_styles'} ? $style : '' ,
-                );
-                $REQUEST{'style'} = $USER{'style'} if $USER{'style'} ne '';
+        if ($select_user_id_by_session->rows()) {
+        #if ($select_user_by_session->rows()) {
+            my ($id, $ip, $restrict_ip) = @{$select_user_id_by_session->fetchrow_arrayref()};
+            
+            # Don't fetch the user data for guests
+            if ($id != 0) {
+            
+                # fetch the user data from the db
+                $select_user_by_id->execute($id);
+                
+                my ($name, $time_offset, $date_format, $style, $group) = @{$select_user_by_id->fetchrow_arrayref()};
+                if (($ip eq $ENV{'REMOTE_ADDR'} and $restrict_ip) or !$restrict_ip) {
+                    %USER = (
+                        'id'          => $id,
+                        'name'        => $name,
+                        'group'       => $group, # TODO: should be group_id ?
+                        'time_offset' => $time_offset,
+                        'date_format' => $date_format,
+                        'session'     => $USER{'session'},
+                        'style'       => $config{'customizable_styles'} ? $style : '' ,
+                    );
+                    $REQUEST{'style'} = $USER{'style'} if $USER{'style'} ne '';
+                }
+            }
+            
+            # set the user id for guests
+            else {
+                $is_guest_session = 1 if (($ip eq $ENV{'REMOTE_ADDR'} and $restrict_ip) or !$restrict_ip);
             }
         }
-
+        
         # if the user has a session id, but it's invalid, delete the cookie so this session is not checked again
-        cgi::set_cookie('session', '', 0, $config{'cookie_path'}, $config{'cookie_domain'}) unless exists $USER{'id'};
+        cgi::set_cookie('session', '', 0, $config{'cookie_path'}, $config{'cookie_domain'}) unless exists $USER{'id'} or defined $is_guest_session;
     }
 
     # if the user is trying to log out
     _logout_init() if ($REQUEST{'module'} eq 'user' and $REQUEST{'action'} eq 'logout' and exists $USER{'id'});
+    
+    # create a session for guests or continue the existing session
+    unless (exists $USER{'id'}) {
+        my $session = defined $is_guest_session ? $USER{'session'} : _create_session(0, 1, $ENV{'REMOTE_ADDR'}); # id = 0 and restrict_ip = 1
 
-    # set default user data
-    %USER = (
-        'id'          => 0,
-        'group'       => $config{'guest_group'},
-        'name'        => $config{'default_name'},
-        'session'     => '',
-        'date_format' => $datetime::formats[0],
-        'time_offset' => 0,
-    ) unless exists $USER{'id'};
+        # set default user data
+        %USER = (
+            'id'          => 0,
+            'group'       => $config{'guest_group'},
+            'name'        => $config{'default_name'},
+            'session'     => $session,
+            'date_format' => $datetime::formats[0],
+            'time_offset' => 0,
+        );
+        
+        # set the cookie
+        cgi::set_cookie('session', $session, 0, $config{'cookie_path'}, $config{'cookie_domain'}); # 0 = remove at end of browser session
+    }
 
     # alias user permissions to an easier-to-reach place
     *PERMISSIONS = \%{$groups{$USER{'group'}}};
@@ -1050,6 +1080,37 @@ sub hook_admin_center_modules_menu {
 
     <section title="Helper Functions">
 =cut
+
+# insert the a new session into the database
+sub _create_session {
+    my ($user_id, $restrict_ip, $ip) = @_;
+    my $new_session;
+
+    # if there is a session id collision try again until there isn't
+    my $success = 0;
+    until ($success) {
+        $success = try {
+            $new_session = string::random(32);
+            $insert_user_session->execute($user_id, $new_session, $ENV{'REMOTE_ADDR'}, $restrict_ip, datetime::gmtime);
+        }
+        catch 'db_error', with {
+            my $error = shift;
+
+            # if it is a duplicate error, abort, returning false, triggering the until() to retry
+            if ($error =~ /Duplicate (?:entry|key)/) { abort(); } # entry for mysql, key for postgresql
+            else { throw 'db_error' => $error; }
+        };
+    }
+    
+    return $new_session;
+}
+
+# delete expired guest sessions from the database
+sub _clean_sessions {
+    $interval = 86400; # 24 hours
+    
+    $DB->query("DELETE FROM ${module_db_prefix}sessions WHERE user_id = '0' and access_ctime <= ?", datetime::gmtime - $interval);
+}
 
 sub _validate_email {
     throw 'validation_error' => 'Invalid email address.' unless email::is_valid_email($INPUT{'email'});
