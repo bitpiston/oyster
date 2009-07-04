@@ -582,6 +582,9 @@ sub request_cleanup {
 
     # clear the request hash
     %REQUEST = ();
+    
+    # perform periodic tasks
+    ipc::update_periodic();
 }
 
 =xml

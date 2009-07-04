@@ -30,6 +30,18 @@ $revision[1]{'up'}{'shared'} = sub {
         `site` tinytext NOT NULL,
         UNIQUE KEY `id` (`id`)
         ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
+    
+    # IPC Periodic
+    $DB->query(qq~CREATE TABLE IF NOT EXISTS `ipc_periodic` (
+      `id` int(11) NOT NULL auto_increment,
+      `module` tinytext NOT NULL,
+      `function` tinytext NOT NULL,
+      `args` text NOT NULL,
+      `site` tinytext NOT NULL,
+      `interval` int(11) NOT NULL,
+      `last_exec_time` int(11) NOT NULL,
+      UNIQUE KEY `id` (`id`)
+    ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
 
     # Modules
     $DB->query(qq~CREATE TABLE IF NOT EXISTS `modules` (
