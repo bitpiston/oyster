@@ -391,8 +391,10 @@ sub bbcode {
                     }
                     # If a quote block
                     # Semantics... Cite should only be for a title/uri and not author?
-                    if ($end_of->{'tag'} eq 'quote') {
-                        $pre .= '<cite><strong>'. $end_of->{'param'} .'</strong> wrote:</cite>' if $end_of->{'param'};
+                    if ($end_of->{'tag'} eq 'quote' and $end_of->{'param'}) {
+                        my ($author, $date) = split ':', $end_of->{'param'};
+                        $pre .= '<cite><strong>'. $author .'</strong> wrote:</cite>';
+                        # $pre .= '<cite><strong>'. $end_of->{'param'} .'</strong> wrote:</cite>' if $end_of->{'param'};
                     }
                     
                     # add html

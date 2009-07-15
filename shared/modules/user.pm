@@ -1109,7 +1109,7 @@ sub _create_session {
 sub _clean_sessions {
     $interval = 86400; # 24 hours
     
-    $DB->query("DELETE FROM ${module_db_prefix}sessions WHERE user_id = '0' and access_ctime <= ?", datetime::gmtime - $interval);
+    $DB->query("DELETE FROM ${module_db_prefix}sessions WHERE user_id = '0' and access_ctime <= ?", datetime::gmtime() - $interval);
 }
 
 sub _validate_email {
