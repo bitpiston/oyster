@@ -93,7 +93,7 @@
 	<xsl:template match="error" mode="heading">Error</xsl:template>
 	<xsl:template match="error" mode="content">
 		<div class="error general">
-			<p><img src="{/oyster/@styles}{/oyster/@style}/images/icon.error.png" alt="Error" /> <xsl:apply-templates /></p>
+			<span><strong>Error: </strong> <xsl:apply-templates /></span>
 		</div>
 	</xsl:template>
 
@@ -101,7 +101,7 @@
 
 	<xsl:template match="/oyster/internal_error" mode="content">
 		<div class="error internal">
-			<p><img src="{/oyster/@styles}{/oyster/@style}/images/icon.error.png" alt="Error" /> 
+			<span>
 				<xsl:choose>
 					<xsl:when test="text() = ''">
 						An internal error has occurred.
@@ -110,7 +110,7 @@
 						<xsl:value-of select="text()" />
 					</xsl:otherwise>
 				</xsl:choose>
-			</p>
+			</span>
 		</div>
 	</xsl:template>
 
@@ -120,12 +120,12 @@
 	<xsl:template match="confirm" mode="content">
 		<div class="confirm">
 			<form id="confirm" method="post" action="{/oyster/@url}{/oyster/@query_string}">
-				<p><strong>Are You Sure?</strong></p>
-				<p><xsl:apply-templates /></p>
-				<p>
+				<div><strong>Are You Sure?</strong></div>
+				<div><xsl:apply-templates /></div>
+				<div>
 					<input type="submit" name="confirm" value="Yes" />
 					<input type="button" onclick="javascript:history.back()" value="No" />
-				</p>
+				</div>
 			</form>
 		</div>
 	</xsl:template>
@@ -135,13 +135,13 @@
 	<xsl:template match="confirmation" mode="heading">Confirmation</xsl:template>
 	<xsl:template match="confirmation" mode="content">
 		<div class="confirmation">
-			<p><xsl:value-of select="./text()" /></p>
+			<div><xsl:value-of select="./text()" /></div>
 			<xsl:if test="options">
 				<xsl:if test="count(options/option) &gt; 1">
-					<p><strong>Options</strong></p>
+					<div><strong>Options</strong></div>
 				</xsl:if>
 				<xsl:for-each select="options/option">
-					<p><a href="{@url}" class="options"><xsl:apply-templates /></a></p>
+					<div><a href="{@url}" class="options"><xsl:apply-templates /></a></div>
 				</xsl:for-each>
 			</xsl:if>
 		</div>
