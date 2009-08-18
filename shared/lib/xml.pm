@@ -20,7 +20,7 @@ package xml;
 use exceptions;
 use event;
 
-my %bbcode = (
+our %bbcode = (
     'img'   => {
         'xhtml_tag' => 'img',
     },
@@ -63,6 +63,43 @@ my %bbcode = (
         'consume_pre_newline'  => 1,
         'extra'                => ' class="code"',
     }
+);
+
+my %smiles = (
+    ':)' => 'smile',
+    ':-)' => 'smile',
+    ':(' => 'sad',
+    ':-(' => 'sad',
+    ';)' => 'wink',
+    ';-)' => 'wink',
+    ':P' => 'razz', 
+    ':-P' => 'razz', 
+    ':p' => 'razz', 
+    ':-p' => 'razz', 
+    ':\'(' => 'cry',
+    ':|' => 'meh', 
+    ':-|' => 'meh', 
+    '&gt;_&gt;' => 'shifty',
+    '&lt;_&lt;' => 'shifty',
+    ':D' => 'grin',
+    ':-D' => 'grin',
+    ':O' => 'shocked',
+    ':-O' => 'shocked',
+    ':o' => 'shocked',
+    ':o' => 'shocked',
+    ':yawn:' => 'yawn',
+    ':crazy:' => 'crazy',
+    ':angry:' => 'angry',
+    ':scared:' => 'scared',
+    ':confused:' => 'confused',
+    ':rollseyes:' => 'rolleyes',
+    ':blush:' => 'blush',
+    ':cool:' => 'cool',
+    '8)' => 'cool',
+    ':borg:' => 'borg',
+    ':suicide:' => 'suicide',
+    ':die:' => 'die',
+    ':-*' => 'kiss',
 );
 
 my %xhtml_tags = (
@@ -264,6 +301,31 @@ sub entities {
 }
 
 =xml
+    <function name="smiles">
+        <synopsis>
+            Transform smiles into XHTML
+        </synopsis>
+        <prototype>
+            string = xml::smiles(string smiles)
+        </prototype>
+        <example>
+            my $post = xml::smiles($INPUT{'post'});
+        </example>
+    </function>
+=cut
+sub smiles {
+    my $string = shift;
+    my $path = $oyster::CONFIG{'styles_url'} . $oyster::CONFIG{'default_style'} . "/images/smiles";
+    
+    # for each smile, replace it with the xhtml img element
+    for my $smile (keys %smiles) {
+        $string =~ s/\Q$smile\E/<img src="$path\/$smiles{$smile}\.gif" alt="$smiles{$smile} emoticon" \/>/g;
+    }
+    
+    return $string;
+}
+
+=xml
     <function name="bbcode">
         <synopsis>
             Transforms BBcode into XHTML
@@ -299,7 +361,7 @@ sub bbcode {
 
     # optimization for include shorthand so the parser does not have do so many tests each pass
     $text =~ s/\[include#(\d+)\]/\[include file file: $1\]/og if $options{'allow_includes'};
-
+    
     # iterate through text
     while (length $text != 0) {
         my $remove_len           = 0; # length of text to chop off of the beginning of $text
