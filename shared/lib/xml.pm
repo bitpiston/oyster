@@ -319,7 +319,7 @@ sub smiles {
     
     # for each smile, replace it with the xhtml img element
     for my $smile (keys %smiles) {
-        $string =~ s/\Q$smile\E/<img src="$path\/$smiles{$smile}\.gif" alt="$smiles{$smile} emoticon" \/>/g;
+        $string =~ s/( |<br \/>|<p>|\n)\Q$smile\E( |<br \/>|<\/p>|\n)/$1<img src="$path\/$smiles{$smile}\.gif" alt="$smiles{$smile} emoticon" \/>$2/g;
     }
     
     return $string;
@@ -334,13 +334,16 @@ sub smiles {
             This function raises a validation_error if a problem is encountered.
         </note>
         <prototype>
-            string xhtml = xml::bbcode(string bbcode[, disabled_tags => hashref, allow_calls => bool, allow_includes => bool])
+            string xhtml = xml::bbcode(string bbcode[, disabled_tags => hashref, allow_calls => bool, allow_includes => bool], disable_urlifcation => bool)
         </prototype>
         <example>
             my $post = xml::bbcode($INPUT{'post'});
         </example>
         <todo>
-            automatic linking for URLs
+            shorten really long links with no breaking spaces with an ellipse in the center
+        </todo>
+        <todo>
+            time to remove the commented out old code?
         </todo>
     </function>
 =cut
@@ -354,7 +357,7 @@ sub bbcode {
     my $in_p = 0;     # true if you are inside of a paragraph
     my @lists;        # holds list data
     my @call_data;    # if calls are allowed, the array storing the call data
-    my @stack; # bbcode tag stack
+    my @stack;        # bbcode tag stack
      
     # Remove evil \r before new lines
     $text =~ s/\r//og;
@@ -434,7 +437,7 @@ sub bbcode {
                     # urls
                     if ($end_of->{'tag'} eq 'url') {
                         my $url = $end_of->{'param'} ? entities($end_of->{'param'}) : entities($post) ;
-                        $extra .= " href=\"$url\" title=\"$url\"";
+                        $extra .= " href=\"$url\"";
                     }
                     
                     # images
@@ -502,16 +505,15 @@ sub bbcode {
                 $xhtml .= entities($tag_full);
             }
         }
-
-        # urls
+        
         #elsif ($text =~ m!^(((?:ht|f)tps?://)?(?:[\D\S]\S+?\.)+)(?:\w{2,3})?!i and !defined($inspect_stack->('url'))) {
         #elsif ($text =~ m!^(\s+(((?:http|ftp|https)://)?(?:\D\S+?\.)+(?:[a-z]{2,3})))!i and !defined($inspect_stack->('url'))) {
         #elsif ($text =~ m!^((?:http://)(?:\w+?\.)+(?:\w{2,3}))!i and !defined($inspect_stack->('url'))) {
-        #elsif ($text =~ m!^(www\.google\.com)! and !defined($inspect_stack->('url'))) {
-        #    my ($url) = ($1);
+        #elsif ($text =~ m!^(www\.sinistrals\.net)! and !defined($inspect_stack->('url'))) {
+        #    my $url = $1;
         #    $remove_len = length($url);
         #    substr($text, length($text) - $remove_len, 0, "[url]$url[/url]");
-        #}
+        #}        
 
         # list elements
         elsif (scalar @lists and $text =~ /^\Q[*]\E/o) {
@@ -519,6 +521,37 @@ sub bbcode {
             $xhtml .= '</li>' if $lists[$#list]->{'num_items'};
             $lists[$#list]->{'num_items'}++;
             $xhtml .= '<li>';
+        }
+
+        # urlification
+        #
+        # url regex clarifcation:
+        #
+        # foo://me:pass@example.com:1234/hello/world?cat=calico#tail 
+        # \_/   \_____/ \_________/ \_/ \_________/ \_________/ \__/
+        #  |       |         |       |       |           |       |
+        # scheme  user     host    port    path       query   fragment
+        #
+        # scheme:    (?:((?:[\w+.]{1,8}):)(?://)?)?
+        # user:      (?:(?:[!-~]+)@)?
+        # host:      (?:(?:[^/?#:\s]*\.)?(?:[^/?#:.\s]*)\.(?:[^/?#:.\s]{2,8}))
+        # port:      (?::(?:[0-9]*))?
+        # path:      (?:/(?:[^?#\s]*))?
+        # query:     (?:\?(?:[^#\s]*))?
+        # fragment:  (?:#(?:\w*))?
+        # 
+        # don't do turn urls into links if the parsed url contains bbcode
+        elsif ($text =~ m`^((?:((?:[\w+.]{1,8}):)(?://)?)?(?:(?:[!-~]+)@)?(?:(?:[^/?#:\s]*\.)?(?:[^/?#:.\s]*)\.(?:[^/?#:.\s]{2,8}))(?::(?:[0-9]*))?(?:/(?:[^?#\s]*))?(?:\?(?:[^#\s]*))?(?:#(?:[^\s]*))?)`io 
+            and $1 !~ m/(?:\[(?:\/)?(?:\w+?)(?:=(?:.+?))?\])/io and !$options{'disable_urlifcation'}) {
+            my $url    = $1;
+            my $length = length($url);
+            my $scheme = $2;
+            my $title  = $url;
+            
+            # assume http:// if no scheme present
+            $url = $scheme ? $url : "http://" . $url;
+            
+            substr($text, 0, $length, "[url=".$url."]".$title."[/url]");
         }
 
         # double newline (indicating paragraph start or end)
