@@ -328,6 +328,7 @@ sub compile {
     my @stylesheets = @_;
     my $style_path  = "$oyster::CONFIG{site_path}styles/$style/";
     my $style_url   = "$oyster::CONFIG{styles_url}$style/";
+    my $xmlns       = $style::styles{$style}->{'output'} eq 'xhtml' ? "\n xmlns=\"http://www.w3.org/1999/xhtml\"" : '';
 
     # if dynamic style compilation is disabled
     unless ($oyster::CONFIG{'compile_styles'}) {
@@ -364,8 +365,8 @@ sub compile {
         push @dyn_style_name, $dyn_name;
         if (_needs_compilation($style, $file)) {
             my $template =
-                "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
-              . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+              . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n"
               .  _compile_style($style, "modules/$file") . "\n"
               .  "</xsl:stylesheet>\n";
             my ($module_id) = ($file =~ m!^(.+?)/!);
@@ -379,8 +380,8 @@ sub compile {
     my $dyn_name = join('-', @dyn_style_name) . '.xsl';
     if (!-e "${style_path}dynamic/$dyn_name") {
         my $dyn_style =
-            "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
-          . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
+            "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+          . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n"
           . "<xsl:include href=\"${style_url}base.xsl\" />\n\n"
           . "$includes\n"
           . "</xsl:stylesheet>\n";
@@ -461,8 +462,8 @@ sub _needs_compilation {
 
 sub _load {
 
-    %styles = %{$oyster::DB->selectall_hashref("SELECT id, name, status FROM $oyster::CONFIG{db_prefix}styles", 'id')};
-
+    %styles = %{$oyster::DB->selectall_hashref("SELECT id, name, status, output FROM $oyster::CONFIG{db_prefix}styles", 'id')};
+    
     # clear style data (for reloads)
     #%styles = ();
 
@@ -488,6 +489,7 @@ sub _compile_style {
     my ($style, $file, $is_server_side) = @_;
     my $style_url  = "$oyster::CONFIG{styles_url}$style/";
     my $style_path = "$oyster::CONFIG{site_path}styles/$style/";
+    my $xmlns      = $style::styles{$style}->{'output'} eq 'xhtml' ? "\n xmlns=\"http://www.w3.org/1999/xhtml\"" : '';
 
     $file = $style_path . 'source/' . $file if -e $style_path . 'source/' . $file;
 
@@ -517,8 +519,8 @@ sub _compile_style {
             # ensure that the file to be included has been compiled
             if ($oyster::CONFIG{'compile_styles'} and _needs_compilation($style, $include_file, $is_server_side)) {
                 my $template;
-                $template .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
-                $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
+                $template .= "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+                $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n";
                 $template .= _compile_style($style, "modules/$include_file", $is_server_side) . "\n";
                 $template .= "</xsl:stylesheet>\n";
                 my ($module_id) = ($include_file =~ m!^(.+?)/!);
@@ -548,9 +550,16 @@ sub _compile_style {
 
         # include the layout (for source.xsl only)
         elsif ($tag eq 'include_layout') {
+            
+            # opening xsl:stylesheet element
+            if ($is_server_side) {
+                $insert = "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n";
+            } else {
+                $insert = "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns:dt=\"http://xsltsl.org/date-time\"\n xmlns:str=\"http://xsltsl.org/string\"$xmlns>\n";
+            }
 
             # return the contents of layout.xsl
-            $insert = file::slurp($style_path . 'source/layout.xsl');
+            $insert .= file::slurp($style_path . 'source/layout.xsl');
         }
 
         # shared includes/imports (for source.xsl only)

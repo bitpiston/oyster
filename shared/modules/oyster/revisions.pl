@@ -110,7 +110,8 @@ $revision[1]{'up'}{'site'} = sub {
     $DB->query(qq~CREATE TABLE IF NOT EXISTS `${DB_PREFIX}styles` (
         `id` tinytext NOT NULL,
         `name` tinytext NOT NULL,
-        `status` tinyint(1) NOT NULL default '1'
+        `status` tinyint(1) NOT NULL default '1',
+        `output` tinytext NOT NULL default 'xhtml'
         ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
     style::register('bitpiston', 'BitPiston');
     style::enable('bitpiston');

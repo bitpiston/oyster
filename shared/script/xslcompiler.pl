@@ -39,6 +39,7 @@ my $module_stylesheets = style::_get_module_stylesheets();
 # iterate over each enabled style
 for my $style (keys %style::styles) {
     my $style_path = $styles_path . $style . '/';
+    my $xmlns      = $style::styles{$style}->{'output'} eq 'xhtml' ? "\n xmlns=\"http://www.w3.org/1999/xhtml\"" : '';
     print "$style...\n";
 
     # client side layout.xsl
@@ -60,8 +61,8 @@ for my $style (keys %style::styles) {
 
             # compile style
             my $template;
-            $template .= "<?xml version='1.0' encoding=\"UTF-8\" ?>\n";
-            $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n";
+            $template .= "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+            $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n";
             $template .= style::_compile_style($style, "modules/$module_id/$stylesheet") . "\n";
             $template .= "</xsl:stylesheet>\n";
             file::write("${style_path}modules/$module_id/$stylesheet", $template);
@@ -70,8 +71,8 @@ for my $style (keys %style::styles) {
             my $style_url = "$oyster::CONFIG{styles_url}$style/";
             my $dyn_name  = $stylesheet;
             my $dyn_style =
-                "<?xml version='1.0' encoding=\"UTF-8\" ?>\n"
-              . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns=\"http://www.w3.org/1999/xhtml\">\n\n"
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+              . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n"
               . "<xsl:include href=\"${style_url}base.xsl\" />\n\n"
               . "<xsl:include href=\"${style_url}modules/$module_id/$stylesheet\" />\n"
               . "</xsl:stylesheet>\n";

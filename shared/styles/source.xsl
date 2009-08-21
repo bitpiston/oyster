@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<oyster:if_server_side>
-<xsl:stylesheet version="1.0"
- xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns="http://www.w3.org/1999/xhtml">
-</oyster:if_server_side>
-<oyster:if_client_side>
-<xsl:stylesheet version="1.0"
- xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
- xmlns:dt="http://xsltsl.org/date-time"
- xmlns:str="http://xsltsl.org/string"
- xmlns="http://www.w3.org/1999/xhtml">
-<oyster:import_shared href="date-time.xsl" />
-<oyster:import_shared href="string.xsl" />
-</oyster:if_client_side>
-	<xsl:output method="xml" indent="yes" />
-
 <oyster:include_layout />
 
 	<!-- Transform XML to (X)HTML -->
