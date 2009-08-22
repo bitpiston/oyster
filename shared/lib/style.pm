@@ -555,7 +555,9 @@ sub _compile_style {
             if ($is_server_side) {
                 $insert = "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n";
             } else {
-                $insert = "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns:dt=\"http://xsltsl.org/date-time\"\n xmlns:str=\"http://xsltsl.org/string\"$xmlns>\n";
+                $insert = "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n xmlns:dt=\"http://xsltsl.org/date-time\"\n xmlns:str=\"http://xsltsl.org/string\"$xmlns>\n"
+                        . "<xsl:import href=\"$oyster::CONFIG{styles_url}date-time.xsl\" />\n"
+                        . "<xsl:import href=\"$oyster::CONFIG{styles_url}string.xsl\" />\n";
             }
 
             # return the contents of layout.xsl
