@@ -92,7 +92,7 @@ $revision[1]{'up'}{'site'} = sub {
         `id` int(11) NOT NULL auto_increment,
         `parent_id` int(11) NOT NULL default '0',
         `url` tinytext NOT NULL,
-        `url_hash` varchar(10) NOT NULL default '',
+        `url_hash` INT(10) UNSIGNED NOT NULL default '',
         `title` tinytext character set utf8 NOT NULL,
         `module` tinytext NOT NULL,
         `function` tinytext NOT NULL,

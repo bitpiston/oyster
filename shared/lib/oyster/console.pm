@@ -140,7 +140,7 @@ sub help {
     print "  search(string)      Searches the code base for a given string, this\n";
     print "                      is interpretted as a regular expression.\n";
     print "  module_urls(string) Returns the perl code necessary to register all\n";
-    print "                      urls currently registered to a given module.";
+    print "                      urls currently registered to a given module.\n";
     print "Note:\n";
     print "  Multi-line commands can be created by appending \\ to the end of any line.\n";
     print "\n";

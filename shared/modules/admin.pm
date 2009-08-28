@@ -272,7 +272,7 @@ sub modules {
         $attrs .= ' name="' . xml::entities($meta->{'name'}) . '"';
         $attrs .= ' description="' . xml::entities($meta->{'description'}) . '"' if length $meta->{'description'};
         $attrs .= ' required="1"' if $meta->{'required'};
-        $attrs .= ' loaded="1"'   if exists $module::loaded{$module_id};
+        $attrs .= ' loaded="1"'   if exists $module::loaded{$module_id} or $module_id eq 'oyster';
         $attrs .= ' enabled="1"'  if module::is_enabled($module_id);
         if ($meta->{'requires'}) {
             print "\t\t<module$attrs>\n";
