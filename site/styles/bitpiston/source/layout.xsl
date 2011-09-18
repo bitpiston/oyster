@@ -1,250 +1,81 @@
-	<xsl:output method="xml" version="1.0" encoding="UTF-8" media-type="application/xhtml+xml" indent="yes"
-		doctype-public="-//W3C//DTD XHTML 1.1//EN" doctype-system="http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd" />
+<xsl:output method="html" version="1.0" encoding="UTF-8" media-type="text/html" indent="yes"
+	doctype-public="-//W3C//DTD HTML 4.01//EN" doctype-system="http://www.w3.org/TR/html4/strict.dtd" />
 
-	<!-- Ajax Template -->
+<!-- Ajax Template -->
+<!-- Re-implement this later -->
+	
+<!-- Base Template (Layout) -->
 
-	<xsl:template match="/oyster[@handler = 'ajax']">
-		<html xml:lang="en">
-
-			<head>
-				<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-
-				<!-- mootools library -->
-				<script src="{@styles}mootools.js" type="text/javascript"></script>
-
-				<!-- oyster library -->
-				<script src="{@styles}oyster.js" type="text/javascript"></script>
-			</head>
-
-			<!-- admin menu -->
-			<xsl:if test="count(/oyster/menu[@id = 'admin']/menu) > 0 or count(/oyster/menu[@id = 'admin']/item) > 0">
-				<div id="admin">
-					<script type="text/javascript">
-						function toggleMenu(menu_id, link) {
-						      menu_element = document.getElementById(menu_id)
-						      if (menu_element.className == '') {
-						          link.title = 'Expand this menu'
-						          menu_element.className = 'hidden'
-						      } else {
-						          link.title = 'Collapse this menu'
-						          menu_element.className = ''
-						      }
-						  }
-					</script>
-					<a class="toggle" href="#" onclick="toggleMenu('admin', this)" title="Collapse this item">Administration</a>
-					<xsl:if test="count(/oyster/menu[@id = 'admin']/item) > 0">
-						<div>
-							<span>Other</span>
-							<ul>
-								<xsl:for-each select="/oyster/menu[@id = 'admin']/item">
-									<li><a href="{@url}"><xsl:value-of select="@label" /></a></li>
-								</xsl:for-each>
-							</ul>
-						</div>
-					</xsl:if>
-					<xsl:for-each select="/oyster/menu[@id = 'admin']/menu">
-						<xsl:sort select="position()" data-type="number" order="descending" />
-						<div>
-							<span><xsl:value-of select="@label" /></span>
-							<ul>
-								<xsl:for-each select="item">
-									<li><a href="{@url}"><xsl:value-of select="@label" /></a></li>
-								</xsl:for-each>
-							</ul>
-						</div>
-					</xsl:for-each>
-				</div>
-
-				<!-- send admin to parent page -->
-				<script type="text/javascript">
-					parent.oyster.ajax.send(document.getElementById('admin').innerHTML, 'admin')
-				</script>
-			</xsl:if>
-
-			<!-- this should essentially be whatever is in your "content" id div, in an ajax request, this will be inserted in place of the current content -->
-			<div id="content">
-
-					<!-- title -->
-					<div id="title">
-						<h1><xsl:apply-templates mode="heading" select="/oyster/*[1]" /></h1>
-						<p>
-							<xsl:if test="/oyster/content/@title = 'Home'">
-								<xsl:attribute name="class">frontpage</xsl:attribute>
+<xsl:template match="/oyster[not(@handler)]">
+	<html lang="en">
+		<head>
+			<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+			<meta http-equiv="content-style-type" content="text/css" />
+			<title>
+				<xsl:variable name="title"><xsl:apply-templates mode="title" select="/oyster/*[1]" /></xsl:variable>
+				<xsl:choose>
+					<xsl:when test="string-length(/oyster/@page_title) != 0"><xsl:value-of select="/oyster/@page_title" /> | </xsl:when>
+					<xsl:when test="string-length(normalize-space($title)) != 0"><xsl:value-of select="$title" /> | </xsl:when>
+					<xsl:otherwise><xsl:apply-templates mode="heading" select="/oyster/*[1]" /> | </xsl:otherwise>
+				</xsl:choose>
+				<xsl:value-of select="@title" />
+			</title>
+			<link rel="stylesheet" type="text/css" media="screen" href="{@styles}{@style}/screen.css" />
+			<link rel="stylesheet" type="text/css" media="print" href="{@styles}{@style}/print.css" />
+			<xsl:comment>[if lt IE 9]>&gt;&lt;script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"&gt;&lt;/script&gt;&lt;![endif]</xsl:comment>
+			<xsl:comment>[if lt IE 10]&gt;&lt;link rel="stylesheet" type="text/css" media="screen" href="{@styles}{@style}/ie.css" /&gt;&lt;![endif]</xsl:comment>
+			<xsl:comment>[if lt IE 8]&gt;&lt;style type="text/css"&gt;#search input[type=text] {margin-top: 1px}&lt;/style&gt;&lt;![endif]</xsl:comment>
+			<xsl:comment>[if IE 9]&gt;&lt;style type="text/css"&gt;#search input[type=text] {padding-top: 5px}&lt;/style&gt;&lt;![endif]</xsl:comment>
+			<xsl:comment>[if !IE]&gt;</xsl:comment><link rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px), only screen and (max-width: 480px)" href="{@styles}{@style}/mobile.css" /><xsl:comment>&lt;![endif]</xsl:comment>
+			<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+			<link rel="alternate" type="application/rss+xml" href="{@base}rss/" title="All posts RSS feed" />
+			<!-- oyster library -->
+			<script src="{@styles}oyster-yui.js" type="text/javascript" />
+			<!-- allow modules to hook into the head tag -->
+			<xsl:apply-templates mode="html_head" />
+		</head>
+		<body class="{/oyster/@module} {/oyster/*[1]/@action}">
+			<div id="header">
+				<a id="title" href="/">BitPiston</a>
+				<ul id="navigation">
+					<xsl:for-each select="/oyster/menu[@id='navigation']/item">
+						<li>
+							<xsl:if test="substring(/oyster/@url,1,string-length(@url)) = @url">
+								<xsl:attribute name="class">selected</xsl:attribute>
 							</xsl:if>
-							<xsl:apply-templates mode="description" select="/oyster/*[1]" />
-						</p>
-					</div>
-
-					<!-- body -->
-					<xsl:apply-templates mode="content" />
+							<a href="{@url}" class="{@label}">
+								<xsl:value-of select="@label" />
+							</a>
+						</li>
+					</xsl:for-each>
+				</ul>
 			</div>
-
-			<!-- send content to parent page -->
-			<script type="text/javascript">
-				parent.oyster.ajax.send(document.getElementById('content').innerHTML, '<xsl:value-of select="/oyster/@ajax_target" />')
-			</script>
-		</html>
-	</xsl:template>
-
-	<!-- Base Template (Layout) -->
-
-	<xsl:template match="/oyster[not(@handler)]">
-		<html xml:lang="en">
-			<head>
-				<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
-				<meta http-equiv="content-style-type" content="text/css" />
-				<title><xsl:apply-templates mode="heading" select="/oyster/*[1]" /> | <xsl:value-of select="@title" /></title>
-
-				<!-- IE7.js for IE6 compatibility -->
-				<xsl:comment>[if lt IE 7]&gt;&lt;script src="{@styles}ie7/ie7-standard-p.js" type="text/javascript"&gt;&lt;/script&gt;&lt;![endif]</xsl:comment>
-
-				<!-- base stylesheet -->
-				<link rel="stylesheet" type="text/css" media="screen, projection" href="{@styles}{@style}/base.css" />
-
-				<!-- mootools library -->
-				<script src="{@styles}mootools-old.js" type="text/javascript"></script>
-
-				<!-- oyster library -->
-				<script src="{@styles}oyster.js" type="text/javascript"></script>
-
-				<!-- allow modules to hook into the head tag -->
-				<xsl:apply-templates mode="html_head" />
-			</head>
-			<body>
-				<div id="container">
-
-					<!-- admin menu -->
-					<xsl:if test="count(/oyster/menu[@id = 'admin']/item) > 0">
-						<div id="admin">
-							<script type="text/javascript">
-								function toggleMenu(menu_id, link) {
-								      menu_element = document.getElementById(menu_id)
-								      if (menu_element.className == '') {
-								          link.title = 'Expand this menu'
-								          menu_element.className = 'hidden'
-								      } else {
-								          link.title = 'Collapse this menu'
-								          menu_element.className = ''
-								      }
-								  }
-							</script>
-							<a class="toggle" href="#" onclick="toggleMenu('admin', this)" title="Collapse this item">Administration</a>
-							<xsl:for-each select="/oyster/menu[@id = 'admin']/item">
-								<xsl:sort select="position()" data-type="number" order="descending" />
-								<div>
-									<span>
-										<xsl:choose>
-											<xsl:when test="@label">
-												<xsl:value-of select="@label" />
-											</xsl:when>
-											<xsl:otherwise>
-												Other
-											</xsl:otherwise>
-										</xsl:choose>
-									</span>
-									<ul>
-										<xsl:for-each select="item">
-											<li><a href="{@url}"><xsl:value-of select="@label" /></a></li>
-										</xsl:for-each>
-									</ul>
-								</div>
-							</xsl:for-each>
-						</div>
+			<hr />
+			<div id="content">
+				<div id="content-primary">
+					<!-- <xsl:apply-templates mode="description" select="/oyster/*[1]" /> -->
+					<xsl:if test="not(/oyster/@module = 'content')">
+						<h1><span><xsl:apply-templates mode="heading" select="/oyster/*[1]" /></span></h1>
 					</xsl:if>
-
-					<!-- header / navigation -->
-					<div id="header">
-						<a href="{/oyster/@base}"><img src="{@styles}{@style}/images/header.logo.png" alt="BitPiston" /></a>
-						<ul id="navigation">
-							<xsl:for-each select="/oyster/menu[@id='navigation']/item">
-								<li>
-									<xsl:if test="@selected = 'true'">
-										<xsl:attribute name="class">selected</xsl:attribute>
-									</xsl:if>
-									<a href="{@url}">
-										<xsl:attribute name="title"><xsl:apply-templates /></xsl:attribute>
-										<xsl:value-of select="@label" />
-									</a>
-								</li>
-							</xsl:for-each>
-						</ul>
-						<ul id="user">
-							<xsl:choose>
-								<xsl:when test="user/@id > 0">
-									<li><a href="{@base}user/settings/">Settings</a></li>
-									<li><a href="{@base}user/profile/">Profile</a></li>
-									<li><a href="{@base}logout/">Log Out</a></li>
-								</xsl:when>
-								<xsl:otherwise>
-									<li><a href="{@base}login/">Client Login</a></li>
-									<!--<li><a href="{@base}register/">Register</a></li>-->
-								</xsl:otherwise>
-							</xsl:choose>
-						</ul>
-					</div>
-					<hr />
-
-					<!-- content -->
-					<div id="wrapper">
-						<div id="content">
-
-							<!-- title -->
-							<div id="title">
-								<h1><xsl:apply-templates mode="heading" select="/oyster/*[1]" /></h1>
-								<p>
-									<xsl:if test="/oyster/content/@title = 'Home'">
-										<xsl:attribute name="class">frontpage</xsl:attribute>
-									</xsl:if>
-									<xsl:apply-templates mode="description" select="/oyster/*[1]" />
-								</p>
-							</div>
-
-							<!-- body -->
-							<!--
-							<div id="#content-primary">
-							-->
-								<xsl:apply-templates mode="content" />
-							<!--
-							</div>
-							<hr />
-							-->
-
-							<!-- sidebar -->
-							<!--
-							<div id="content-secondary">
-							<xsl:apply-templates mode="sidebar" />
-							</div>
-							-->
-						</div>
-					</div>
-					<hr />
-
-					<!-- footer -->
-					<div id="footer">
-						<p class="copyright">Copyright &#169; 2007 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved.</p>
-						<p class="links">
-							<a href="/legal/privacy/">Privacy Policy</a> | 
-							<a href="/legal/tos/">Terms of Service</a> | 
-							<a href="/login/">Client Login</a> | 
-							<a href="/about/jobs/">Jobs</a>
-						</p>
-					</div>
+					<xsl:apply-templates mode="content" />			
 				</div>
-
-				<!-- ajax popup -->
-				<div id="oyster_ajax_popup_loading" style="display: none">
-					Loading...
+				<div id="content-secondary">
+					<xsl:apply-templates mode="sidebar" />
 				</div>
-				<div style="width: 650px;" id="sims_ajax_popup">
-					<input type="button" value="Close" onclick="oyster.ajax.close_popup()" />
-					<div id="oyster_ajax_popup_content"></div>
-				</div>
-				<div id="oyster_ajax_popup_overlay" />
-
-				<!-- ajax communication frame -->
-				<form id="oyster_ajax_form" method="post" action="" style="display: none">
-				</form>
-				<iframe id="oyster_ajax_iframe" style="height: 1px; width: 1px; border: 0px; margin: 0px; padding: 0px"></iframe>
-			</body>
-		</html>
-	</xsl:template>
+			</div>
+			<hr />
+			<div id="footer">
+				<p class="copyright">Copyright &#169; 2007&#8211;2011 BitPiston. All rights reserved.</p>
+				<ul class="links">
+					<li><a href="/accessiblity/">Accessibility</a></li>
+					<li><a href="/privacy/">Privacy</a></li>
+					<li><a href="/about/#jobs">Jobs</a></li>
+					<li><a href="http://client.bitpiston.com/">Client Login</a></li>
+					<li><a href="http://developer.bitpiston.com/">Project Tracker</a></li>
+				</ul>
+			</div>
+			<!-- ajax popup -->
+			<!-- ajax communication frame -->
+		</body>
+	</html>
+</xsl:template>

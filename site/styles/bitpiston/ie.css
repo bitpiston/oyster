@@ -1,0 +1,27 @@
+@charset "UTF-8";
+
+/*
+	BitPiston.v1
+	http://www.bitpiston.com/
+	
+	Internet Explorer Fixes
+*/
+
+* html ul.projects li, * html ul.news li, * html ul.project { margin: 0 0 0; }
+ul.projects strong { margin-top: -1.5em; }
+ul.news a, ul.projects a, ul.products a, #navigation li.selected a, #navigation li.selected a:hover,
+body.contact #content-secondary address a.url, body.products h2 a, body.products h2 a:hover {
+	color: #4d4942;
+	text-decoration: none;
+}
+address { font-style: normal; }
+* html body.home #content { margin-bottom: 0; }
+body.weblog h2 a, body.weblog h1 a { 
+	color: #376e1f;
+	text-decoration: none;
+}
+#content, body.products div { overflow: hidden; zoom: 1; }
+blockquote:before, pre:before, p.note:before { content: ""; }
+#search input[type=button] { top: 0; }
+#search input[type=text] { margin-top: 3px; }
+#search { padding-right: 3.2em; }

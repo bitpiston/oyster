@@ -18,7 +18,7 @@ sub _load {
 
     # prepare queries
     $fetch_by_hash               = $oyster::DB->server_prepare("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? and regex = 0 LIMIT 1");
-    $fetch_nav_urls_by_parent_id = $oyster::DB->server_prepare("SELECT id, url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority DESC");
+    $fetch_nav_urls_by_parent_id = $oyster::DB->server_prepare("SELECT id, url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority ASC");
 
     # load regex urls
     %regex_urls = %{$oyster::DB->selectall_hashref("SELECT id, parent_id, url, title, module, function, regex FROM $oyster::CONFIG{db_prefix}urls WHERE regex = 1", 'url')};

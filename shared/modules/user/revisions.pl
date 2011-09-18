@@ -132,7 +132,8 @@ $revision[1]{'up'}{'site'} = sub {
     url::register('url' => 'admin/user',               'module' => 'user', 'function' => 'admin',              'title' => 'User Administration');
     url::register('url' => 'user/confirm',             'module' => 'user', 'function' => 'confirm_account',    'title' => 'Confirm Account');
     url::register('url' => 'user/recover',             'module' => 'user', 'function' => 'recover',            'title' => 'Recover Account');
-    url::register('url' => 'user/settings',            'module' => 'user', 'function' => 'edit_settings',      'title' => 'Edit User Settings');
+    url::register('url' => 'user/account',             'module' => 'user', 'function' => 'edit_account',       'title' => 'Edit User Account');
+    url::register('url' => 'user/profile/(\w+)',       'module' => 'user', 'function' => 'view_profile',       'title' => 'View Profile', 'regex' => 1);
     url::register('url' => 'admin/user/manage',        'module' => 'user', 'function' => 'admin_manage',       'title' => 'Manage Users');
     url::register('url' => 'admin/user/config',        'module' => 'user', 'function' => 'admin_config',       'title' => 'User Configuration');
     url::register('url' => 'admin/user/groups',        'module' => 'user', 'function' => 'admin_groups',       'title' => 'Manage User Groups');

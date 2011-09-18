@@ -4,6 +4,9 @@
         Functions that allow daemons to communicate.  These are mainly used to force
         daemons to reload cached data when one of them updates it.
     </synopsis>
+    <todo>
+        Clean up old IPC jobs.
+    </todo>
 =cut
 
 package ipc;
@@ -135,6 +138,9 @@ sub do_periodic {
             Modules should not need to call this function, Oyster performs this
             task automatically.
         </note>
+        <note>
+            This uses event::register_hook() to execute at the right times.
+        </note>
         <prototype>
             ipc::update()
         </prototype>
@@ -168,6 +174,9 @@ sub update {
         <note>
             Modules should not need to call this function, Oyster performs this
             task automatically.
+        </note>
+        <note>
+            This uses event::register_hook() to execute at the right times.
         </note>
         <prototype>
             ipc::update_periodic()

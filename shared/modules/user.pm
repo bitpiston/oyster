@@ -155,17 +155,17 @@ sub recover {
 }
 
 =xml
-        <function name="edit_settings">
+        <function name="edit_account">
             <synopsis>
-                Edits a user's settings
+                Edits a user's settings and profile
             </synopsis>
             <note>
-                This is registered to the url 'user/settings'.
+                This is registered to the url 'user/account'.
             </note>
         </function>
 =cut
 
-sub edit_settings {
+sub edit_account {
     throw 'permission_error' if $USER{'id'} == 0;
 
     # select the id of the user to edit
@@ -175,8 +175,34 @@ sub edit_settings {
     my $input_source;
 
     # fetch current settings
-    $edit_user = $DB->query('SELECT * FROM users WHERE id = ? LIMIT 1', $user_id)->fetchrow_hashref();
+    my $edit_user = $DB->query('SELECT * FROM users WHERE id = ? LIMIT 1', $user_id)->fetchrow_hashref();
+    
+    my $profile_meta;
+    my $edit_profile;
+    if ($config{'enable_profile'} == 1) {
+        
+        # fetch profile metadata
+        my $query = $DB->query("SELECT * FROM user_profile_meta ORDER BY parent, name ASC");
 
+        # prepare profile metadata
+        while ( my $field = $query->fetchrow_hashref() ) {
+            #push @{$profile_meta{ $field->{'parent'} }}, $field;
+            $profile_meta{ $field->{'name'} } = $field;
+        }
+
+        # fetch user's profile data 
+        $edit_profile = $DB->query("SELECT * FROM user_profiles WHERE user_id = ? LIMIT 1", $user_id)->fetchrow_hashref();
+        
+        # unserialize bbcode/xhtml fields
+        for my $field (keys %{$edit_profile}) {
+            if ($profile_meta{ $field }{'bbcode'} == 1) {
+                my @unserialized = split /(?!\\),/, $edit_profile->{ $field };
+                @unserialized[0] =~ s/\\,/,/o;
+                $edit_profile->{ $field } = @unserialized[0];
+            }
+        }
+    }
+    
     # if the form has been submitted
     if ($ENV{'REQUEST_METHOD'} eq 'POST') {
         $input_source = \%INPUT;
@@ -291,8 +317,8 @@ sub edit_settings {
         }
         $input_source->{'name'} = $edit_user->{'name'};
     } else {
-
-        $input_source                  = $edit_user;
+        $input_source                  = $edit_profile;
+        $input_source->{$_}            = $edit_user->{$_} for keys %{$edit_user};
         $input_source->{'name'}        = $edit_user->{'name'};
         $input_source->{'date_format'} = $datetime::formats[0] unless length $edit_user->{'date_format'};
         if ($PERMISSIONS{'user_admin_manage'}) {
@@ -303,7 +329,7 @@ sub edit_settings {
     }
 
     # print the edit settings form
-    style::include_template('edit_settings');
+    style::include_template('edit_account');
     my $attrs;
     $attrs .= qq~ customizable_styles="1" style="$input_source->{style}"~ if $config{'customizable_styles'};
     $attrs .= qq~ id="$input_source->{id}" name="$input_source->{name}"~  if $user_id != $USER{'id'};
@@ -311,10 +337,56 @@ sub edit_settings {
     $attrs .=' email="' . xml::entities($input_source->{'email'}) . '"';
     $attrs .=' time_offset="' . xml::entities($input_source->{'time_offset'}) . '"';
     $attrs .=' date_format="' . xml::entities($input_source->{'date_format'}) . '"';
-    print qq~\t<user action="edit_settings"$attrs>\n~;
-    _print_groups() if $PERMISSIONS{'user_admin_manage'};
-    datetime::print_date_formats_xml();
-    style::print_enabled_styles_xml() if $config{'customizable_styles'};
+    print qq~\t<user action="edit_account"$attrs>\n~;
+        print "\t\t<settings>\n";
+            _print_groups() if $PERMISSIONS{'user_admin_manage'};
+            datetime::print_date_formats_xml();
+            style::print_enabled_styles_xml() if $config{'customizable_styles'};
+        print "\t\t</settings>\n";
+        
+        if ($config{'enable_profile'} == 1) {
+            print "\t\t<profile>\n";
+            
+            # sort profile meta data by group
+            my %profile_groups;
+            for my $field (%profile_meta) {
+                next if length $field->{'name'} == 0;
+                push @{ $profile_groups->{ $field->{'parent'} } }, $field->{'name'};
+            }
+            
+            # print fields by group
+            for my $group ( sort keys %{$profile_groups} ) {
+                print qq~\t\t\t<group name="$group">\n~;
+                
+                for my $field ( sort @{$profile_groups->{$group}} ) {
+                    my $attributes = qq~ name="$field" type="$profile_meta{ $field }{'input_type'}"~;
+                    $attributes   .= qq~ note="$profile_meta{ $field }{'note'}"~ unless length $profile_meta{ $field }{'note'} == 0;
+                    if ($profile_meta{ $field }{'input_type'} eq 'select') {
+                        my $default;
+                        $default     = qq~ default="$profile_meta{ $field }{'default_value'}"~ unless length $profile_meta{ $field }{'default_value'} == 0;
+                        $default     = qq~ default="$input_source->{ $field }"~ unless length $input_source->{ $field } == 0;            
+                        $attributes .= $default;
+                        print qq~\t\t\t\t<field$attributes>\n~;
+                        
+                        for my $value ( split /,/, $profile_meta{ $field }{'values'} ) {
+                            print qq~\t\t\t\t\t<value>$value</value>\n~;
+                        }
+                        print "\t\t\t\t</field>\n";
+                    }
+                    elsif ($profile_meta{ $field }{'input_type'} eq 'textarea') {
+                        print qq~\t\t\t\t<field$attributes>\n~;
+                        print $input_source->{ $field };
+                        print "\t\t\t\t</field>\n";
+                    }
+                    else {
+                        $attributes .= qq~ default="$profile_meta{ $field }{'default_value'}"~ unless length $profile_meta{ $field }{'default_value'} == 0;
+                        print qq~\t\t\t\t<field$attributes value="$input_source->{ $field }" />\n~;
+                    }
+                }
+                print "\t\t\t</group>\n";
+            }
+            print "\t\t</profile>\n";
+        }
     print "\t</user>\n";
 }
 
@@ -912,6 +984,83 @@ sub logout {
 
         # remove the session cookie
         cgi::set_cookie('session', '', 0,  $config{'cookie_path'}, $config{'cookie_domain'});
+    }
+}
+
+
+=xml
+        <function name="view_profile">
+            <synopsis>
+                View a profile
+            </synopsis>
+            <note>
+                This is registered to the url 'user/profile/(\w+)'.
+            </note>
+        </function>
+=cut
+
+sub view_profile {
+    my ($username) = @_;
+    
+    user::require_permission('user_profile_view');
+    
+    throw 'validation_error' =>i cop 'A username is required.' unless length $username;
+    throw 'validation_error' => 'Profiles are currently disabled.' unless $config{'enable_profile'} == 1;
+    
+    # fetch user's profile data 
+    my $user = $DB->query("SELECT users.id, user_profiles.*, users.email FROM users, user_profiles WHERE users.name_hash = ? and user_profiles.user_id = users.id LIMIT 1", hash::fast(lc($username)) )->fetchrow_hashref();
+    
+    # validate username
+    throw 'request_404' unless $user;
+    
+    # fetch profile metadata
+    # todo: move this into a subroutine and cache it
+    my $query = $DB->query("SELECT name, parent, link, bbcode FROM user_profile_meta ORDER BY name ASC");
+    
+    # prepare profile metadata
+    my $fields;
+    while ( my $field = $query->fetchrow_arrayref() ) {
+        my %field = ( 'name' => $field->[0], 'link' => $field->[2], 'bbcode' => $field->[3] );
+        push @{$fields{ $field->[1] }}, \%field;
+    }
+    
+    # print profile data
+    style::include_template('view_profile');
+   
+    print qq~\t<user action="view_profile" name="$username">\n~;
+    
+    # print fields by group
+    for my $group (sort keys %fields) {
+        print qq~\t\t<group name="$group">\n~;
+        for my $field (@{$fields{ $group }}) {
+            
+            # skip empty fields and set email
+            next if length $user->{ $field->{'name'} } == 0;
+            $field->{'name'} = "email" if ($field->{'name'} eq "display_email" and $user->{ $field->{'name'} } == 1);
+            
+            # unserialize fields with bbcode/xhtml
+            if ($field->{'bbcode'} == 1) {
+                my @unserialized = split /(?!\\),/, $user->{ $field->{'name'} };
+                @unserialized[1] =~ s/\\,/,/o;
+                $user->{ $field->{'name'} } = @unserialized[1];
+                print qq~\t\t\t<field name="$field->{'name'}">\n~;
+                print "\t\t\t\t" . $user->{ $field->{'name'} } . "\n";
+                print "\t\t\t</field>\n";
+            }
+            else {
+                my $link = qq~link="$field->{'link'}" ~ unless length $field->{'link'} == 0;
+                print qq~\t\t\t<field name="$field->{'name'}" value="$user->{ $field->{'name'} }" $link/>\n~; 
+            }            
+        }
+        print "\t\t</group>\n";
+    }
+    print "\t</user>\n";
+    
+    # contextual admin menu
+    if ($PERMISSIONS{'user_admin_manage'}) {
+        my $item = menu::add_item('menu' => 'admin', 'label' => 'This User', 'url' => $REQUEST{'url'});
+        menu::add_item('parent' => $item, 'label' => 'Edit Account',    'url' => $REQUEST{'url'} . '/?id=' .  $user->{'user_id'});
+        menu::add_item('parent' => $item, 'label' => 'Delete',          'url' => $module_admin_base_url . 'manage/?find=' .  $user->{'user_id'} . '&amp;a=delete');
     }
 }
 

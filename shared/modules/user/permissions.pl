@@ -11,4 +11,8 @@
         'name'   => 'Manage Users',
         'levels' => ['No', 'Yes'],
     },
+    'user_profile_view' => {
+        'name'   => 'View Profiles',
+        'levels' => ['No', 'Yes'],
+    },
 }
