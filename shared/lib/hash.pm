@@ -47,19 +47,23 @@ package hash;
     </function>
 =cut
 
-eval { require Digest::JHash };
-if ($@) {
-    eval q~
-        sub fast {
-            return substr(Digest::SHA::sha1_hex($_[0]), 0, 10);
-        }
-    ~;
-} else {
-    eval q~
-        sub fast {
-            return Digest::JHash::jhash($_[0]);
-        }
-    ~;
+sub fast {
+	if ($oyster::CONFIG{'hash_method'} eq "sha") {
+        return substr(Digest::SHA::sha1_hex($_[0]), 0, 10);
+	} elsif ($oyster::CONFIG{'hash_method'} eq "jhash") {
+		return Digest::JHash::jhash($_[0]);
+	} else {
+		eval { require Digest::JHash };
+		if ($@) {
+		    eval q~
+		    	return substr(Digest::SHA::sha1_hex($_[0]), 0, 10);
+		    ~;
+		} else {
+		    eval q~
+		    	return Digest::JHash::jhash($_[0]);
+		    ~;
+		}
+	}
 }
 
 =xml
