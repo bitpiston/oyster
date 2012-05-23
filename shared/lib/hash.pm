@@ -93,6 +93,30 @@ sub secure {
     return Digest::SHA::sha256_hex($_[0]);
 }
 
+=xml
+    <function name="md5">
+        <synopsis>
+            Returns a hashed md5 value of a string
+        </synopsis>
+        <note>
+            Hashes are 16 bytes long and hexidecimal.
+        </note>
+        <note>
+            MD5 hashing is optional and will only be loaded if MD5 is installed.
+        </note>
+        <prototype>
+            string = hash::md5(string)
+        </prototype>
+    </function>
+=cut
+
+eval { require Digest::MD5 };
+unless ($@) {
+   sub md5 {
+	   return Digest::MD5::md5_hex($_[0]);
+   }
+}
+
 # Copyright BitPiston 2008
 1;
 =xml

@@ -64,10 +64,10 @@ sub parse_chunk {
             push @{$self->{'stack'}}, $node unless $is_singleton;
 
             # execute handler (if any)
-            $self->{'handlers'}{'node_start'}->($self, lc $namespace, lc $node, _parse_attrs($attrs)) if exists $self->{'handlers'}{'node_start'};
+            $self->{'handlers'}{'node_start'}->($self, $namespace, $node, _parse_attrs($attrs)) if exists $self->{'handlers'}{'node_start'};
 
             # execute end handler (if any) if this was a singleton node
-            $self->{'handlers'}{'node_end'}->($self, lc $namespace, lc $node) if $is_singleton and exists $self->{'handlers'}{'node_end'};
+            $self->{'handlers'}{'node_end'}->($self, $namespace, $node) if $is_singleton and exists $self->{'handlers'}{'node_end'};
         }
 
         # node end
@@ -79,7 +79,7 @@ sub parse_chunk {
             throw 'validation_error' => "Unmatched end tag '$node', expecting '$popped_node'." unless $node eq $popped_node;
 
             # execute handler (if any)
-            $self->{'handlers'}{'node_end'}->($self, lc $namespace, lc $node) if exists $self->{'handlers'}{'node_end'};
+            $self->{'handlers'}{'node_end'}->($self, $namespace, $node) if exists $self->{'handlers'}{'node_end'};
         }
 
         # doctype declarations (must come first)
@@ -97,7 +97,7 @@ sub parse_chunk {
             throw 'validation_error' => 'XML directive inside of node.' if @{$self->{'stack'}};
 
             # execute handler (if any)
-            $self->{'handlers'}{'directive'}->($self, lc $directive, _parse_attrs($attrs)) if exists $self->{'handlers'}{'directive'};
+            $self->{'handlers'}{'directive'}->($self, $directive, _parse_attrs($attrs)) if exists $self->{'handlers'}{'directive'};
         }
 
         # comments
@@ -169,7 +169,7 @@ sub _parse_attrs {
     while (length $attrs) {
         #allows escaped "s in attributes # if ($attrs =~ s/^\s+((?:[a-zA-z0-9]+:)?[a-zA-z0-9]+)\s*=\s*"((?:[\s\S])*?(?!\\))"//o) {
         if ($attrs =~ s/^\s+((?:[a-zA-z0-9]+:)?[a-zA-z0-9]+)\s*=\s*"([\s\S]*?)"//o) {
-           $attrs{lc $1} = $2;
+           $attrs{$1} = $2;
         } else {
             throw 'validation_error' => "Attribute parse error.";
         }
