@@ -458,7 +458,7 @@ sub request_handler {
             'start_time'  => $start,                    # used for benchmarking
             #'method'      => $ENV{'REQUEST_METHOD'},    # TODO: keep this? created because it can be a simple misspelling for $ENV{'REQUEST_METHOD'}
         );
-
+        
         # uhhh not sure why this is needed.... the query string env variable isnt being populated properly (fastcgi issue?)
         if ((my $query_begin = index($ENV{'REQUEST_URI'}, '?')) != -1) {
             $ENV{'QUERY_STRING'} = substr($ENV{'REQUEST_URI'}, $query_begin + 1);
@@ -521,8 +521,8 @@ sub request_handler {
         buffer::start();
 
         # signal the request_start hook
-        #event::execute('request_start') if $REQUEST{'handler'} ne 'ajax';
-        event::execute('request_start');
+        event::execute('request_start') if $REQUEST{'handler'} ne 'ajax';
+        #event::execute('request_start');
 
         # execute the selected module and action
         try {
@@ -533,21 +533,25 @@ sub request_handler {
         my $content = buffer::end_clean();
 
         # print the header
-        style::print_header();
+        style::print_header() if $REQUEST{'handler'} ne 'ajax';
+		#style::print_header();
 
         # print the buffer
         print $content;
 
         # print the navigation menu
-        url::print_navigation_xml();
+        url::print_navigation_xml() if $REQUEST{'handler'} ne 'ajax';
+		#url::print_navigation_xml();
 
         # signal the request_end hook
-        #event::execute('request_end') if $REQUEST{'handler'} ne 'ajax';
-        event::execute('request_end');
+        event::execute('request_end') if $REQUEST{'handler'} ne 'ajax';
+        #event::execute('request_end');
 
         # print the footer
-        print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'};
-        style::print_footer();
+        print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'} and $REQUEST{'handler'} ne 'ajax';
+		#print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'};
+        style::print_footer() if $REQUEST{'handler'} ne 'ajax';
+		#style::print_footer();
 
         # signal the request_finish hook
         event::execute('request_finish');
@@ -646,7 +650,11 @@ sub _load_exception_handlers {
         #http::header("HTTP/1.1 404 Not Found"); # sending this makes the web server use its own 404 page -- TODO: make that an option?
         style::print_header();
         event::execute('request_start');
-        print "\t<error status=\"404\" />\n";
+        my $url = $ENV{'REQUEST_URI'};
+        $url =~ s!^/!!o;
+        $url = $CONFIG{'full_url'} . $url;
+        print "\t<error status=\"404\" url=\"" . $url . "\" hash=\"" . hash::fast($REQUEST{'url'}) . "\" />\n";
+        url::print_navigation_xml();
         event::execute('request_end');
         #print "\t<url hash=\"" . hash::fast($REQUEST{'url'}) . "\">\n";
         style::print_footer();

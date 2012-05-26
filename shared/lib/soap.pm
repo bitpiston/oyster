@@ -135,7 +135,10 @@ sub request {
 	});
 	$parser->parse_string($buffer);
 	
-	return \%structure;
+	# Trim the useless elements that will always be there
+	my $response = $structure{'Envelope'}{'Body'};
+	
+	return $response;
 }
 
 =xml
