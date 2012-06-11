@@ -337,7 +337,15 @@ sub compile {
         return "${style_url}base.xsl", "${style_path}base.xsl" unless @stylesheets;
 
         # otherwise return the url to the dynamic style
-        my $dyn_name = join('-', map { s!\.xsl$!!og; s!/!_!og } @stylesheets) . '.xsl';
+        # ugly work around for whatever reason map fails in fastcgi
+        my $dyn_name;
+        for my $file (@stylesheets) {
+            $dyn_name = $file;
+            $dyn_name =~ s/\.xsl$//og;
+            $dyn_name =~ s/\//_/og;
+            $dyn_name .= '.xsl';
+        }
+        #my $dyn_name = join('-', map { s!\.xsl$!!og; s!/!_!og } @stylesheets) . '.xsl';
         return "${style_url}dynamic/$dyn_name", "${style_path}dynamic/$dyn_name";
     }
 

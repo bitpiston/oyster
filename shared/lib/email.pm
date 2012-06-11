@@ -93,7 +93,7 @@ sub send {
             Templates are stored in site_email_templates
         </note>
         <prototype>
-            email::send_template(string template_name, string to, hashref variables)
+            email::send_template(string template_name, string to, hashref variables[, string header_name => string header_value ...])
         </prototype>
         <example>
             email::send_template('user_registration', 'ShaneCalimlim@gmail.com', {'username' => 'ShaneC'});
@@ -105,8 +105,11 @@ sub send_template {
     my ($template, $to, $vars) = @_;
 
     # grab the template
-    my ($subject, $body) = @{ $oyster::DB->selectrow_arrayref("SELECT subject, body FROM $oyster::CONFIG{db_prefix}email_templates WHERE name = ? LIMIT 1", {}, $template) };
-
+    my ($subject, $from, $type, $body) = @{ $oyster::DB->selectrow_arrayref("SELECT subject, from_address, type, body FROM $oyster::CONFIG{db_prefix}email_templates WHERE name = ? LIMIT 1", {}, $template) };
+	
+	# default from address unless template has one
+	$from = $oyster::CONFIG{'sendmail_from'} unless defined $from;
+	
     # remove returns
     $body =~ s/\r//g;
 
@@ -115,7 +118,12 @@ sub send_template {
     $body    =~ s/{(\w+?)}/$vars->{$1}/g;
 
     # send email
-    email::send('to' => $to, 'subject' => $subject, $body);
+	if ($type eq 'html') {
+		email::send('content-type' => 'text/html', 'from' => $from, 'to' => $to, 'subject' => $subject, $body);
+	}
+	else {
+		email::send('from' => $from, 'to' => $to, 'subject' => $subject, $body);
+	}
 }
 
 =xml

@@ -257,7 +257,7 @@ sub abort {
 =xml
     <function name="trace">
         <synopsis>
-            
+            Traces the call back stack
         </synopsis>
         <note>
             

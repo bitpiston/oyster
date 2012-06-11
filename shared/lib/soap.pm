@@ -74,6 +74,7 @@ sub request {
         "Host: $host" . ( $port != 80 ? ":$port" : '' ),
         'Content-Type: text/xml; charset=utf-8',
 		'Content-Length: ' . length($content),
+		'Connection: close',
 		"SOAPAction: \"$action\"",
         '', '', # end header
     ) . $content;

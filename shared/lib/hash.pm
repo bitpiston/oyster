@@ -91,6 +91,7 @@ require Digest::SHA::PurePerl if $@;
 
 sub secure {
     return Digest::SHA::sha256_hex($_[0]);
+	#return Digest::SHA::sha512_hex($_[0]);
 }
 
 =xml
@@ -115,6 +116,28 @@ unless ($@) {
    sub md5 {
 	   return Digest::MD5::md5_hex($_[0]);
    }
+}
+
+=xml
+    <function name="rot13">
+        <synopsis>
+            Returns a ciphered rot13 value of a string
+        </synopsis>
+        <note>
+            The returned value is equal length to the input.
+        </note>
+        <note>
+            This should /NEVER/ be used for encryption. 
+        </note>
+        <prototype>
+            string = hash::rot13(string)
+        </prototype>
+    </function>
+=cut
+
+sub rot13 {
+  $_[0] =~ tr/A-Za-z/N-ZA-Mn-za-m/;
+  return $_[0];
 }
 
 # Copyright BitPiston 2008
