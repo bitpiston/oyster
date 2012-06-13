@@ -534,14 +534,14 @@ sub request_handler {
 
         # print the header
         style::print_header() if $REQUEST{'handler'} ne 'ajax';
-		#style::print_header();
+        #style::print_header();
 
         # print the buffer
         print $content;
 
         # print the navigation menu
         url::print_navigation_xml() if $REQUEST{'handler'} ne 'ajax';
-		#url::print_navigation_xml();
+        #url::print_navigation_xml();
 
         # signal the request_end hook
         event::execute('request_end') if $REQUEST{'handler'} ne 'ajax';
@@ -549,9 +549,9 @@ sub request_handler {
 
         # print the footer
         print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'} and $REQUEST{'handler'} ne 'ajax';
-		#print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'};
+        #print qq~\t<daemon>$CONFIG{daemon_id}</daemon>\n~ if $CONFIG{'debug'};
         style::print_footer() if $REQUEST{'handler'} ne 'ajax';
-		#style::print_footer();
+        #style::print_footer();
 
         # signal the request_finish hook
         event::execute('request_finish');
@@ -864,36 +864,36 @@ sub parse_user_agent {
         $REQUEST{'ua_render_engine'}         = 'konqueror';
         $REQUEST{'ua_render_engine_version'} = $1;
     }
-	
-	# Check for the OS
-	my %systems = (
-		'iPhone'         => qr/iPhone/o,
-		'Windows 3.11'   => qr/Win16/o,
-		'Windows 95'     => qr/(?:Windows 95)|(?:Win95)|(?:Windows_95)/o, 
-		'Windows 98'     => qr/(?:Windows 98)|(?:Win98)/o,
-		'Windows 2000'   => qr/(?:Windows NT 5.0)|(?:Windows 2000)/o,
-		'Windows XP'     => qr/(?:Windows NT 5.1)|(?:Windows XP)/o,
-		'Windows 2003'   => qr/(?:Windows NT 5.2)/o,
-		'Windows Vista'  => qr/(?:Windows NT 6.0)|(?:Windows Vista)/o,
-		'Windows 7'      => qr/(?:Windows NT 6.1)|(?:Windows 7)/o,
-		'Windows NT 4.0' => qr/(?:Windows NT 4.0)|(?:WinNT4.0)|(?:WinNT)|(?:Windows NT)/o,
-		'Windows ME'     => qr/Windows ME/o,
-		'OpenBSD'        => qr/OpenBSD/o,
-		'FreeBSD'        => qr/FreeBSD/o,
-		'Sun OS'         => qr/SunOS/o,
-		'Linux'          => qr/(?:Linux)|(?:X11)/o,
-		'Macintosh'      => qr/(?:Mac_PowerPC)|(?:Macintosh)/o,
-		'QNX'            => qr/QNX/o,
-		'BeOS'           => qr/BeOS/o,
-		'OS/2'           => qr/OS\/2/o,
-		'Search Bot'     => qr/(?:nuhk)|(?:Googlebot)|(?:Yammybot)|(?:Openbot)|(?:Slurp\/cat)|(?:msnbot)|(?:ia_archiver)/o
-	);
-	foreach my $os (keys %systems) { 
-		if ($ua =~ $systems{$os}) {
-			$REQUEST{'ua_os'} = $os;
-			last;
-		}
-	}
+    
+    # Check for the OS
+    my %systems = (
+        'iPhone'         => qr/iPhone/o,
+        'Windows 3.11'   => qr/Win16/o,
+        'Windows 95'     => qr/(?:Windows 95)|(?:Win95)|(?:Windows_95)/o, 
+        'Windows 98'     => qr/(?:Windows 98)|(?:Win98)/o,
+        'Windows 2000'   => qr/(?:Windows NT 5.0)|(?:Windows 2000)/o,
+        'Windows XP'     => qr/(?:Windows NT 5.1)|(?:Windows XP)/o,
+        'Windows 2003'   => qr/(?:Windows NT 5.2)/o,
+        'Windows Vista'  => qr/(?:Windows NT 6.0)|(?:Windows Vista)/o,
+        'Windows 7'      => qr/(?:Windows NT 6.1)|(?:Windows 7)/o,
+        'Windows NT 4.0' => qr/(?:Windows NT 4.0)|(?:WinNT4.0)|(?:WinNT)|(?:Windows NT)/o,
+        'Windows ME'     => qr/Windows ME/o,
+        'OpenBSD'        => qr/OpenBSD/o,
+        'FreeBSD'        => qr/FreeBSD/o,
+        'Sun OS'         => qr/SunOS/o,
+        'Linux'          => qr/(?:Linux)|(?:X11)/o,
+        'Macintosh'      => qr/(?:Mac_PowerPC)|(?:Macintosh)/o,
+        'QNX'            => qr/QNX/o,
+        'BeOS'           => qr/BeOS/o,
+        'OS/2'           => qr/OS\/2/o,
+        'Search Bot'     => qr/(?:nuhk)|(?:Googlebot)|(?:Yammybot)|(?:Openbot)|(?:Slurp\/cat)|(?:msnbot)|(?:ia_archiver)/o
+    );
+    foreach my $os (keys %systems) { 
+        if ($ua =~ $systems{$os}) {
+            $REQUEST{'ua_os'} = $os;
+            last;
+        }
+    }
     $REQUEST{'parsed_user_agent'} = undef;
 }
 

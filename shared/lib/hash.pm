@@ -91,7 +91,7 @@ require Digest::SHA::PurePerl if $@;
 
 sub secure {
     return Digest::SHA::sha256_hex($_[0]);
-	#return Digest::SHA::sha512_hex($_[0]);
+    #return Digest::SHA::sha512_hex($_[0]);
 }
 
 =xml
@@ -114,7 +114,7 @@ sub secure {
 eval { require Digest::MD5 };
 unless ($@) {
    sub md5 {
-	   return Digest::MD5::md5_hex($_[0]);
+       return Digest::MD5::md5_hex($_[0]);
    }
 }
 

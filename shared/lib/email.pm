@@ -106,10 +106,10 @@ sub send_template {
 
     # grab the template
     my ($subject, $from, $type, $body) = @{ $oyster::DB->selectrow_arrayref("SELECT subject, from_address, type, body FROM $oyster::CONFIG{db_prefix}email_templates WHERE name = ? LIMIT 1", {}, $template) };
-	
-	# default from address unless template has one
-	$from = $oyster::CONFIG{'sendmail_from'} unless defined $from;
-	
+    
+    # default from address unless template has one
+    $from = $oyster::CONFIG{'sendmail_from'} unless defined $from;
+    
     # remove returns
     $body =~ s/\r//g;
 
@@ -118,12 +118,12 @@ sub send_template {
     $body    =~ s/{(\w+?)}/$vars->{$1}/g;
 
     # send email
-	if ($type eq 'html') {
-		email::send('content-type' => 'text/html', 'from' => $from, 'to' => $to, 'subject' => $subject, $body);
-	}
-	else {
-		email::send('from' => $from, 'to' => $to, 'subject' => $subject, $body);
-	}
+    if ($type eq 'html') {
+        email::send('content-type' => 'text/html', 'from' => $from, 'to' => $to, 'subject' => $subject, $body);
+    }
+    else {
+        email::send('from' => $from, 'to' => $to, 'subject' => $subject, $body);
+    }
 }
 
 =xml
