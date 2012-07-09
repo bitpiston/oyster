@@ -50,16 +50,16 @@ package hash;
 my $is_jhash_available;
 eval { require Digest::JHash };
 if ($@) {
-   $is_jhash_available = 0;
+    $is_jhash_available = 0;
 } else {
-   $is_jhash_available = 1;
+    $is_jhash_available = 1;
 }
 
 sub fast {
-   if ($oyster::CONFIG{'hash_method'} eq "sha") {
-       return substr(Digest::SHA::sha1_hex($_[0]), 0, 10);
-   } elsif ($oyster::CONFIG{'hash_method'} eq "jhash" and $is_jhash_available == 1) {
-       return Digest::JHash::jhash($_[0]);
+    if ($oyster::CONFIG{'hash_method'} eq "sha") {
+        return substr(Digest::SHA::sha1_hex($_[0]), 0, 10);
+    } elsif ($oyster::CONFIG{'hash_method'} eq "jhash" or $is_jhash_available == 1) {
+        return Digest::JHash::jhash($_[0]);
     }
 }
 
@@ -90,8 +90,8 @@ eval { require Digest::SHA };
 require Digest::SHA::PurePerl if $@;
 
 sub secure {
-    return Digest::SHA::sha256_hex($_[0]);
-    #return Digest::SHA::sha512_hex($_[0]);
+    #return Digest::SHA::sha256_hex($_[0]);
+    return Digest::SHA::sha512_hex($_[0]);
 }
 
 =xml
