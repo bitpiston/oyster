@@ -104,7 +104,8 @@ sub pdt {
 
     # make the request
     my $request = $obj->{'ua'}->post($obj->{'webscr_url'}, \%request_params);
-    throw 'perl_error' => "Paypal communication failed: " . $request->status_line() unless $request->is_success(); # could include more details in the error but it's probably not a good idea to store this raw data in the error log (or to transmit it over http)
+    throw 'perl_error' => "Paypal communication failed: " . $request->status_line() unless $request->is_success(); 
+    # could include more details in the error but it's probably not a good idea to store this raw data in the error log (or to transmit it over http)
 
     # parse the returned data
     my @lines = split(/\n/, $request->content());
@@ -182,7 +183,8 @@ sub validate_ipn {
 
     $ipn->{'cmd'} = '_notify-validate';
     my $request = $obj->{'ua'}->post($obj->{'webscr_url'}, $ipn);
-    throw 'perl_error' => "Paypal communication failed: " . $request->status_line() unless $request->is_success(); # could include more details in the error but it's probably not a good idea to store this raw data in the error log (or to transmit it over http)
+    throw 'perl_error' => "Paypal communication failed: " . $request->status_line() unless $request->is_success();
+     # could include more details in the error but it's probably not a good idea to store this raw data in the error log (or to transmit it over http)
 
     return $request->content() eq 'VERIFIED' ? 1 : 0 ;
 }
@@ -221,7 +223,8 @@ sub _send_msg {
 
     # send the request
     my $request = $obj->{'ua'}->post($obj->{'url'}, $params);
-    throw 'perl_error' => "Paypal communication failed: " . $request->status_line() unless $request->is_success(); # could include more details in the error but it's probably not a good idea to store this raw data in the error log (or to transmit it over http)
+    throw 'perl_error' => "Paypal communication failed: " . $request->status_line() unless $request->is_success(); 
+    # could include more details in the error but it's probably not a good idea to store this raw data in the error log (or to transmit it over http)
 
     # parse the nvp response
     my %response;

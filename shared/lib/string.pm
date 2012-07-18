@@ -114,9 +114,6 @@ sub urlify {
     $string =~ s/\@/ at /og;
     $string =~ s/&/ and /og;
     
-    # replace whitespace with +
-    $string =~ s/[\s]+/\+/og;
-    
     # replace puncutation with underscores
     #$string =~ s/\s+/_/ogi;
     $string =~ s/[,.!""'']+/_/og;
@@ -125,7 +122,34 @@ sub urlify {
     $string =~ s/_+/_/og;
 
     # replaced non word/ascii characters with encoded equivalents
-    $string =~ s/([^a-zA-Z0-9_])/sprintf('%%%02X', ord $1)/oge;
+    #$string =~ s/([^a-zA-Z0-9_])/sprintf('%%%02X', ord $1)/oge;
+    $string = cgi::uri_encode($string);
+
+    # replace whitespace with +
+    $string =~ s/%20/\+/og;
+    
+    return $string;
+}
+
+=xml
+    <function name="deurlify">
+        <synopsis>
+             Takes a url friendly string and normalizes it (the best we can)
+        </synopsis>
+        <prototype>
+            string = string::deurlify(string)
+        </prototype>
+    </function>
+=cut
+
+sub deurlify {
+    my $string = lc(shift()); # get the first arg and lowercase it
+    
+    # replace + with whitespace
+    $string =~ s/\+/ /og;
+    
+    # decode uri encoding
+    $string = cgi::uri_decode($string);
 
     return $string;
 }
