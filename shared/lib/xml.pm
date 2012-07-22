@@ -831,7 +831,7 @@ sub validate_xhtml {
         }
 
         # start tags
-        elsif ($xhtml =~ /^(<(\w+)((?:\s*\w+\s*=\s*"[^"]*")+)?\s*(\/?)>)/o and $ignore_tag == 0) {
+        elsif ($xhtml =~ /^(<(\w+)((?:\s*[-\w]+\s*=\s*"[^"]*")+)?\s*(\/?)>)/o and $ignore_tag == 0) {
             my ($match, $tag, $attrs, $is_end) = ($1, lc $2, $3, $4);
             if (!defined $xhtml_tags{$tag} or $xhtml_tags{$tag} > $options{'permission_level'}) {
                 $ignore_tag = 1;
@@ -842,7 +842,7 @@ sub validate_xhtml {
             my @attrs;
             while (length $attrs) {
                 my $attr_replace_len = 1;
-                if ($attrs =~ /^((\w+)\s*=\s*"([^"]*)")/o) {
+                if ($attrs =~ /^(([-\w]+)\s*=\s*"([^"]*)")/o) {
                     my ($match, $name, $value) = ($1, $2, $3);
                     $attr_replace_len = length $match;
                     push(@attrs, $name . '="' . entities($value) . '"');
