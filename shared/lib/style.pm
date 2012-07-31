@@ -197,6 +197,8 @@ sub print_header {
               . ' page_title="' . $oyster::REQUEST{'current_url'}->{'title'} . '"'
               . ' base="' .   $oyster::CONFIG{'url'} . '"'
               . ' styles="' . $oyster::CONFIG{'styles_url'} . '"'
+              . ' browser="' . $oyster::REQUEST{'ua_browser'} . '"'
+              . ' renderer="' . $oyster::REQUEST{'ua_render_engine'} . '"'
               . ' style="' .  $oyster::REQUEST{'style'} . '"'
               . ' url="' .    $oyster::CONFIG{'url'} . ( length $oyster::REQUEST{'url'} ? $oyster::REQUEST{'url'} . '/' : '' ) . '"';
     $attrs .= ' module="' . $oyster::REQUEST{'module'} . '"' if length $oyster::REQUEST{'module'};

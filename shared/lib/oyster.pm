@@ -842,28 +842,53 @@ sub dump {
 sub parse_user_agent {
     return if exists $REQUEST{'parsed_user_agent'};
     my $ua = $ENV{'HTTP_USER_AGENT'};
-    if    ($ua =~ m!Opera.(\d.\d+)!o) {
-        $REQUEST{'ua_render_engine'}         = 'opera';
+    if    ($ua =~ m!Presto/(\d+.\d+.\d+)!o) {
+        $REQUEST{'ua_render_engine'}         = 'presto';
         $REQUEST{'ua_render_engine_version'} = $1;
+        if ($ua =~ m!Opera/(?:(\d+)\.\d+)!o) {
+            $REQUEST{'ua_browser'}           = 'opera';
+            $REQUEST{'ua_browser_version'}   = $1;
+        }
     }
     elsif ($ua =~ m!MSIE (\d\.\d+)!o) {
-        $REQUEST{'ua_render_engine'}         = 'msie';
+        $REQUEST{'ua_render_engine'}         = 'trident';
         $REQUEST{'ua_render_engine_version'} = $1;
+        $REQUEST{'ua_browser'}               = 'msie';
+        $REQUEST{'ua_browser_version'}       = $1;
     }
     elsif ($ua =~ m!Gecko/(\d+)!o) {
         $REQUEST{'ua_render_engine'}         = 'gecko';
         $REQUEST{'ua_render_engine_version'} = $1;
+        if ($ua =~ m!Camino/(?:(\d+)\.\d+\.\d+) \(like Firefox!o) {
+            $REQUEST{'ua_browser'}           = 'camino';
+            $REQUEST{'ua_browser_version'}   = $1;
+        }
+        elsif ($ua =~ m!Firefox/(\d+)!o) {
+            $REQUEST{'ua_browser'}           = 'firefox';
+            $REQUEST{'ua_browser_version'}   = $1;
+        }
     }
     #elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)+))?!o) {
     elsif ($ua =~ m!AppleWebKit(?:/(\d(?:\.\d)?))?!o) {
-        $REQUEST{'ua_render_engine'}         = 'applewebkit';
+        $REQUEST{'ua_render_engine'}         = 'webkit';
         $REQUEST{'ua_render_engine_version'} = $1;
+        if ($ua =~ m!Chrome\/(?:(\d+)\.\d+\.\d+\.\d+) Safari!o) {
+            $REQUEST{'ua_browser'}           = 'chrome';
+            $REQUEST{'ua_browser_version'}   = $1;
+        }
+        elsif ($ua =~ m!Version/(?:(\d+)\.\d+(?:\.\d+)?)(?: Mobile/\w+)? Safari!o) {
+            $REQUEST{'ua_browser'}           = 'safari';
+            $REQUEST{'ua_browser_version'}   = $1;
+        }
+        
     }
     #elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)+))?!o) {
     elsif ($ua =~ m!KHTML(?:/(\d(?:\.\d)?))?!o) {
-        $REQUEST{'ua_render_engine'}         = 'konqueror';
+        $REQUEST{'ua_render_engine'}         = 'khtml';
         $REQUEST{'ua_render_engine_version'} = $1;
     }
+    
+    $REQUEST{'ua_browser'} = 'other' if !defined $REQUEST{'ua_browser'};
     
     # Check for the OS
     my %systems = (

@@ -58,7 +58,7 @@ sub request_legacy {
     $content .= '<?xml version="1.0" encoding="utf-8"?>' . "\n" . 
                 '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' . "\n" .  
                 "\t<soap:Body>\n";
-    $content .= _print_vars($name, $request, 2);
+    $content .= print_vars($name, $request, 2);
     $content .= "\t</soap:Body>\n" . 
                 '</soap:Envelope>' . "\n";
 
