@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
-<meta http-equiv="content-style-type" content="text/css"/>
-<link rel="stylesheet" type="text/css" media="screen" href="../document.css"/>
-<title>Hashing Functions | Oyster Documentation</title>
-<!--[if lt IE 8]>
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+    <meta http-equiv="content-style-type" content="text/css"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="../document.css"/>
+    <title>Hashing Functions | Oyster Documentation</title>
+    <!--[if lt IE 8]>
 					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
 					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
 				<![endif]-->
-</head>
-<body class="documentation">
-<div id="header">
-<div class="wrapper">
-<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
-<span id="subtitle">A Perl web application framework.</span>
-</div>
-</div>
-<hr/>
-<div id="navigation">
-<div class="wrapper">
-<ul>
-<li>
-<a href="http://oyster.bitpiston.com/">Overview</a>
-</li>
-<li>
-<a href="http://oyster.bitpiston.com/download/">Download</a>
-</li>
-<li class="selected">
-<a href="../index.xhtml">Documentation</a>
-</li>
-<li>
-<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
-</li>
-<li>
-<a href="http://oyster.bitpiston.com/development/">Development</a>
-</li>
-</ul>
-</div>
-</div>
-<hr/>
-<div id="content">
-<div class="wrapper">
-<div id="content-primary"><h1><span>2.11</span><a href="./">Hashing Functions</a></h1>
+  </head>
+  <body class="documentation">
+    <div id="header">
+      <div class="wrapper">
+        <a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+        <span id="subtitle">A Perl web application framework.</span>
+      </div>
+    </div>
+    <hr/>
+    <div id="navigation">
+      <div class="wrapper">
+        <ul>
+          <li>
+            <a href="http://oyster.bitpiston.com/">Overview</a>
+          </li>
+          <li>
+            <a href="http://oyster.bitpiston.com/download/">Download</a>
+          </li>
+          <li class="selected">
+            <a href="../index.xhtml">Documentation</a>
+          </li>
+          <li>
+            <a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+          </li>
+          <li>
+            <a href="http://oyster.bitpiston.com/development/">Development</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <hr/>
+    <div id="content">
+      <div class="wrapper">
+        <div id="content-primary"><h1><span>1.11</span><a href="./">Hashing Functions</a></h1>
     <p>
         Functions related to hashing data.
     </p>
@@ -86,25 +86,43 @@
         </p><h3>Prototype:</h3><pre class="prototype">
             string = hash::secure(string)
         </pre></div>
+    <div class="function"><h2 id="md5"><span/><a href="md5" rel="bookmark">md5</a></h2><p>
+            Returns a hashed md5 value of a string
+        </p><p class="note">
+            Hashes are 16 bytes long and hexidecimal.
+        </p><p class="note">
+            MD5 hashing is optional and will only be loaded if MD5 is installed.
+        </p><h3>Prototype:</h3><pre class="prototype">
+            string = hash::md5(string)
+        </pre></div>
+    <div class="function"><h2 id="rot13"><span/><a href="rot13" rel="bookmark">rot13</a></h2><p>
+            Returns a ciphered rot13 value of a string
+        </p><p class="note">
+            The returned value is equal length to the input.
+        </p><p class="note">
+            This should /NEVER/ be used for encryption. 
+        </p><h3>Prototype:</h3><pre class="prototype">
+            string = hash::rot13(string)
+        </pre></div>
 </div>
-<div id="content-secondary">
-<form id="search" method="get" action="/search/">
-<div>
-<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
-<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
-</div>
-</form>
-<h2>Lorem Ipsum</h2>
-<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
-</div>
-</div>
-</div>
-<hr/>
-<div id="footer">
-<div class="wrapper">
-<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
-<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
-</div>
-</div>
-</body>
+        <div id="content-secondary">
+          <form id="search" method="get" action="/search/">
+            <div>
+              <input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+              <input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+            </div>
+          </form>
+          <h2>Lorem Ipsum</h2>
+          <p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div id="footer">
+      <div class="wrapper">
+        <p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+        <a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+      </div>
+    </div>
+  </body>
 </html>

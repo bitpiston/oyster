@@ -217,10 +217,7 @@ sub _transaction {
     $request{'url'} = $config->{'url'};
     $request{'ssl'} = {
         SSL_version => 'SSLv3',
-        #SSL_use_cert => '1',
         SSL_verify_mode => '0x00',
-        #SSL_key_file => $conf->{'ssl_key'},
-        #SSL_cert_file => $conf->{'ssl_cert'},
     };
 
     # HTTP headers for PayPal XMLPay API

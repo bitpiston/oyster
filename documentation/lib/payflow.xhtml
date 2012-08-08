@@ -5,7 +5,7 @@
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
     <meta http-equiv="content-style-type" content="text/css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="../document.css"/>
-    <title>Paypal API | Oyster Documentation</title>
+    <title>Payflow Pro API | Oyster Documentation</title>
     <!--[if lt IE 8]>
 					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
 					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
@@ -43,58 +43,57 @@
     <hr/>
     <div id="content">
       <div class="wrapper">
-        <div id="content-primary"><h1><span>1.22</span><a href="./">Paypal API</a></h1><div class="todo"><strong>Todo</strong><ul><li>
-        Paypal account details should be in a config
-    </li><li>
-        Needs more documentation
+        <div id="content-primary"><h1><span>1.21</span><a href="./">Payflow Pro API</a></h1><div class="todo"><strong>Todo</strong><ul><li>
+        Error handling for XMLPay responses.
     </li></ul></div>
     <div class="warning"><strong>Warning</strong><p>
-        This library is considered pre-alpha.
+        This library is considered beta at best.
     </p></div>
     <p>
-        This library provides access to Paypal's NVP api.
+        This library provides access to Paypal's PayFlow Pro XMLPay API.
     </p>
-    
     
     <h2 id=""><span/><a href="">Public Functions</a></h2>
         <p class="note">
-            All functions take either a single argument or a hash of arguments (NOT
-            a hashref).
+            All functions take two hashrefs. One for your API configuration details and another with the transaction data to pass to the API. See the PayPal PayFlow Pro XMLPay API documentation for the details:
+            https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_PayflowPro_XMLPay_Guide.pdf
         </p>
         <p class="note">
-            All functions return hashrefs containing the nvp response.
+            All functions return hashrefs containing the XMLPay TransactionResult from the response.
         </p>
-        <div class="function"><h3 id="new"><span/><a href="new" rel="bookmark">new</a></h3><p/></div>
-        <div class="function"><h3 id="pdt"><span/><a href="pdt" rel="bookmark">pdt</a></h3><p>
-                Sends a Payment Data Transfer request to Paypal
-            </p><p class="note">
-                For an explanation of the variables returned by this, see
-                PayPal's variable reference.
-            </p><p class="note">
-                This uses a different authentication scheme than the NVP-based API
-                functions.
-            </p><p class="note">
-                PDT also returns data in a different format than NVP, so it must use a
-                custom parser.
+        <div class="function"><h3 id="sale_credit"><span/><a href="sale_credit" rel="bookmark">sale_credit</a></h3><p>
+                Sends a credit card sale request to PayPal and returns the response.
             </p><h4>Prototype:</h4><pre class="prototype">
-                hashref = obj-&gt;pdt(string transaction_id)
+                hashref = sale_credit(hashref config, hashref data)
             </pre></div>
-        <div class="function"><h3 id="get_transaction_details"><span/><a href="get_transaction_details" rel="bookmark">get_transaction_details</a></h3><p/></div>
-        <div class="function"><h3 id="transaction_search"><span/><a href="transaction_search" rel="bookmark">transaction_search</a></h3><p/></div>
-        <div class="function"><h3 id="parsed_transaction_search"><span/><a href="parsed_transaction_search" rel="bookmark">parsed_transaction_search</a></h3><p>
-                A wrapper for transaction_search() that parses the results and puts them
-                into a more meaningful data structure.
-            </p></div>
-        <div class="function"><h3 id="validate_ipn"><span/><a href="validate_ipn" rel="bookmark">validate_ipn</a></h3><p/></div>
+                    'BillTo' =&gt; [ 0, {
+                        'Address' =&gt; [ 0, {
+                            'Street'  =&gt; [ 0, $data-&gt;{'street'} ],
+                            'City'    =&gt; [ 1, $data-&gt;{'city'} ],
+                            'State'   =&gt; [ 2, $data-&gt;{'state'} ],
+                            'Zip'     =&gt; [ 3, $data-&gt;{'zip'} ],
+                            'Country' =&gt; [ 4, $data-&gt;{'country'} ],
+                        } ],
+                    } ],
+        <div class="function"><h3 id="auth"><span/><a href="auth" rel="bookmark">auth</a></h3><p>
+                Sends a credit card authorization request to PayPal and returns the response.
+            </p><h4>Prototype:</h4><pre class="prototype">
+                hashref = auth_credit(hashref config, hashref data)
+            </pre></div>
+        <div class="function"><h3 id="capture_credit"><span/><a href="capture_credit" rel="bookmark">capture_credit</a></h3><p/></div>
+        <div class="function"><h3 id="capture_credit"><span/><a href="capture_credit" rel="bookmark">capture_credit</a></h3><p/></div>
+        <div class="function"><h3 id="credit"><span/><a href="credit" rel="bookmark">credit</a></h3><p/></div>
+        <div class="function"><h3 id="capture_credit"><span/><a href="capture_credit" rel="bookmark">capture_credit</a></h3><p/></div>
+        <div class="function"><h3 id="void_credit"><span/><a href="void_credit" rel="bookmark">void_credit</a></h3><p/></div>
     
     
     <h2 id=""><span/><a href="">Private Functions</a></h2>
 
-        <div class="function"><h3 id="_send_msg"><span/><a href="_send_msg" rel="bookmark">_send_msg</a></h3><p>
-                This is the main work horse of this library, this sends an NVP message and
+        <div class="function"><h3 id="_transaction"><span/><a href="_transaction" rel="bookmark">_transaction</a></h3><p>
+                This is the main work horse of this library, this constructs, sends an XMLPay message and
                 returns the response.
             </p><h4>Prototype:</h4><pre class="prototype">
-                 $obj-&gt;_send_msg(string method, hashref params)
+                 _transaction(hashref config, string name, hashref content)
             </pre></div>
     
 </div>

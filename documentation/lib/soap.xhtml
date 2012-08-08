@@ -5,7 +5,7 @@
     <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
     <meta http-equiv="content-style-type" content="text/css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="../document.css"/>
-    <title>Database Functions | Oyster Documentation</title>
+    <title>SOAP Functions | Oyster Documentation</title>
     <!--[if lt IE 8]>
 					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
 					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
@@ -43,60 +43,42 @@
     <hr/>
     <div id="content">
       <div class="wrapper">
-        <div id="content-primary"><h1><span>1.5</span><a href="./">Database Functions</a></h1>
+        <div id="content-primary"><h1><span>1.23</span><a href="./">SOAP Functions</a></h1><div class="todo"><strong>Todo</strong><ul><li>
+        BUG: http headers must be under 8 kb!
+    </li></ul></div>
     <p>
-        Extensions to DBI functionality (mostly driver neutral access to insert_ids
-        and prepared statements)
+        Send a SOAP 1.1 request and parse/return the response.
     </p>
-    <div class="function"><h2 id="connect"><span/><a href="connect" rel="bookmark">connect</a></h2><p>
-            Establishes a database connection and tells it to use Oyster exceptions.
-        </p><h3>Prototype:</h3><pre class="prototype">
-            obj = database::connect(, driver =&gt; string driver, host =&gt; string hostname, user =&gt; string username, password =&gt; string password, database =&gt; string database)
-        </pre></div>
-    <div class="function"><h2 id="compress_metadata"><span/><a href="compress_metadata" rel="bookmark">compress_metadata</a></h2><p>
-            
-        </p><p class="note">
-            
-        </p><h3>Prototype:</h3><pre class="prototype">
-            
-        </pre><h3>Example:</h3><pre class="code">
-            
-        </pre></div>
-    <div class="function"><h2 id="expand_metadata"><span/><a href="expand_metadata" rel="bookmark">expand_metadata</a></h2><p>
-            
-        </p><p class="note">
-            
-        </p><h3>Prototype:</h3><pre class="prototype">
-            
-        </pre><h3>Example:</h3><pre class="code">
-            
-        </pre></div>
-    <h2 id=""><span/><a href="">Extensions to Database Handles</a></h2>
-        <div class="function"><h3 id="insert_id"><span/><a href="insert_id" rel="bookmark">insert_id</a></h3><p>
-                Returns the unique ID of the last row inserted into the database.
-            </p><h4>Prototype:</h4><pre class="prototype">
-                int = $DB-&gt;insert_id(string sequence_name)
-            </pre></div>
-        <div class="function"><h3 id="server_prepare"><span/><a href="server_prepare" rel="bookmark">server_prepare</a></h3><p>
-                Prepares a query and caches it server side.
-            </p><p class="note">
-                This calls ordinary prepare() on mysql, its DB driver does not allow
-                specifying it per-query, only per connection.
-            </p><h4>Prototype:</h4><pre class="prototype">
-                object statement_handle = $DB-&gt;server_prepare(string statement)
-            </pre></div>
-    <div class="function"><h3 id="query"><span/><a href="query" rel="bookmark">query</a></h3><p>
-            Prepares and executes a query in one command, returns the query object
-        </p><h4>Prototype:</h4><pre class="prototype">
-            object statement_handle = $DB-&gt;query(string statement[, bind variables]);
-        </pre></div>
+    <p class="note">
+        This module requires installing IO::Socket::SSL from CPAN to use request_ssl().
+    </p>
     
-    
-    <h2 id=""><span/><a href="">Extensions to Statement Handles</a></h2>
-    <div class="function"><h3 id="insert_id"><span/><a href="insert_id" rel="bookmark">insert_id</a></h3><p>
-            An alias to $DB-&gt;insert_id()
+    <div class="function"><h2 id="request"><span/><a href="request" rel="bookmark">request</a></h2><p>
+            Constructs a SOAP request and parses the response.
+        </p><p class="note">
+            Expects a complex hash to maintain the order since most SOAP servers care about the order.
+        </p><p class="note">
+            Returns a hash of the xml response keyed by elements.
+        </p><h3>Prototype:</h3><pre class="prototype">
+            soap::request(['url' =&gt; 'string url', 'xmlns' =&gt; ' string xmlns'], string action, string name ['param' =&gt; [ 0, 'string value']][, 'param' =&gt; [ 1, 'string value']]...)
+        </pre></div>
+    <div class="function"><h2 id="request_ssl"><span/><a href="request_ssl" rel="bookmark">request_ssl</a></h2><p>
+            Constructs a secure SOAP request and parses the response.
+        </p><p class="note">
+            Expects a complex hash to maintain the order since most SOAP servers care about the order.
+        </p><p class="note">
+            Returns a hash of the xml response keyed by elements.
+        </p><p class="note">
+            Credentials must be base64 encoded.
+        </p><h3>Prototype:</h3><pre class="prototype">
+            soap::request(['url' =&gt; 'string url', 'xmlns' =&gt; ' string xmlns', 'auth' =&gt; 'string base64 user:password', 'ssl_key' =&gt; 'string path, 'ssl_cert' =&gt; 'string path'], string action, string name, ['param' =&gt; [ 0, 'string value']][, 'param' =&gt; [ 1, 'string value']]...)
+        </pre></div>
+    <div class="function"><h2 id="_process_response"><span/><a href="_process_response" rel="bookmark">_process_response</a></h2><p>
+            Processes the SOAP response to our requests - secure or not.
         </p></div>
-    
+    <div class="function"><h2 id="print_vars"><span/><a href="print_vars" rel="bookmark">print_vars</a></h2><p>
+            Like xml::print_var but the hash is complex and ordered. Also handles multiple xml name spaces properly.
+        </p></div>
 </div>
         <div id="content-secondary">
           <form id="search" method="get" action="/search/">

@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
-<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
-<meta http-equiv="content-style-type" content="text/css"/>
-<link rel="stylesheet" type="text/css" media="screen" href="../document.css"/>
-<title>User Module | Oyster Documentation</title>
-<!--[if lt IE 8]>
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+    <meta http-equiv="content-style-type" content="text/css"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="../document.css"/>
+    <title>User Module | Oyster Documentation</title>
+    <!--[if lt IE 8]>
 					<link rel="stylesheet" type="text/css" media="screen" href="./layout/ie.css" />
 					<script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE8.js" type="text/javascript"></script>
 				<![endif]-->
-</head>
-<body class="documentation">
-<div id="header">
-<div class="wrapper">
-<a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
-<span id="subtitle">A Perl web application framework.</span>
-</div>
-</div>
-<hr/>
-<div id="navigation">
-<div class="wrapper">
-<ul>
-<li>
-<a href="http://oyster.bitpiston.com/">Overview</a>
-</li>
-<li>
-<a href="http://oyster.bitpiston.com/download/">Download</a>
-</li>
-<li class="selected">
-<a href="../index.xhtml">Documentation</a>
-</li>
-<li>
-<a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
-</li>
-<li>
-<a href="http://oyster.bitpiston.com/development/">Development</a>
-</li>
-</ul>
-</div>
-</div>
-<hr/>
-<div id="content">
-<div class="wrapper">
-<div id="content-primary"><h1><span>3.3</span><a href="./">User Module</a></h1>
+  </head>
+  <body class="documentation">
+    <div id="header">
+      <div class="wrapper">
+        <a id="title" href="http://oyster.bitpiston.com/">Oyster</a>
+        <span id="subtitle">A Perl web application framework.</span>
+      </div>
+    </div>
+    <hr/>
+    <div id="navigation">
+      <div class="wrapper">
+        <ul>
+          <li>
+            <a href="http://oyster.bitpiston.com/">Overview</a>
+          </li>
+          <li>
+            <a href="http://oyster.bitpiston.com/download/">Download</a>
+          </li>
+          <li class="selected">
+            <a href="../index.xhtml">Documentation</a>
+          </li>
+          <li>
+            <a href="http://oyster.bitpiston.com/weblog/">Weblog</a>
+          </li>
+          <li>
+            <a href="http://oyster.bitpiston.com/development/">Development</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <hr/>
+    <div id="content">
+      <div class="wrapper">
+        <div id="content-primary"><h1><span>2.4</span><a href="./">User Module</a></h1>
     <p>
         This module encapsulates the current user's data/permissions and all user-related actions.
     </p>
@@ -66,10 +66,10 @@
             </p><p class="note">
                 This is registered to the url 'user/recover'.
             </p></div>
-        <div class="function"><h3 id="edit_settings"><span/><a href="edit_settings" rel="bookmark">edit_settings</a></h3><p>
-                Edits a user's settings
+        <div class="function"><h3 id="edit_account"><span/><a href="edit_account" rel="bookmark">edit_account</a></h3><p>
+                Edits a user's settings and profile
             </p><p class="note">
-                This is registered to the url 'user/settings'.
+                This is registered to the url 'user/account'.
             </p></div>
         <div class="function"><h3 id="confirm_email"><span/><a href="confirm_email" rel="bookmark">confirm_email</a></h3><p>
                 Confirms an email address update
@@ -131,6 +131,11 @@
             </p><p class="note">
                 This is registered to the url 'logout'.
             </p></div>
+        <div class="function"><h3 id="view_profile"><span/><a href="view_profile" rel="bookmark">view_profile</a></h3><p>
+                View a profile
+            </p><p class="note">
+                This is registered to the url 'user/profile/(\w+)'.
+            </p></div>
     
 
     <h2 id=""><span/><a href="">Event Hooks</a></h2>
@@ -191,26 +196,53 @@
             </p><h4>Prototype:</h4><pre class="prototype">
                 hashref = user::get_module_permissions(string module_id)
             </pre></div>
+        <div class="function"><h3 id="print_permissions"><span/><a href="print_permissions" rel="bookmark">print_permissions</a></h3><p>
+                Prints user permissions exactly matching requested strings as a user child-node
+            </p><p class="note">
+                Prints all permissions if no string is present
+            </p><h4>Prototype:</h4><pre class="prototype">
+                user::print_permissions([string permission_name ...])
+            </pre><h4>Example:</h4><pre class="code">
+                user::print_permissions;
+            </pre><pre class="code">
+                user::print_permissions('user_admin_config', 'user_admin_groups');
+            </pre></div>
+        <div class="function"><h3 id="print_permissions_regex"><span/><a href="print_permissions_regex" rel="bookmark">print_permissions_regex</a></h3><p>
+                Prints user permissions matching requested strings as a user child-node
+            </p><p class="note">
+                Matches permissions starting with the provided string(s)
+            </p><h4>Prototype:</h4><pre class="prototype">
+                user::print_permissions_regex(string permission_partial_name [, string permission_partial_name ...])
+            </pre><h4>Example:</h4><pre class="code">
+                user::print_permissions_regex('user_admin_');
+            </pre></div>
+        <div class="function"><h3 id="print_module_permissions"><span/><a href="print_module_permissions" rel="bookmark">print_module_permissions</a></h3><p>
+                Prints all user permissions for requested modules as a user child-node
+            </p><h4>Prototype:</h4><pre class="prototype">
+                user::print_module_permissions(string module_name [, string module_name ...])
+            </pre><h4>Example:</h4><pre class="code">
+                user::print_module_permissions('user');
+            </pre></div>
     
 </div>
-<div id="content-secondary">
-<form id="search" method="get" action="/search/">
-<div>
-<input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
-<input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
-</div>
-</form>
-<h2>Lorem Ipsum</h2>
-<p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
-</div>
-</div>
-</div>
-<hr/>
-<div id="footer">
-<div class="wrapper">
-<p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
-<a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
-</div>
-</div>
-</body>
+        <div id="content-secondary">
+          <form id="search" method="get" action="/search/">
+            <div>
+              <input type="text" id="search-input" name="search-input" accesskey="f" value="Search documentation" onfocus="if(this.value=='Search documentation') this.value='';" onblur="if(this.value=='') this.value='Search documentation';" size="25"/>
+              <input type="image" src="../images/icon.search.png" id="search-submit " alt="Search" title="Search"/>
+            </div>
+          </form>
+          <h2>Lorem Ipsum</h2>
+          <p>Mauris eleifend adipiscing nisl. Mauris tellus nunc, condimentum vel, sollicitudin sit amet, gravida et, ante.</p>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div id="footer">
+      <div class="wrapper">
+        <p class="copyright">Copyright © 2007–2008 BitPiston, <abbr title="Limited Liability Company">LLC</abbr>. All rights reserved. <br/> Oyster is released under the <a href="./license.xhtml">Artistic License 2</a>, or the <a href="./license.xhtml">GNU General Public License (GPL) 2</a>.</p>
+        <a id="bitpiston" href="http://www.bitpiston.com/">A BitPiston Product.</a>
+      </div>
+    </div>
+  </body>
 </html>
