@@ -56,8 +56,8 @@ Setting Up an Oyster Development Environment
     `pkg_add -r p5-DBD-mysql`
     `pkg_add -r p5-Digest-JHash`
     `pkg_add -r p5-Digest-SHA`
-* Get a fresh SVN checkout:
-  `svn co svn://bitpiston.com/oyster oyster`
+* Get a fresh git clone:
+  `git clone https://github.com/BitPiston/Oyster.git oyster`
 * Navigate to the shared directory:
   `cd oyster/trunk/shared`
 * Copy the config file template:
