@@ -1,0 +1,3 @@
+Copyright © 2007–2012 BitPiston Studios Ltd. Some rights reserved:
+Oyster is released under the Artistic License 2, and/or the GNU General Public License (GPL) 2.
+
