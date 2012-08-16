@@ -1,0 +1,23 @@
+# /documentation/
+/documentation/
+
+# /documentation/source/
+/documentation/source/*
+
+# /shared/
+/shared/config.pl
+
+# /shared/tmp/
+/shared/tmp/*
+
+# /site/files/
+/site/files/*
+
+# /site/logs/
+/site/logs/*
+
+# /site/styles/bitpiston/
+/site/styles/bitpiston/modules
+/site/styles/bitpiston/base.xsl
+/site/styles/bitpiston/server_base.xsl
+/site/styles/bitpiston/dynamic
