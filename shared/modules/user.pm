@@ -930,7 +930,8 @@ sub login {
 
     # if the form has not been submitted
     style::include_template('login');
-    print "\t<user action=\"login\" referer=\"" . xml::entities($ENV{'HTTP_REFERER'}) . "\" user=\"" . xml::entities($INPUT{'user'}) . "\"  />\n";
+    my $referer = exists $ENV{'HTTP_REFERER'} ? $ENV{'HTTP_REFERER'} : 'javascript:history.go(-2);';
+    print "\t<user action=\"login\" referer=\"" . xml::entities($referer) . "\" user=\"" . xml::entities($INPUT{'user'}) . "\" />\n";
 
     # executed at request_init if the login form is submitted
     sub _login_init {        
