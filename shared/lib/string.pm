@@ -125,8 +125,8 @@ sub urlify {
     #$string =~ s/([^a-zA-Z0-9_])/sprintf('%%%02X', ord $1)/oge;
     $string = cgi::uri_encode($string);
 
-    # replace whitespace with +
-    $string =~ s/%20/\+/og;
+    # replace whitespace with -
+    $string =~ s/%20/\-/og;
     
     return $string;
 }
@@ -143,7 +143,54 @@ sub urlify {
 =cut
 
 sub deurlify {
-    my $string = lc(shift()); # get the first arg and lowercase it
+    #my $string = lc(shift()); # get the first arg and lowercase it
+    my $string = shift(); # why did we lowercase it?
+    
+    # replace - with whitespace
+    $string =~ s/\-/ /og;
+    
+    # decode uri encoding
+    $string = cgi::uri_decode($string);
+
+    return $string;
+}
+
+=xml
+    <function name="ajax_urlify">
+        <synopsis>
+             Takes a string and URL encodes it with + for spaces
+        </synopsis>
+        <prototype>
+            string = string::ajax_encode(string)
+        </prototype>
+    </function>
+=cut
+
+sub ajax_urlify {
+    my $string = shift();
+
+    # replaced non word/ascii characters with encoded equivalents
+    $string = cgi::uri_encode($string);
+
+    # replace whitespace with +
+    $string =~ s/%20/\+/og;
+    
+    return $string;
+}
+
+=xml
+    <function name="ajax_deurlify">
+        <synopsis>
+             Takes a url friendly string and normalizes it (the best we can)
+        </synopsis>
+        <prototype>
+            string = string::ajax_deurlify(string)
+        </prototype>
+    </function>
+=cut
+
+sub ajax_deurlify {
+    my $string = shift();
     
     # replace + with whitespace
     $string =~ s/\+/ /og;
