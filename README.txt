@@ -8,7 +8,7 @@ Setting Up an Oyster Development Environment
 
     Perl 5.8 or higher is required.
 
-    On Windows, visit www.activestate.com and download their latest version
+    On Windows, visit activestate.com and download their latest version
     of perl.
 
     On Linux or BSD, either compile perl from source or install using your
@@ -33,6 +33,18 @@ Setting Up an Oyster Development Environment
 
     On Linux, the binaries are usually placed in '/usr/bin/'.
 
+  - MySQL, MariaDB or PostgreSQL object-relational database management systems
+
+    On Windows, visit mysql.org, mariadb.org or postgresql.org and download the 
+    latest release.
+
+    On Linux or BSD, either compile MySQL, MariaDB or PostgreSQL from source or 
+    install using your distribution's package management tools.
+
+    NOTE: PostgreSQL support is considered alpha.  Most, if not all, of Oyster 
+    should be PostgreSQL compatible but this is not tested regularly.  MariaDB 
+    is untested but should work as a drop-in replacement for MySQL.
+
   - Perl Modules
 
     Oyster requires the following perl modules: DBI, DBD::mysql, Digest::JHash,
@@ -40,7 +52,8 @@ Setting Up an Oyster Development Environment
     also recommended (they are used for server-side XSLT), but the ssxslt module
     will automatically disable itself if they are not found.  Digest::SHA and
     Digest::JHash are not required, but recommended for high traffic sites.
-    Time::HiRes usually comes with Perl.
+    Time::HiRes usually comes with Perl.  The optionsl SOAP library requires 
+    IO::Socket::SSL for https support.
 
     To check if you have these modules installed, type:
     `perl -Mmodulenamehere -e "print qq{success\n}"`
