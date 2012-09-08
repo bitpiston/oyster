@@ -15,6 +15,7 @@ Setting Up an Oyster Development Environment
     distribution's package management tools.
 
   - ImageMagick
+
     ImageMagick is a set of programs that allow advanced image manipulation to
     be done on the command line.  Only the Imagemagick binaries are required
     by Oyster, no ImageMagick perl libraries are required.
