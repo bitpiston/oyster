@@ -31,7 +31,8 @@ Setting Up an Oyster Development Environment
     On Windows, this directory will be the one you specified during
     installation, typically 'C:/program files/imagemagick/'.
 
-    On Linux, the binaries are usually placed in '/usr/bin/'.
+    On Linux, the binaries are usually placed in '/usr/bin/'. On BSD, the 
+    binaries are usually placed in '/usr/local/bin/'.
 
   - MySQL, MariaDB or PostgreSQL object-relational database management systems
 
@@ -70,19 +71,32 @@ Setting Up an Oyster Development Environment
     `pkg_add -r p5-DBD-mysql`
     `pkg_add -r p5-Digest-JHash`
     `pkg_add -r p5-Digest-SHA`
+
 * Get a fresh git clone:
   `git clone https://github.com/BitPiston/Oyster.git oyster`
+
 * Navigate to the shared directory:
   `cd oyster/trunk/shared`
+
 * Copy the config file template:
   `cp config.pl.tmpl config.pl`
+
 * Edit config.pl with the text editor of your choice.
+
 * Install Oyster:
   `perl script/update.pl`
+
 * Start your test server:
   `perl script/server.pl`
 
   Note: For additional server options, type `perl script/server.pl -h`
+
 * Visit 127.0.0.1:80 (or whatever you configured the server to bind to)
+
 * Your Oyster development environment is ready!
+
+  For details on spawning Oyster as FastCGI under a httpd such as Lighttpd, 
+  nginx or Apache refer to the documentation which has configuration examples
+  available for all three. It also includes examples for using supervisord or 
+  fcgictl/spawn-fcgi.
 
