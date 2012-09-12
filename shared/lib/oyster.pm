@@ -538,7 +538,7 @@ sub request_handler {
 
         # print the buffer
         print $content;
-
+        
         # print the navigation menu
         url::print_navigation_xml() if $REQUEST{'handler'} ne 'ajax';
         #url::print_navigation_xml();
@@ -578,7 +578,7 @@ sub request_handler {
 sub request_cleanup {
 
     # update the url cache
-    url::update_cache() if $CONFIG{'mode'} eq 'fastcgi';
+    url::update_cache() if $CONFIG{'mode'} eq 'fastcgi' and length $REQUEST{'current_url'}->{'module'};     # length check to avoid caching a 404
 
     # signal the request_cleanup hook
     event::execute('request_cleanup');
@@ -892,7 +892,7 @@ sub parse_user_agent {
     
     # Check for the OS
     my %systems = (
-        'iPhone'         => qr/iPhone/o,
+        'iOS'            => qr/(?:iPhone)|(?:iPad)|(?:iOS)/o,
         'Windows 3.11'   => qr/Win16/o,
         'Windows 95'     => qr/(?:Windows 95)|(?:Win95)|(?:Windows_95)/o, 
         'Windows 98'     => qr/(?:Windows 98)|(?:Win98)/o,
@@ -901,13 +901,13 @@ sub parse_user_agent {
         'Windows 2003'   => qr/(?:Windows NT 5.2)/o,
         'Windows Vista'  => qr/(?:Windows NT 6.0)|(?:Windows Vista)/o,
         'Windows 7'      => qr/(?:Windows NT 6.1)|(?:Windows 7)/o,
-        'Windows NT 4.0' => qr/(?:Windows NT 4.0)|(?:WinNT4.0)|(?:WinNT)|(?:Windows NT)/o,
+        'Windows NT' => qr/(?:Windows NT 4.0)|(?:WinNT4.0)|(?:WinNT)|(?:Windows NT)/o,
         'Windows ME'     => qr/Windows ME/o,
         'OpenBSD'        => qr/OpenBSD/o,
         'FreeBSD'        => qr/FreeBSD/o,
-        'Sun OS'         => qr/SunOS/o,
+        'SunOS'          => qr/SunOS/o,
         'Linux'          => qr/(?:Linux)|(?:X11)/o,
-        'Macintosh'      => qr/(?:Mac_PowerPC)|(?:Macintosh)/o,
+        'Mac'            => qr/(?:Mac_PowerPC)|(?:Macintosh)/o,
         'QNX'            => qr/QNX/o,
         'BeOS'           => qr/BeOS/o,
         'OS/2'           => qr/OS\/2/o,
