@@ -651,11 +651,12 @@ sub _load_exception_handlers {
         style::print_header();
         event::execute('request_start');
         my $url = $ENV{'REQUEST_URI'};
+        my $referer = $ENV{'HTTP_REFERER'};
         $url =~ s!^/!!o;
         $url = $CONFIG{'full_url'} . $url;
         my $hash = hash::fast($REQUEST{'url'});
-        log::status("404 Request\nURL: " . $url . "\nHash: " . $hash) if $CONFIG{'log_404s'};
-        print "\t<error status=\"404\" url=\"" . $url . "\" hash=\"" . $hash . "\" />\n";
+        log::status("404 Request\nURL: " . $url . "\nHash: " . $hash. "\nReferer: " . $referer) if $CONFIG{'log_404s'};
+        print "\t<error status=\"404\" url=\"" . $url . "\" hash=\"" . $hash . "\" referer=\"" . $referer . "\" />\n";
         url::print_navigation_xml();
         event::execute('request_end');
         #print "\t<url hash=\"" . hash::fast($REQUEST{'url'}) . "\">\n";
