@@ -653,7 +653,9 @@ sub _load_exception_handlers {
         my $url = $ENV{'REQUEST_URI'};
         $url =~ s!^/!!o;
         $url = $CONFIG{'full_url'} . $url;
-        print "\t<error status=\"404\" url=\"" . $url . "\" hash=\"" . hash::fast($REQUEST{'url'}) . "\" />\n";
+        my $hash = hash::fast($REQUEST{'url'});
+        log::status("404 Request\nURL: " . $url . "\nHash: " . $hash) if $CONFIG{'log_404s'};
+        print "\t<error status=\"404\" url=\"" . $url . "\" hash=\"" . $hash . "\" />\n";
         url::print_navigation_xml();
         event::execute('request_end');
         #print "\t<url hash=\"" . hash::fast($REQUEST{'url'}) . "\">\n";
