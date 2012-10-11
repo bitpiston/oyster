@@ -651,9 +651,9 @@ sub _load_exception_handlers {
         style::print_header();
         event::execute('request_start');
         my $url = $ENV{'REQUEST_URI'};
-        my $referer = $ENV{'HTTP_REFERER'};
+        my $referer = xml::entities($ENV{'HTTP_REFERER'}, 'safe');
         $url =~ s!^/!!o;
-        $url = $CONFIG{'full_url'} . $url;
+        $url = xml::entities($CONFIG{'full_url'} . $url, 'safe');
         my $hash = hash::fast($REQUEST{'url'});
         log::status("404 Request\nURL: " . $url . "\nHash: " . $hash. "\nReferer: " . $referer) if $CONFIG{'log_404s'};
         print "\t<error status=\"404\" url=\"" . $url . "\" hash=\"" . $hash . "\" referer=\"" . $referer . "\" />\n";
