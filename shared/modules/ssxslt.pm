@@ -58,13 +58,15 @@ sub hook_request_init {
     oyster::parse_user_agent();
 
     # figure out of the user's engine and version can handle xml/xslt
-    my ($engine, $version)  = @REQUEST{ 'ua_render_engine', 'ua_render_engine_version' };
-    if    (exists $INPUT{'ssxslt'} or $CONFIG{'force_ssxslt'} == 1) { $REQUEST{'server_side_xslt'} = 1 } # developer ssxslt override
-    elsif ($engine eq 'trident' and $version > 5.5) { return }
-    elsif ($engine eq 'presto' and $version >= 9)   { return }
-    elsif ($engine eq 'gecko')                      { return }
-    elsif ($engine eq 'webkit')                     { return }
-    elsif ($engine eq 'khtml')                      { return }
+    my ($engine, $version, $handler)  = @REQUEST{ 'ua_render_engine', 'ua_render_engine_version', 'handler' };
+    if    ($handler eq 'ajax') { return }
+    elsif (exists $INPUT{'ssxslt'} or $CONFIG{'force_ssxslt'} == 1) { $REQUEST{'server_side_xslt'} = 1 } # developer ssxslt override
+    elsif ($engine eq 'trident' and $version > 5.5 and $ENV{'HTTPS'} ne 'on') { return }
+    elsif ($engine eq 'trident' and $version > 9 and $ENV{'HTTPS'} eq 'on') { return }
+    elsif ($engine eq 'presto' and $version >= 9) { return }
+    elsif ($engine eq 'gecko') { return }
+    elsif ($engine eq 'webkit') { return }
+    elsif ($engine eq 'khtml') { return }
     else { $REQUEST{'server_side_xslt'} = 1 }
 
     # capture output
@@ -81,7 +83,7 @@ sub hook_request_init {
 
         # start an output buffer
         $mimetype = $style::styles{$REQUEST{'style'}}->{'output'} eq 'xhtml' ? 'application/xhtml+xml' : 'text/html';
-        $REQUEST{'mime_type'} = $engine eq 'msie' ? 'text/html' : $mimetype ; # IE requires text/html for xhtml
+        $REQUEST{'mime_type'} = $engine eq 'trident' ? 'text/html' : $mimetype ; # IE requires text/html for xhtml
         buffer::start();
     }
 }
