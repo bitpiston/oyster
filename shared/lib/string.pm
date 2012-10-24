@@ -97,6 +97,24 @@ sub pad {
 }
 
 =xml
+    <function name="pad">
+        <synopsis>
+            Pads a numeric string with leading zeros to a given length.
+        </synopsis>
+        <prototype>
+            string = string::pad_number(string, int length)
+        </prototype>
+    </function>
+=cut
+
+sub pad_number {
+    my $string   = shift;
+    my $pad_to   = shift;
+    
+    return ('0' x ($pad_to - length $string)) . $string;
+}
+
+=xml
     <function name="urlify">
         <synopsis>
              Takes a string and turns it into something url-friendly
