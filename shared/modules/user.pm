@@ -939,7 +939,7 @@ sub login {
 
         # get the user id by login credentials
         $select_user_id_by_credentials->execute(hash::fast(lc($INPUT{'user'})), hash::secure($INPUT{'password'}));
-        $user_id = $select_user_id_by_credentials->fetchrow_arrayref()->[0] if $select_user_id_by_credentials->rows();
+        my $user_id = $select_user_id_by_credentials->fetchrow_arrayref()->[0] if $select_user_id_by_credentials->rows();
         
         # if the login was successful
         if (defined $user_id) {
@@ -982,8 +982,9 @@ sub logout {
         # remove the session from the database
         $DB->do("DELETE FROM ${module_db_prefix}sessions WHERE user_id = $USER{id} LIMIT 1");
 
-        # remove the existing id from this request's user data (to turn the user into a guest)
-        $USER{'id'} = 0;
+        # remove the existing id and session from this request's user data (to turn the user into a guest)
+        $USER{'id'}      = 0;
+        $USER{'session'} = 0;
 
         # remove the session cookie
         cgi::set_cookie('session', '', 0,  $config{'cookie_path'}, $config{'cookie_domain'});
@@ -1007,7 +1008,7 @@ sub view_profile {
     
     user::require_permission('user_profile_view');
     
-    throw 'validation_error' =>i cop 'A username is required.' unless length $username;
+    throw 'validation_error' => 'A username is required.' unless length $username;
     throw 'validation_error' => 'Profiles are currently disabled.' unless $config{'enable_profile'} == 1;
     
     # fetch user's profile data 
