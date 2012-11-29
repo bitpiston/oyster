@@ -46,14 +46,33 @@ sub status {
         <example>
             log::error("We're all gonna die!");
         </example>
-        <todo>
-            
-        </todo>
     </function>
 =cut
 
 sub error {
     _message('error', shift());
+}
+
+=xml
+    <function name="debug">
+        <synopsis>
+            Saves a message to the debug log if debug is enabled in config.pl
+        </synopsis>
+        <note>
+            If a database connection is available, this message is written to the
+            log table, otherwise it is written to logs/debug.log
+        </note>
+        <prototype>
+            log::debug(string message)
+        </prototype>
+        <example>
+            log::debug('Something happened);
+        </example>
+    </function>
+=cut
+
+sub debug {
+    _message('debug', shift()) if $oyster::CONFIG{'debug'};
 }
 
 =xml
@@ -100,7 +119,7 @@ sub _message {
     };
 
     unless ($success) {
-        open(my $log, '>>', "$oyster::CONFIG{site_path}logs/error.log");
+        open(my $log, '>>', "$oyster::CONFIG{site_path}logs/$type.log");
         print $log scalar(localtime) . "\t$message\n";
         # TODO: should this store a trace?
     }
