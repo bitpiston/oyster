@@ -6,6 +6,12 @@
 =cut
 package oyster;
 
+# our source is UTF-8 ...unless someone is using a bad editor!
+#use utf8;
+
+# assume UTF-8 filehandle streams unless told otherwise 
+#use open ':encoding(UTF-8)';
+
 # import libraries (can't implement these myself, sadly ;-P)
 use DBI;
 use Time::HiRes;
@@ -205,8 +211,9 @@ sub load {
     $CONFIG{'db_prefix'} = $CONFIG{'site_id'} . '_';
     $CONFIG{'daemon_id'} = string::random();
 
-    # enable UTF8 output
-    binmode STDOUT, ':utf8';
+    # enable UTF-8 output and UTF-8 input 
+    binmode STDOUT, ':encoding(UTF-8)';
+    binmode STDIN, ':encoding(UTF-8)'; # HTTP POST only?
 
     # load oyster
     try {
@@ -528,7 +535,7 @@ sub request_handler {
         try {
             &{"$REQUEST{module}::$REQUEST{action}"}(@{$REQUEST{'params'}});
         } @request_exception_handlers;
-
+        
         # end the print buffer and save its contents
         my $content = buffer::end_clean();
 

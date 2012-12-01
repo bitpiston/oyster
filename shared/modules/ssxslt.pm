@@ -94,6 +94,7 @@ sub hook_request_finish {
 
     my $buffer = buffer::end_clean();
     $buffer =~ s/^.+\n.+\n//; # strip first two lines out (xml version and stylesheet)
+    utf8::upgrade($buffer); # experimental fix for non UTF-8 data choking LibXML
     my $source = eval { $xml_parser->parse_string($buffer) };
     if ($@) {
         log::error("Error parsing xml on url '$ENV{REQUEST_URI}': $@");

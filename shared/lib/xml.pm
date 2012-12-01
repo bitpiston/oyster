@@ -313,6 +313,8 @@ sub entities {
     $string =~ s/</&lt;/og;
     $string =~ s/>/&gt;/og;
     $string =~ s/"/&#34;/og; # this is actually only necessary for attributes, but why make another function just for those
+    
+    $string =~ tr/\x{9}\x{A}\x{D}\x{20}-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}//cd; # strip invalid data that isn't UTF-8?
 
     # transform proper english entities
     if (exists $flags{'proper_english'}) {
@@ -916,7 +918,7 @@ sub validate_xhtml {
         elsif ($xhtml =~ /^([\s\S]+?)(?=<)/o) {
             my $text = $1;
             $replace_len = length $text;
-            $xml .= entities($text, 'proper_english');
+            $xml .= entities($text, safe => 1, 'proper_english');
         }
 
         # nothing has matched a < yet it must just be a plain <
@@ -928,7 +930,7 @@ sub validate_xhtml {
         # no more <'s, so there must not be any more xhtml tags, entity the rest of the xhtml
         else {
             $replace_len = length $xhtml;
-            $xml .= entities($xhtml, 'proper_english');
+            $xml .= entities($xhtml, safe => 1, 'proper_english');
         }
 
         $ignore_tag = 0;
