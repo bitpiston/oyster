@@ -4,11 +4,18 @@
         This module encapsulates the current user's data/permissions and all user-related actions.
     </synopsis>
 =cut
+
 package user;
 
 # import libraries
 use oyster 'module';
 use exceptions;
+
+# import geolocation library
+if ($config{'enable_geoip'}) { 
+    use Geo::IP;
+    my $geoip;
+}
 
 our (%USER, %PERMISSIONS, %groups);
 
@@ -32,19 +39,22 @@ sub hook_load {
     our $select_group_by_id             = $DB->server_prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1"); 
     #our $select_user_by_session         = $DB->server_prepare("SELECT ${module_db_prefix}sessions.user_id, ${module_db_prefix}sessions.ip, ${module_db_prefix}sessions.restrict_ip, users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM ${module_db_prefix}sessions, users, ${module_db_prefix}permissions WHERE ${module_db_prefix}sessions.session_id = ? and users.id = ${module_db_prefix}sessions.user_id and ${module_db_prefix}permissions.user_id = ${module_db_prefix}sessions.user_id LIMIT 1");
     our $select_user_by_id              = $DB->server_prepare("SELECT users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM users, ${module_db_prefix}permissions WHERE users.id = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
-    our $select_user_id_by_session      = $DB->server_prepare("SELECT user_id, ip, restrict_ip FROM ${module_db_prefix}sessions WHERE session_id = ? LIMIT 1");
+    our $select_user_id_by_session      = $DB->server_prepare("SELECT user_id, ip, restrict_ip, geoip_country, geoip_region, geoip_city FROM ${module_db_prefix}sessions WHERE session_id = ? LIMIT 1");
     our $select_user_id_by_credentials  = $DB->server_prepare("SELECT id FROM users WHERE name_hash = ? and password = ? LIMIT 1");
     #our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET session_id = ?, ip = ?, restrict_ip = ?, access_ctime = ? WHERE user_id = ? LIMIT 1");
     our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET ip = ?, restrict_ip = ?, access_ctime = ? WHERE session_id = ? LIMIT 1");
     #our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET access_ctime = ? WHERE session_id = ? LIMIT 1");
-    our $insert_user_session            = $DB->server_prepare("INSERT INTO ${module_db_prefix}sessions (user_id, session_id, ip, restrict_ip, access_ctime) VALUES (?, ?, ?, ?, ?)");
+    our $insert_user_session            = $DB->server_prepare("INSERT INTO ${module_db_prefix}sessions (user_id, session_id, ip, restrict_ip, access_ctime, geoip_country, geoip_region, geoip_city) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     our $select_permissions_count       = $DB->server_prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions WHERE ${module_db_prefix}permissions.user_id = ? LIMIT 1");
 
     # load user groups
     _load_groups();
     
     # every 15 minutes clean up expired sessions 
-    ipc::do_periodic(900, 'user', '_clean_sessions');
+    ipc::do_periodic(900, 'user', '_clean_sessions');   
+    
+    # open geolocation database
+    $geoip = Geo::IP->open($CONFIG{'geoip_db'}, GEOIP_STANDARD) or die "Unable to open Geo::IP database: $CONFIG{geoip_db}" if $config{'enable_geoip'};
 }
 
 =xml
@@ -947,13 +957,19 @@ sub login {
             # remove the any existing session for the user_id from the database
             $DB->do("DELETE FROM ${module_db_prefix}sessions WHERE user_id = $user_id LIMIT 1");
             
-            my $new_session = _create_session($user_id, $restrict_ip, $ENV{'REMOTE_ADDR'});
+            my ($new_session, $geoip_country, $geoip_region, $geoip_city) = _create_session($user_id, $restrict_ip, $ENV{'REMOTE_ADDR'});
             
             $USER{'session'} = $new_session;
             
+            if ($config{'enable_geoip'}) {
+                $USER{'geoip_country'} = $geoip_country;
+                $USER{'geoip_region'}  = $geoip_region;
+                $USER{'geoip_city'}    = $geoip_city;
+            }
+            
             my $how_long = ($INPUT{'how_long'} and $INPUT{'how_long'} =~ /^\d+$/) ? $INPUT{'how_long'} : 0 ; # 0 = remove at end of browser session
             cgi::set_cookie('session', $USER{'session'}, $how_long, $config{'cookie_path'}, $config{'cookie_domain'});
-
+            
             # check if the user is set up in a group on this site, if not, put them in the default group
             $select_permissions_count->execute($user_id);
             $DB->do("INSERT INTO ${module_db_prefix}permissions (user_id, group_id) VALUES ('$user_id', '$config{default_group}')") if $select_permissions_count->fetchrow_arrayref()->[0] == 0;
@@ -1090,8 +1106,12 @@ sub hook_request_init {
 
     # otherwise, get the session from the cookie
     else {
-        $USER{'session'} = $COOKIES{'session'};
+        $USER{'session'}       = $COOKIES{'session'};
+        $USER{'geoip_country'} = $COOKIES{'country'};
+        $USER{'geoip_region'}  = $COOKIES{'region'};
+        $USER{'geoip_city'}    = $COOKIES{'city'};
     }
+    
     # if a session id is set
     if (exists $USER{'session'} and length $USER{'session'} == 32) {
 
@@ -1101,7 +1121,7 @@ sub hook_request_init {
         # if the user is logged in
         if ($select_user_id_by_session->rows()) {
         #if ($select_user_by_session->rows()) {
-            my ($id, $ip, $restrict_ip) = @{$select_user_id_by_session->fetchrow_arrayref()};
+            my ($id, $ip, $restrict_ip, $geoip_country, $geoip_region, $geoip_city) = @{$select_user_id_by_session->fetchrow_arrayref()};
             
             # Don't fetch the user data for guests
             if ($id != 0) {
@@ -1120,6 +1140,13 @@ sub hook_request_init {
                         'session'     => $USER{'session'},
                         'style'       => $config{'customizable_styles'} ? $style : '' ,
                     );
+                    
+                    if ($config{'enable_geoip'}) {
+                        $USER{'geoip_country'} = $geoip_country;
+                        $USER{'geoip_region'}  = $geoip_region;
+                        $USER{'geoip_city'}    = $geoip_city;
+                    }
+                    
                     $REQUEST{'style'} = $USER{'style'} if $USER{'style'} ne '';
                 }
             }
@@ -1142,8 +1169,20 @@ sub hook_request_init {
     
     # create a session for guests or continue the existing session
     unless (exists $USER{'id'}) {
+        my ($session, $geoip_country, $geoip_region, $geoip_city);
         
-        my $session = defined $is_guest_session ? $USER{'session'} : _create_session(0, 1, $ENV{'REMOTE_ADDR'}); # id = 0 and restrict_ip = 1        
+        #my ($session, $geoip_country, $geoip_region, $geoip_city) = defined $is_guest_session ? $USER{'session'} : _create_session(0, 1, $ENV{'REMOTE_ADDR'}); # id = 0 and restrict_ip = 1
+        
+        if (defined $is_guest_session) {
+            $session       = $USER{'session'};
+            $geoip_country = $USER{'geoip_country'};
+            $geoip_region  = $USER{'geoip_region'};
+            $geoip_city    = $USER{'geoip_city'};
+        } 
+        else {
+            ($session, $geoip_country, $geoip_region, $geoip_city) = _create_session(0, 1, $ENV{'REMOTE_ADDR'});
+        }
+        
         # set default user data
         %USER = (
             'id'          => 0,
@@ -1154,8 +1193,17 @@ sub hook_request_init {
             'time_offset' => 0,
         );
         
-        # set the cookie
-        cgi::set_cookie('session', $session, 0, $config{'cookie_path'}, $config{'cookie_domain'}); # 0 = remove at end of browser session
+        if ($config{'enable_geoip'}) {
+            $USER{'geoip_country'} = $geoip_country;
+            $USER{'geoip_region'}  = $geoip_region;
+            $USER{'geoip_city'}    = $geoip_city;
+        }
+        
+        # set the cookies
+        cgi::set_cookie('session', $session,       0, $config{'cookie_path'}, $config{'cookie_domain'}); # 0 = remove at end of browser session
+        cgi::set_cookie('country', $geoip_country, 0, $config{'cookie_path'}, $config{'cookie_domain'}); 
+        cgi::set_cookie('region',  $geoip_region,  0, $config{'cookie_path'}, $config{'cookie_domain'}); 
+        cgi::set_cookie('city',    $geoip_city,    0, $config{'cookie_path'}, $config{'cookie_domain'}); 
     }
 
     # alias user permissions to an easier-to-reach place
@@ -1165,6 +1213,8 @@ sub hook_request_init {
 # called before the footer is printed
 event::register_hook('request_end', 'hook_request_end', 0);
 sub hook_request_end {
+    my $geoip_attributes = $config{'enable_geoip'} ? ' country="' . $USER{'geoip_country'} . '" region="' . $USER{'geoip_region'} . '" city="' . $USER{'geoip_city'} . '"' : '';
+    
     # Print the user node with permissions child-node if request flag set
     if (exists $REQUEST{'user'}{'print_permissions'}) {
         my $attributes;
@@ -1174,14 +1224,14 @@ sub hook_request_end {
             $attributes .= $permission . '="' . $PERMISSIONS{ $permission } . '" ' if exists $PERMISSIONS{ $permission };
         }
         
-        print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}">\n~;
+        print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}"$geoip_attributes>\n~;
         print qq~\t\t<permissions $attributes/>\n~;
         print qq~\t</user>\n~;
     }
     
     # Otherwise just print the user node sans permissions.
     else {
-        print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}" />\n~;
+        print qq~\t<user id="$USER{id}" name="$USER{name}" date_format="$USER{date_format}" time_offset="$USER{time_offset}"$geoip_attributes />\n~;
     }
 }
 
@@ -1238,26 +1288,37 @@ sub hook_admin_center_modules_menu {
 # insert the a new session into the database
 sub _create_session {
     my ($user_id, $restrict_ip, $ip) = @_;
-    my $new_session;
-
+    my ($new_session, $geoip_country, $geoip_region, $geoip_city) = undef;
+    
+    $ip = "184.69.103.134"; #DELETEME
+    
+    my $geoip_results = $geoip->record_by_addr($ip) if $config{'enable_geoip'};
+    
+    if ($geoip_results) {
+        $geoip_country = $geoip_results->country_code;
+        $geoip_region  = $geoip_results->region;
+        $geoip_city    = $geoip_results->city;
+    }
+    
     # if there is a session id collision try again until there isn't
     my $success = 0;
     until ($success) {
         $success = try {
-            $new_session = string::random(32);
-            $insert_user_session->execute($user_id, $new_session, $ENV{'REMOTE_ADDR'}, $restrict_ip, datetime::gmtime);
+            $new_session = string::random(32);            
+            $insert_user_session->execute($user_id, $new_session, $ENV{'REMOTE_ADDR'}, $restrict_ip, datetime::gmtime, $geoip_country, $geoip_region, $geoip_city);
         }
         catch 'db_error', with {
             my $error = shift;
-
+            
             # if it is a duplicate error, abort, returning false, triggering the until() to retry
             if ($error =~ /Duplicate (?:entry|key)/) { abort(); } # entry for mysql, key for postgresql
             else { throw 'db_error' => $error; }
         };
     }
     
-    return $new_session;
+    return $new_session, $geoip_country, $geoip_region, $geoip_city;
 }
+
 
 # delete expired guest sessions from the database
 sub _clean_sessions {
