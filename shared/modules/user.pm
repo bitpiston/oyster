@@ -11,11 +11,7 @@ package user;
 use oyster 'module';
 use exceptions;
 
-# import geolocation library
-if ($config{'enable_geoip'}) { 
-    use Geo::IP;
-    my $geoip;
-}
+my $geoip;
 
 our (%USER, %PERMISSIONS, %groups);
 
@@ -51,10 +47,34 @@ sub hook_load {
     _load_groups();
     
     # every 15 minutes clean up expired sessions 
-    ipc::do_periodic(900, 'user', '_clean_sessions');   
+    ipc::do_periodic(900, 'user', '_clean_sessions');
     
-    # open geolocation database
-    $geoip = Geo::IP->open($CONFIG{'geoip_db'}, GEOIP_STANDARD) or die "Unable to open Geo::IP database: $CONFIG{geoip_db}" if $config{'enable_geoip'};
+    # import geolocation library
+    if ($config{'enable_geoip'}) {
+        try {
+            require Geo::IP;
+        }
+        catch 'perl_error', with {
+            $config{'enable_geoip'} = 0;
+            log::status('User geolocation is ignored. Required library is not available.');
+        };
+    }
+
+    # create the geoip object and open geoip database
+    if ($config{'enable_geoip'}) {
+        log::debug('creating geoip object');
+        try {
+            log::debug('starting try');
+            $geoip = Geo::IP->open($CONFIG{'geoip_db'}, GEOIP_STANDARD);
+            log::debug('end of try');
+        }
+        catch 'perl_error', with {
+            log::debug('starting catch perl_error, with');
+            $config{'enable_geoip'} = 0;
+            log::status('User geolocation is ignored. Unable to open the geolocation database.');
+            log::debug('end of catch perl_error, with');
+        };
+    }
 }
 
 =xml
@@ -1290,8 +1310,6 @@ sub _create_session {
     my ($user_id, $restrict_ip, $ip) = @_;
     my ($new_session, $geoip_country, $geoip_region, $geoip_city) = undef;
     
-    $ip = "184.69.103.134"; #DELETEME
-    
     my $geoip_results = $geoip->record_by_addr($ip) if $config{'enable_geoip'};
     
     if ($geoip_results) {
@@ -1305,7 +1323,7 @@ sub _create_session {
     until ($success) {
         $success = try {
             $new_session = string::random(32);            
-            $insert_user_session->execute($user_id, $new_session, $ENV{'REMOTE_ADDR'}, $restrict_ip, datetime::gmtime, $geoip_country, $geoip_region, $geoip_city);
+            $insert_user_session->execute($user_id, $new_session, $ip, $restrict_ip, datetime::gmtime, $geoip_country, $geoip_region, $geoip_city);
         }
         catch 'db_error', with {
             my $error = shift;
