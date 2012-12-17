@@ -29,11 +29,27 @@ sub _load {
 
 our (%cache, %cache_last_hit_time);
 
+=xml
+    <section title="General URL Functions">
+
+        <function name="update_cache">
+            <synopsis>
+                Updates the URL cache with the current request's URL.
+            </synopsis>
+            <prototype>
+                url::update_cache()
+            </prototype>
+        </function>
+=cut
+
 sub update_cache {
     my $url = $oyster::REQUEST{'url'};
 
     # if the current url is not cached, cache it
-    $cache{ $url } = $oyster::REQUEST{'current_url'} unless exists $cache{ $url };
+    if (!exists $cache{ $url }) {
+        $oyster::REQUEST{'current_url'}->{'params'} = url::_parse_params_arg($oyster::REQUEST{'params'});
+        $cache{ $url } = $oyster::REQUEST{'current_url'};
+    }
 
     # update the url's last hit time
     $cache_last_hit_time{ $url } = time();
@@ -49,8 +65,6 @@ sub update_cache {
 }
 
 =xml
-    <section title="General URL Functions">
-
         <function name="is_valid">
             <synopsis>
                 Returns true if a given string is a valid url.
