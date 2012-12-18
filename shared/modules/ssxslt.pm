@@ -29,21 +29,23 @@ our ($disable_ssxslt, $xml_parser, $xslt_parser, %styles, %style_parse_times, $l
 sub load {
 
     # server side xml/xslt libraries
-    eval {
+    try {
         require XML::LibXSLT;
         require XML::LibXML;
-    };
-    if ($@) {
-        $disable_ssxslt = 1;
-        log::status('Server side XSLT module ignored.  Required libraries are not available.') unless $CONFIG{'debug'};
-        return; # proceed no further in loading
     }
+    catch 'perl_error', with {
+        $disable_ssxslt = 1;
+        log::status('Server side XSLT module ignored.  Required libraries are not available.'); # unless $CONFIG{'debug'};
+    };
+    
+    unless ($disable_ssxslt) {
 
-    # create xml/xslt processor objects
-    $xml_parser  = XML::LibXML->new();
-    $xslt_parser = XML::LibXSLT->new();
-
-    $loaded = 1;
+        # create xml/xslt processor objects
+        $xml_parser  = XML::LibXML->new();
+        $xslt_parser = XML::LibXSLT->new();
+    
+        $loaded = 1;
+    }
 }
 
 # ----------------------------------------------------------------------------
@@ -59,9 +61,9 @@ sub hook_request_init {
 
     # figure out of the user's engine and version can handle xml/xslt
     my ($engine, $version, $handler)  = @REQUEST{ 'ua_render_engine', 'ua_render_engine_version', 'handler' };
-    if    ($handler eq 'ajax') { return }
-    elsif (exists $INPUT{'ssxslt'} or $CONFIG{'force_ssxslt'} == 1) { $REQUEST{'server_side_xslt'} = 1 } # developer ssxslt override
-    elsif ($engine eq 'trident' and $version > 5.5 and $ENV{'HTTPS'} ne 'on') { return }
+
+    if (exists $INPUT{'ssxslt'} or $CONFIG{'force_ssxslt'} == 1) { $REQUEST{'server_side_xslt'} = 1 } # developer ssxslt override
+    elsif ($engine eq 'trident' and $version > 5.5 and $ENV{'HTTPS'} ne 'on') { return } # XSL in IE older than 9 fails over HTTPS
     elsif ($engine eq 'trident' and $version > 9 and $ENV{'HTTPS'} eq 'on') { return }
     elsif ($engine eq 'presto' and $version >= 9) { return }
     elsif ($engine eq 'gecko') { return }
@@ -83,7 +85,7 @@ sub hook_request_init {
 
         # start an output buffer
         $mimetype = $style::styles{$REQUEST{'style'}}->{'output'} eq 'xhtml' ? 'application/xhtml+xml' : 'text/html';
-        $REQUEST{'mime_type'} = $engine eq 'trident' ? 'text/html' : $mimetype ; # IE requires text/html for xhtml
+        $REQUEST{'mime_type'} = $engine eq 'trident' ? 'text/html' : $mimetype ; # IE does not support xhtml as xml, only html as sgml
         buffer::start();
     }
 }
@@ -91,34 +93,48 @@ sub hook_request_init {
 event::register_hook('request_finish', 'hook_request_finish', -110);
 sub hook_request_finish {
     return unless exists $REQUEST{'server_side_xslt'};
+    my ($buffer, $source);
 
     my $buffer = buffer::end_clean();
-    $buffer =~ s/^.+\n.+\n//; # strip first two lines out (xml version and stylesheet)
-    utf8::upgrade($buffer); # experimental fix for non UTF-8 data choking LibXML
-    my $source = eval { $xml_parser->parse_string($buffer) };
-    if ($@) {
-        log::error("Error parsing xml on url '$ENV{REQUEST_URI}': $@");
-        return;
+    
+    if ($REQUEST{'handler'} ne 'ajax') {
+        $buffer =~ s/^.+\n.+\n//; # strip first two lines out (xml version and stylesheet)
+    
+        utf8::upgrade($buffer); # experimental fix for non UTF-8 data choking LibXML
+    
+        try {
+           #log::debug('hi');
+           $source = $xml_parser->parse_string($buffer);
+           #log::debug('hi2u2');
+        }
+        catch 'perl_error', with {
+           log::error("Error parsing XML on URL '$ENV{REQUEST_URI}': $@");
+           #throw 'perl_error', "Error parsing XML on URL '$ENV{REQUEST_URI}': $@";
+        };
+
+        my $style_id = $REQUEST{'style'};
+
+        # reparse server_base.xsl if necessary
+        _parse_server_base($style_id) if (!exists $styles{$style_id} or ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id}));
+
+    # TODO: proper errors for the end user if something goes wrong
+    # TODO: should be a debugging switch for the evals
+
+        # transform xml using the current style
+        my $style = eval { $styles{$style_id}->transform($source) };
+        if ($@) {
+            log::error("Error parsing style '$style_id' url '$ENV{REQUEST_URI}': $@");
+            return;
+        }
+
+        # print output
+        print $styles{$style_id}->output_string($style);
+        print "\n<!-- Full Execution Time (with server side XSLT): " . sprintf('%0.5f', Time::HiRes::gettimeofday() - $REQUEST{'start_time'}) . " sec -->\n";
     }
-
-    my $style_id = $REQUEST{'style'};
-
-    # reparse server_base.xsl if necessary
-    _parse_server_base($style_id) if (!exists $styles{$style_id} or ($oyster::CONFIG{'compile_styles'} and file::mtime("$CONFIG{site_path}styles/$style_id/server_base.xsl") > $style_parse_times{$style_id}));
-
-# TODO: proper errors for the end user if something goes wrong
-# TODO: should be a debugging switch for the evals
-
-    # transform xml using the current style
-    my $style = eval { $styles{$style_id}->transform($source) };
-    if ($@) {
-        log::error("Error parsing style '$style_id' url '$ENV{REQUEST_URI}': $@");
-        return;
+    
+    else {
+        print $buffer;
     }
-
-    # print output
-    print $styles{$style_id}->output_string($style);
-    print "\n<!-- Full Execution Time (with server side XSLT): " . sprintf('%0.5f', Time::HiRes::gettimeofday() - $REQUEST{'start_time'}) . " sec -->\n";
 }
 
 sub _parse_server_base {
