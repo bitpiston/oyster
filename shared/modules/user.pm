@@ -62,17 +62,17 @@ sub hook_load {
 
     # create the geoip object and open geoip database
     if ($config{'enable_geoip'}) {
-        log::debug('creating geoip object');
+        #log::debug('creating geoip object');
         try {
-            log::debug('starting try');
-            $geoip = Geo::IP->open($CONFIG{'geoip_db'}, GEOIP_STANDARD);
-            log::debug('end of try');
+            #log::debug('starting try');
+            $geoip = Geo::IP->open($CONFIG{'geoip_db'}, GEOIP_STANDARD); # unable to catch die() from Geo::IP
+            #log::debug('end of try');
         }
         catch 'perl_error', with {
-            log::debug('starting catch perl_error, with');
+            #log::debug('starting catch perl_error, with');
             $config{'enable_geoip'} = 0;
-            log::status('User geolocation is ignored. Unable to open the geolocation database.');
-            log::debug('end of catch perl_error, with');
+            #log::status('User geolocation is ignored. Unable to open the geolocation database.');
+            #log::debug('end of catch perl_error, with');
         };
     }
 }
