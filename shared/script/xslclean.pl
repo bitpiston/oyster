@@ -24,37 +24,42 @@ BEGIN {
 use oyster 'script';
 
 my $styles_path = "$config->{site_path}styles/";
+   $styles_path =~ s/ /\\ /g;   # otherwise glob is going to split on the whitespace
 
 print "Cleaning up styles directory...\n";
 print "\tDeleting module styles...\n";
-my @dirs = <${styles_path}*/modules/>;
+my @dirs = glob("${styles_path}*/modules/");
 for my $dir (@dirs) {
     my $disp_path = $dir;
+    $disp_path =~ s/ /\\ /g;   # otherwise glob is going to split on the whitespace
     $disp_path =~ s/^\Q$styles_path\E//;
     print "\t\t$disp_path\n";
     file::rmdir($dir);
 }
 print "\tDone.\n";
 print "\tDeleting dynamic styles...\n";
-my @dirs = <${styles_path}*/dynamic/>;
+my @dirs = glob("${styles_path}*/dynamic/");
 for my $dir (@dirs) {
     my $disp_path = $dir;
+    $disp_path =~ s/ /\\ /g;
     $disp_path =~ s/^\Q$styles_path\E//;
     print "\t\t$disp_path\n";
     file::rmdir($dir);
 }
 print "\tDone.\n";
 print "\tDeleting base styles...\n";
-my @files = <${styles_path}*/base.xsl>;
+my @files = glob("${styles_path}*/base.xsl");
 for my $file (@files) {
     my $disp_path = $file;
+    $disp_path =~ s/ /\\ /g;
     $disp_path =~ s/^\Q$styles_path\E//;
     print "\t\t$disp_path\n";
     unlink($file) or die "Error deleting '$file'.";
 }
-my @files = <${styles_path}*/server_base.xsl>;
+my @files = glob("${styles_path}*/server_base.xsl");
 for my $file (@files) {
     my $disp_path = $file;
+    $disp_path =~ s/ /\\ /g;
     $disp_path =~ s/^\Q$styles_path\E//;
     print "\t\t$disp_path\n";
     unlink($file) or die "Error deleting '$file'.";

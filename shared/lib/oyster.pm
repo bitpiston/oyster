@@ -327,7 +327,7 @@ sub _load_config {
 
 sub _load_modules {
     my $skip_outdated = shift;
-
+    
     # if modules are already loaded, unload them
     module::unload($_) for keys %module::loaded;
 
@@ -335,8 +335,12 @@ sub _load_modules {
     my @modules = module::get_enabled();
     die('No modules were loaded.  Your modules table may have been corrupted.') unless @modules;
 
+    # determine module paths
+    module::get_paths(@modules);
+
     # order modules by dependencies
     @modules = module::order_by_dependencies(@modules);
+    #print oyster::dump(@modules) . "\n";
 
     # load modules
     my $i = 0;

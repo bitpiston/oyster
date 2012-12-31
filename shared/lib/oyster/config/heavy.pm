@@ -30,6 +30,23 @@ sub init {
     eval "use lib '${oyster::config::shared_path}modules/'";
     eval "use lib '${oyster::config::shared_path}perllib/'";
     eval "use lib '${oyster::config::shared_path}lib/'";
+    
+    # add site (and 'package' for lack of better name to ease the version control pain of submodules) library paths to the include list
+    opendir my $site_dirs_handle, $oyster::config::sites_path or die "Unable to open shared's parent directory.";
+    my @site_dirs = grep {-d "$oyster::config::sites_path/$_" && ! /^\..*?$/ && ! /^shared$/} readdir $site_dirs_handle;
+    foreach my $site_dir (@site_dirs) {
+        my $site_modules_path = $oyster::config::sites_path . $site_dir . "/modules/";
+        my $site_perllib_path = $oyster::config::sites_path . $site_dir . "/perllib/";
+        my $site_lib_path     = $oyster::config::sites_path . $site_dir . "/lib/";
+                
+        eval "use lib '$site_modules_path'" if -d $site_modules_path;
+        eval "use lib '$site_perllib_path'" if -d $site_perllib_path;
+        eval "use lib '$site_lib_path'"     if -d $site_lib_path;
+    }
+    
+    closedir $site_dirs_handle;
+    undef $site_dirs_handle;
+    undef @site_dirs;
 
     # parse command line arguments
     if (@ARGV) {
@@ -54,17 +71,17 @@ sub end {
         }
 
         # add misc variables to config
-        $combined_config->{'environment'} = $ENV{'oyster_environment'};
-        $combined_config->{'site_id'}     = $ENV{'oyster_site_id'};
-        $combined_config->{'shared_path'} = $oyster::config::shared_path;
-        $combined_config->{'site_path'}   = $oyster::config::sites_path . $combined_config->{'site_id'} . '/';
-        $combined_config->{'tmp_path'}    = $combined_config->{'shared_path'} . 'tmp/';
-        $combined_config->{'db_prefix'}   = $combined_config->{'site_id'} . '_';
+        $combined_config->{'environment'}  = $ENV{'oyster_environment'};
+        $combined_config->{'site_id'}      = $ENV{'oyster_site_id'};
+        $combined_config->{'shared_path'}  = $oyster::config::shared_path;
+        $combined_config->{'site_path'}    = $oyster::config::sites_path . $combined_config->{'site_id'} . '/';
+        $combined_config->{'tmp_path'}     = $combined_config->{'shared_path'} . 'tmp/';
+        $combined_config->{'db_prefix'}    = $combined_config->{'site_id'} . '_';
         # possible values: MSWin32, MSWin64, linux, hpux, solaris, darwin, freebsd, openbsd, otherwise should either die or issue a warning
         if ($^O eq 'MSWin32' or $^O eq 'MSWin64') { # TODO: this is a pretty basic test... add more possiblities
-            $combined_config->{'os'}      = 'windows';
+            $combined_config->{'os'}       = 'windows';
         } else {
-            $combined_config->{'os'}      = 'nix';
+            $combined_config->{'os'}       = 'nix';
         }
 
         # delete some variables, they are no longer needed (and wont be GC'd automatically)

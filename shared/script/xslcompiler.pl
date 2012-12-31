@@ -63,7 +63,7 @@ for my $style (keys %style::styles) {
             my $template;
             $template .= "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
             $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n";
-            $template .= style::_compile_style($style, "modules/$module_id/$stylesheet") . "\n";
+            $template .= style::_compile_style($style, "$module::paths{$module_id}$module_id/$stylesheet") . "\n";
             $template .= "</xsl:stylesheet>\n";
             file::write("${style_path}modules/$module_id/$stylesheet", $template);
 

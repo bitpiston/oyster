@@ -10,6 +10,7 @@ package module;
 use exceptions;
 
 our %loaded; # currently loaded modules
+our %paths;  # paths to currently loaded modules
 
 =xml
     <function name="print_start_xml">
@@ -80,8 +81,8 @@ sub print_end_xml {
 
 sub get_available {
     my @modules;
-    for my $file (<./modules/*/meta.pl>) { # find all modules with meta.pl files
-        my ($module) = ($file =~ m!^.+/(.+?)/meta\.pl$!); # extract the module name from the meta.pl file path
+    for my $file (<../*/modules/*/meta.pl>) { # find all modules with meta.pl files
+        my ($module) = ($file =~ m!^.+/.+?/(.+?)/meta\.pl$!); # extract the module name from the meta.pl file path
         push @modules, $module;
     }
     return @modules;
@@ -100,6 +101,36 @@ sub get_available {
 
 sub get_enabled {
     return @{$oyster::DB->selectcol_arrayref("SELECT id FROM modules WHERE site_$oyster::CONFIG{site_id} = '1'")};
+}
+
+=xml
+    <function name="get_paths">
+        <synopsis>
+            Retreives a hash of paths to modules indexed by module name (relative to shared)
+        </synopsis>
+        <prototype>
+            hash = module::get_paths(array)
+        </prototype>
+    </function>
+=cut
+
+sub get_paths {
+    my @modules = @_;
+    my @directories;
+    
+    opendir my $dir_handle, "../" or die "Unable to open shared's parent directory.";
+    @directories = grep {-d "../$_/modules/" && ! /^\..*?$/} readdir $dir_handle;
+    closedir $dir_handle;
+    undef $dir_handle;
+    
+    for my $module (@modules) {
+        for my $directory (@directories) {
+            if (-d "../$directory/modules/$module/") {
+                $paths{$module} = "../$directory/modules/";
+                last;
+            }
+        }        
+    }
 }
 
 =xml
@@ -163,7 +194,7 @@ sub order_by_dependencies {
 
 sub get_latest_revision {
     my $module_id = shift;
-    my $filename  = "./modules/$module_id/revisions.pl";
+    my $filename  = $paths{$module_id} . $module_id . "/revisions.pl";
     #throw 'perl_error' => "Revision file does not exist '$filename'." unless -e $filename;
     return 0 unless -e $filename;
     my $ret = do $filename;
@@ -351,7 +382,7 @@ sub get_revision {
 
 sub get_meta {
     my $module_id = shift;
-    my $filename = "./modules/${module_id}/meta.pl";
+    my $filename = $paths{$module_id} . $module_id . "/meta.pl";
     throw 'perl_error' => "Metafile does not exist for module '$module_id'." unless -e $filename;
     my $meta = do $filename;
     unless ($meta) {
@@ -391,7 +422,7 @@ sub load {
     module::load_config($module_id);
 
     # load module's perl source
-    my $filename = "./modules/${module_id}.pm";
+    my $filename = $paths{$module_id} . $module_id . ".pm";
     my $ret      = do $filename; # do instead of require since if unload is called, require wouldn't re-include it!
     unless ($ret) {
         die "Couldn't parse module file '$filename': $@" if $@;

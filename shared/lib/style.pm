@@ -199,6 +199,7 @@ sub print_header {
               . ' styles="' . $oyster::CONFIG{'styles_url'} . '"'
               . ' browser="' . $oyster::REQUEST{'ua_browser'} . '"'
               . ' renderer="' . $oyster::REQUEST{'ua_render_engine'} . '"'
+              . ' os="' . $oyster::REQUEST{'ua_os'} . '"'
               . ' style="' .  $oyster::REQUEST{'style'} . '"'
               . ' url="' .    $oyster::CONFIG{'url'} . ( length $oyster::REQUEST{'url'} ? $oyster::REQUEST{'url'} . '/' : '' ) . '"';
     $attrs .= ' module="' . $oyster::REQUEST{'module'} . '"' if length $oyster::REQUEST{'module'};
@@ -422,8 +423,10 @@ sub compile {
 sub _get_module_stylesheets {
     my %module_stylesheets;
     for my $module (keys %module::loaded) {
-        for my $file (grep(!/\.hook\.xsl$/, <modules/$module/*.xsl>)) {
-            $file =~ s!^modules/$module/!!;
+        my $module_path = $module::paths{$module} . $module;
+           $module_path =~ s/ /\\ /g;   # otherwise glob is going to split on the whitespace
+        for my $file ( grep( !/\.hook\.xsl$/, glob("$module_path/*.xsl") ) ) {
+            $file =~ s!^../.+?/modules/$module/!!;
             push @{$module_stylesheets{$module}}, $file;
         }
     }
@@ -531,7 +534,7 @@ sub _compile_style {
                 my $template;
                 $template .= "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
                 $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n";
-                $template .= _compile_style($style, "modules/$include_file", $is_server_side) . "\n";
+                #$template .= _compile_style($style, "modules/$include_file", $is_server_side) . "\n";
                 $template .= "</xsl:stylesheet>\n";
                 my ($module_id) = ($include_file =~ m!^(.+?)/!);
                 file::mkdir("${style_path}modules/$module_id/");
@@ -594,7 +597,7 @@ sub _compile_style {
                 $insert .= "\n<!-- MODULE: $module_id -->\n\n";
                 for my $include_file (@{$module_stylesheets->{$module_id}}) {
                     $insert .= "\n<!-- $include_file -->\n\n";
-                    $insert .= style::_compile_style($style, "modules/$module_id/$include_file", $is_server_side) . "\n";
+                    #$insert .= style::_compile_style($style, "modules/$module_id/$include_file", $is_server_side) . "\n";
                 }
             }
         }
