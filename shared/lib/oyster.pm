@@ -340,7 +340,6 @@ sub _load_modules {
 
     # order modules by dependencies
     @modules = module::order_by_dependencies(@modules);
-    #print oyster::dump(@modules) . "\n";
 
     # load modules
     my $i = 0;

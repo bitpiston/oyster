@@ -106,10 +106,10 @@ sub get_enabled {
 =xml
     <function name="get_paths">
         <synopsis>
-            Retreives a hash of paths to modules indexed by module name (relative to shared)
+            Updates a hash (%module::paths) of paths to modules indexed by module name (relative to shared)
         </synopsis>
         <prototype>
-            hash = module::get_paths(array)
+            module::get_paths(array)
         </prototype>
     </function>
 =cut
