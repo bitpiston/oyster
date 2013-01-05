@@ -12,29 +12,46 @@
 			<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 			<meta http-equiv="content-style-type" content="text/css" />
 			<title>
+				<!--
 				<xsl:variable name="title"><xsl:apply-templates mode="title" select="/oyster/*[1]" /></xsl:variable>
 				<xsl:choose>
 					<xsl:when test="string-length(/oyster/@page_title) != 0"><xsl:value-of select="/oyster/@page_title" /> | </xsl:when>
 					<xsl:when test="string-length(normalize-space($title)) != 0"><xsl:value-of select="$title" /> | </xsl:when>
-					<xsl:otherwise><xsl:apply-templates mode="heading" select="/oyster/*[1]" /> | </xsl:otherwise>
+					<xsl:otherwise><xsl:apply-templates mode="heading" /> | </xsl:otherwise>
 				</xsl:choose>
 				<xsl:value-of select="@title" />
+				-->
+				<xsl:apply-templates mode="heading" />
 			</title>
 			<link rel="stylesheet" type="text/css" media="screen" href="{@styles}{@style}/screen.css" />
 			<link rel="stylesheet" type="text/css" media="print" href="{@styles}{@style}/print.css" />
-			<xsl:comment>[if lt IE 9]>&gt;&lt;script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"&gt;&lt;/script&gt;&lt;![endif]</xsl:comment>
+			<xsl:comment>[if lt IE 9]&gt;&lt;script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"&gt;&lt;/script&gt;&lt;![endif]</xsl:comment>
 			<xsl:comment>[if lt IE 10]&gt;&lt;link rel="stylesheet" type="text/css" media="screen" href="{@styles}{@style}/ie.css" /&gt;&lt;![endif]</xsl:comment>
 			<xsl:comment>[if lt IE 8]&gt;&lt;style type="text/css"&gt;#search input[type=text] {margin-top: 1px}&lt;/style&gt;&lt;![endif]</xsl:comment>
 			<xsl:comment>[if IE 9]&gt;&lt;style type="text/css"&gt;#search input[type=text] {padding-top: 5px}&lt;/style&gt;&lt;![endif]</xsl:comment>
-			<xsl:comment>[if !IE]&gt;</xsl:comment><link rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px), only screen and (max-width: 480px)" href="{@styles}{@style}/mobile.css" /><xsl:comment>&lt;![endif]</xsl:comment>
+			<xsl:comment>[if !IE]&gt;</xsl:comment>
+			<link rel="stylesheet" type="text/css" media="only screen and (max-device-width: 480px), only screen and (max-width: 480px)" href="{@styles}{@style}/mobile.css" />
+			<xsl:comment>&lt;![endif]</xsl:comment>
 			<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
 			<link rel="alternate" type="application/rss+xml" href="{@base}rss/" title="All posts RSS feed" />
+			<script type="text/javascript"><![CDATA[
+				var _gaq = _gaq || [];
+				_gaq.push(['_setAccount', 'UA-92985-7']);
+				_gaq.push(['_setDomainName', 'bitpiston.com']);
+				_gaq.push(['_setAllowLinker', true]);
+				_gaq.push(['_trackPageview']);
+				(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+				})();
+			]]></script>
 			<!-- oyster library -->
-			<script src="{@styles}oyster-yui.js" type="text/javascript" />
+			<!-- <script src="{@styles}oyster-yui.js" type="text/javascript" /> -->
 			<!-- allow modules to hook into the head tag -->
 			<xsl:apply-templates mode="html_head" />
 		</head>
-		<body class="{/oyster/@module} {/oyster/*[1]/@action}">
+		<body class="{/oyster/@module} {/oyster/*[1]/@action} {translate(/oyster/@page_title, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')}">
 			<div id="header">
 				<a id="title" href="/">BitPiston</a>
 				<ul id="navigation">
@@ -55,7 +72,7 @@
 				<div id="content-primary">
 					<!-- <xsl:apply-templates mode="description" select="/oyster/*[1]" /> -->
 					<xsl:if test="not(/oyster/@module = 'content')">
-						<h1><span><xsl:apply-templates mode="heading" select="/oyster/*[1]" /></span></h1>
+						<h1><span><xsl:apply-templates mode="heading" /></span></h1>
 					</xsl:if>
 					<xsl:apply-templates mode="content" />			
 				</div>
@@ -65,17 +82,12 @@
 			</div>
 			<hr />
 			<div id="footer">
-				<p class="copyright">Copyright &#169; 2007&#8211;2011 BitPiston. All rights reserved.</p>
+				<p class="copyright">Copyright &#169; 2007&#8211;2012 BitPiston Studios Ltd. All rights reserved.</p>
 				<ul class="links">
-					<li><a href="/accessiblity/">Accessibility</a></li>
-					<li><a href="/privacy/">Privacy</a></li>
-					<li><a href="/about/#jobs">Jobs</a></li>
-					<li><a href="http://client.bitpiston.com/">Client Login</a></li>
+					<li><a href="/about/jobs/">Work at BitPiston</a></li>
 					<li><a href="http://developer.bitpiston.com/">Project Tracker</a></li>
 				</ul>
 			</div>
-			<!-- ajax popup -->
-			<!-- ajax communication frame -->
 		</body>
 	</html>
 </xsl:template>
