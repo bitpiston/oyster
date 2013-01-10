@@ -367,6 +367,7 @@ sub compile {
     }
 
     # ensure that all of the stylesheets passed are compiled
+    #$module::paths{$module}
     my (@dyn_style_name, $includes);
     for my $file (@stylesheets) {
         $includes .= "<xsl:include href=\"${style_url}modules/$file\" />\n";
@@ -378,7 +379,7 @@ sub compile {
             my $template =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
               . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n"
-              .  _compile_style($style, "modules/$file") . "\n"
+              .  _compile_style($style, _complete_path_to_stylesheet($file)) . "\n"
               .  "</xsl:stylesheet>\n";
             my ($module_id) = ($file =~ m!^(.+?)/!);
             file::mkdir("${style_path}modules/$module_id/");
@@ -435,9 +436,9 @@ sub _get_module_stylesheets {
 
 =xml
         <function name="_needs_compilation">
-            <todo>
-                Document this function
-            </todo>
+            <synopsis>
+                Checks if the stylesheet needs to be dynamically compiled if the mtime is behind the source xsl.
+            </synopsis>
         </function>
 =cut
 
@@ -458,8 +459,24 @@ sub _needs_compilation {
 
     # if the general template is being used
     else {
-        return file::mtime("modules/$file") > file::mtime("${style_path}modules/$file") ? 1 : 0 ;
+        return file::mtime(_complete_path_to_stylesheet($file)) > file::mtime("${style_path}modules/$file") ? 1 : 0 ;
     }
+}
+
+=xml
+        <function name="_complete_path_to_stylesheet">
+            <synopsis>
+                Completes the path to the stylesheet related to the the shared directory.
+            </synopsis>
+        </function>
+=cut
+
+sub _complete_path_to_stylesheet() {
+    my $file   = shift;
+    my $module = $file;
+       $module =~ s!^(.+?)/.+?\.xsl$!$1!;
+    
+    return $module::paths{$module} . $file;
 }
 
 =xml

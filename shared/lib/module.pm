@@ -82,7 +82,7 @@ sub print_end_xml {
 sub get_available {
     my @modules;
     for my $file (<../*/modules/*/meta.pl>) { # find all modules with meta.pl files
-        my ($module) = ($file =~ m!^.+/.+?/(.+?)/meta\.pl$!); # extract the module name from the meta.pl file path
+        my ($module) = ($file =~ m!^.+?/.+?/(.+?)/meta\.pl$!); # extract the module name from the meta.pl file path
         push @modules, $module;
     }
     return @modules;
