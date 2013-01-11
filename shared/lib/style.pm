@@ -471,7 +471,7 @@ sub _needs_compilation {
         </function>
 =cut
 
-sub _complete_path_to_stylesheet() {
+sub _complete_path_to_stylesheet {
     my $file   = shift;
     my $module = $file;
        $module =~ s!^(.+?)/.+?\.xsl$!$1!;
@@ -520,11 +520,11 @@ sub _compile_style {
     my $style_url  = "$oyster::CONFIG{styles_url}$style/";
     my $style_path = "$oyster::CONFIG{site_path}styles/$style/";
     my $xmlns      = $style::styles{$style}->{'output'} eq 'xhtml' ? "\n xmlns=\"http://www.w3.org/1999/xhtml\"" : '';
-
+    
     $file = $style_path . 'source/' . $file if -e $style_path . 'source/' . $file;
-
+    
     my $stylesheet = file::slurp($file);
-
+    
     # replace conditionals
     $stylesheet =~ s{<oyster:(.+?)>([\s\S]+?)</oyster:\1>}{
         my ($tag, $data) = ($1, $2);
@@ -535,7 +535,7 @@ sub _compile_style {
             $is_server_side ? $data : '';
         }
     }eg;
-
+    
     # replace singleton tags
     $stylesheet =~ s{<oyster:(.+?) />}{
         my $tag = $1;
@@ -551,7 +551,7 @@ sub _compile_style {
                 my $template;
                 $template .= "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
                 $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n";
-                #$template .= _compile_style($style, "modules/$include_file", $is_server_side) . "\n";
+                $template .= _compile_style($style, style::_complete_path_to_stylesheet($include_file), $is_server_side) . "\n";
                 $template .= "</xsl:stylesheet>\n";
                 my ($module_id) = ($include_file =~ m!^(.+?)/!);
                 file::mkdir("${style_path}modules/$module_id/");
@@ -614,7 +614,7 @@ sub _compile_style {
                 $insert .= "\n<!-- MODULE: $module_id -->\n\n";
                 for my $include_file (@{$module_stylesheets->{$module_id}}) {
                     $insert .= "\n<!-- $include_file -->\n\n";
-                    #$insert .= style::_compile_style($style, "modules/$module_id/$include_file", $is_server_side) . "\n";
+                    $insert .= style::_compile_style($style, $module::paths{$module_id} . $module_id . "/" . $include_file, $is_server_side) . "\n";
                 }
             }
         }

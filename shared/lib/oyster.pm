@@ -863,9 +863,9 @@ sub parse_user_agent {
             $REQUEST{'ua_browser_version'}   = $1;
         }
     }
-    elsif ($ua =~ m!MSIE (\d+)!o) {
+    elsif ($ua =~ m!MSIE (?:(\d+)\.(\d+))!o) {
         $REQUEST{'ua_render_engine'}         = 'trident';
-        $REQUEST{'ua_render_engine_version'} = $1;
+        $REQUEST{'ua_render_engine_version'} = $1 . '.' . $2;
         $REQUEST{'ua_browser'}               = 'msie_' . $1;
         $REQUEST{'ua_browser_version'}       = $1;
     }

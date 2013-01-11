@@ -63,7 +63,7 @@ sub hook_request_init {
     my ($engine, $version, $handler)  = @REQUEST{ 'ua_render_engine', 'ua_render_engine_version', 'handler' };
 
     if (exists $INPUT{'ssxslt'} or $CONFIG{'force_ssxslt'} == 1) { $REQUEST{'server_side_xslt'} = 1 } # developer ssxslt override
-    elsif ($engine eq 'trident' and $version > 5.5 and $ENV{'HTTPS'} ne 'on') { return } # XSL in IE older than 9 fails over HTTPS
+    elsif ($engine eq 'trident' and $version > 5.5 and $ENV{'HTTPS'} ne 'on') { return } # XSL in IE older than 9.0.10 fails over HTTPS
     elsif ($engine eq 'trident' and $version > 9 and $ENV{'HTTPS'} eq 'on') { return }
     elsif ($engine eq 'presto' and $version >= 9) { return }
     elsif ($engine eq 'gecko') { return }
