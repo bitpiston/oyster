@@ -14,6 +14,7 @@
 package payflow;
 
 use soap;
+use exceptions;
 
 =xml
     <section title="Public Functions">
@@ -187,7 +188,10 @@ sub void_credit {
 
 sub _transaction {
     my ($config, $name, $content) = @_;
-        
+    my ($response, $success);
+    my $max_retries = 3;
+    my $retries     = $max_retries;
+    
     # PayPal XMLPay header and footer
     my %request;
     $request{'xml_header'} .= '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . 
@@ -211,6 +215,7 @@ sub _transaction {
     
     # Request ID for transaction
     # TODO: use date::gmtime
+    # TODO: this should be changed since I don't think we pass these in
     my $request_id = substr(time . $content->{TrxType} . ($content->{InvNum} || $content->{OrigID} || 'NOID'),0,32);
     
     # IO::Socket::SSL settings
@@ -219,7 +224,7 @@ sub _transaction {
         SSL_version => 'SSLv3',
         SSL_verify_mode => '0x00',
     };
-
+    
     # HTTP headers for PayPal XMLPay API
     $request{'headers'} = [
         'X-VPS-CLIENT-TIMEOUT: 45',
@@ -227,9 +232,31 @@ sub _transaction {
     ];
     
     # Send the SOAP post to PayPal's server and return the response
-    my $response = soap::request(\%request, 1);
+    do {
+        log::debug("Payflow: Attempting transaction, retries remaining: " . $retries);
+        
+        sleep(46) unless ($max_retries - $retries) == 0; # do not delay unless there has been a failure
+        
+        $success = try {
+            $response = soap::request(\%request, 1);
+            throw 'payflow_error' => 'SOAP request to PayPal Payflow Pro failed for transaction ' . $request_id unless $response;
+        }
+        catch 'payflow_error', with {
+            my $error = shift;
+            
+            log::error("Payflow Error: " . $error);
+            abort(1);
+        };
+    } while (!$success and --$retries);
     
-    return $response->{'XMLPayResponse'}->{'ResponseData'}->{'TransactionResults'}->{'TransactionResult'};
+    if ($success) {
+        return $response->{'XMLPayResponse'}->{'ResponseData'}->{'TransactionResults'}->{'TransactionResult'};
+    }
+    else {
+        log::error("Payflow Error: Maximum retries reached, giving up on transaction " . $request_id);
+        throw 'validation_error' => 'Unable to process your transaction. Please try again later.';
+        return;
+    }
 }
 
 =xml
