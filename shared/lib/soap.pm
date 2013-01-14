@@ -116,56 +116,69 @@ sub request {
     my ($request, $ssl) = @_;
     $options{'timeout'} = $timeout unless exists $options{'timeout'};
     $options{'max_kb'}  = $max_kb  unless exists $options{'max_kb'};  # should use $cgi::max_post_size, but this module may be used without cgi
-    my ($content, $sock, $host, $port, $path);
-        
+    my ($sock, $host, $port, $path, $response);
+    
     # get host, port, and path from url
     throw 'validation_error' => "Invalid url: '$request->{'url'}'." unless $request->{'url'} =~ m!^(?:http|https)://([a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5}))(?::(\d+))?((?:/[\S\s]+?)/?)?$!o;
     $host = $1;
     $path = $3;
     $path = "/$path" unless $path =~ m{^/}; # lead the path with a / if it isn't already
     
-    # open a connection
-    if (defined $ssl) {
-        require IO::Socket::SSL;
-        #use IO::Socket::SSL qw(debug9);
-        $port = $2 || 443;
+    my $opened = try {
         
-        $request->{'ssl'}->{'PeerAddr'} = $host;
-        $request->{'ssl'}->{'PeerPort'} = $port;
-        $request->{'ssl'}->{'Proto'}    = 'tcp';
-        $sock = IO::Socket::SSL->new(%{ $request->{'ssl'} }) or throw 'validation_error' => "Error connecting to host '$host'.";
+        # open a connection
+        if (defined $ssl) {
+            require IO::Socket::SSL;
+            #use IO::Socket::SSL qw(debug9);
+            $port = $2 || 443;
+            
+            $request->{'ssl'}->{'PeerAddr'} = $host;
+            $request->{'ssl'}->{'PeerPort'} = $port;
+            $request->{'ssl'}->{'Proto'}    = 'tcp';
+            $sock = IO::Socket::SSL->new(%{ $request->{'ssl'} }) or throw 'soap_error' => "Error connecting to host '$host'.";
+        }
+        else {
+            require IO::Socket;
+            $port = $2 || 80;
+            
+            $sock = IO::Socket::INET->new(
+                    PeerAddr => $host,
+                    PeerPort => $port,
+                    Proto    => 'tcp',
+                    Timeout  => $options{'timeout'},
+                ) or throw 'soap_error' => "Error connecting to host '$host'.";
+        }
     }
-    else {
-        require IO::Socket;
-        $port = $2 || 80;
+    catch 'soap_error', with {
+        my $error = shift;
         
-        $sock = IO::Socket::INET->new(
-                PeerAddr => $host,
-                PeerPort => $port,
-                Proto    => 'tcp',
-                Timeout  => $options{'timeout'},
-            ) or throw 'validation_error' => "Error connecting to host '$host'.";    
-    }
-    $sock->autoflush(); # disable output buffering on this connection
+        log::debug("SOAP Error: " . $error);
+        abort(1);
+    };
     
-    # post the request
-    my $headers;
-    foreach my $header (@{ $request->{'headers'} }) {
-        $headers .= $header . $crlf;
+    if ($opened) {
+        
+        $sock->autoflush(); # disable output buffering on this connection
+        
+        # post the request
+        my $headers;
+        foreach my $header (@{ $request->{'headers'} }) {
+            $headers .= $header . $crlf;
+        }
+        print $sock join($crlf,
+            "POST $path HTTP/1.1",
+            "Host: $host:$port",
+            'Connection: close',
+            'Accept-Encoding: gzip,deflate',
+            'Content-Length: ' . length($request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'}),
+            'Content-Type: text/xml; charset=utf-8',
+            $headers,
+            '', # end header
+        ) . $request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'};  
+        
+        # process, parse and return the response
+        $response = _process_response($sock, $request->{'url'}, \%options);
     }
-    print $sock join($crlf,
-        "POST $path HTTP/1.1",
-        "Host: $host:$port",
-        'Connection: close',
-        'Accept-Encoding: gzip,deflate',
-        'Content-Length: ' . length($request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'}),
-        'Content-Type: text/xml; charset=utf-8',
-        $headers,
-        '', # end header
-    ) . $request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'};  
-
-    # process, parse and return the response
-    my $response = _process_response($sock, $request->{'url'}, \%options);
     
     return $response;
 }
@@ -188,35 +201,35 @@ sub _process_response {
     my $read_bytes = 0;  # total number of bytes read
     my $n;               # number of bytes read for the current chunk
     while ($n = sysread($sock, $buf, 8 * 1024)) {
-
+        
         # if this is the first chunk, check for http headers (TODO: BUG: http headers must be under 8 kb!)
         unless ($read_bytes) {
             throw 'validation_error' => "'$url' returned no HTTP headers." unless $buf =~ m!^HTTP/\d+\.\d+\s+(\d+)[^\012]*\012!o;
-
+            
             # check for a redirect
             my $status_code = $1;
             if ($status_code =~ /^30[1237]/o and $buf =~ /\012Location:\s*(\S+)/io) {
                 my $redirect = $1;
                 return http::get($redirect, $options);
             }
-
+            
             # check for non-success status codes
             throw 'validation_error' => "'$url' contained a malformed header." unless $status_code =~ /^2/o; # TODO: check for more status codes
             # remove header from buffer
             throw 'validation_error' => "'$url' contained a malformed header." unless $buf =~ s/^[\s\S]+?\015?\012\015?\012//o;
         }
-
+        
         # incremeent total read bytes
         $read_bytes += $n;
-
+        
         # check max file size
         throw 'validation_error' => "'$url' exceeded the maximum file size, $options->{max_kb}kb." if $read_bytes > $max_bytes;
-
+        
         # save it to a buffer to be returned
         $buffer .= $buf;
     }
     throw 'validation_error' => "'$url' is an empty file." unless $read_bytes;
-
+    
     # parse the response in our buffer and return a hash of the xml
     # elements are the keys 
     my $data;
@@ -238,7 +251,7 @@ sub _process_response {
         }
     });
     $parser->parse_string($buffer);
-        
+    
     return \%structure;
 }
 
@@ -267,7 +280,7 @@ sub print_vars {
     foreach my $value (@values) {
         $xmlns .= $value if $value;
     }
-        
+    
     if ($type eq '') {
        $buffer .= "$indent<$name$xmlns>" . xml::entities($value) . "</$name>\n";
     }
