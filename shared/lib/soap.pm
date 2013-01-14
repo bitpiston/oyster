@@ -113,15 +113,17 @@ sub request_legacy {
 
 sub request {
     # parse arguments
-    my ($request, $ssl) = @_;
+    my ($request) = @_;
     $options{'timeout'} = $timeout unless exists $options{'timeout'};
     $options{'max_kb'}  = $max_kb  unless exists $options{'max_kb'};  # should use $cgi::max_post_size, but this module may be used without cgi
-    my ($sock, $host, $port, $path, $response);
+    my ($sock, $host, $port, $path, $ssl, $response);
     
     # get host, port, and path from url
-    throw 'validation_error' => "Invalid url: '$request->{'url'}'." unless $request->{'url'} =~ m!^(?:http|https)://([a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5}))(?::(\d+))?((?:/[\S\s]+?)/?)?$!o;
-    $host = $1;
-    $path = $3;
+    throw 'validation_error' => "Invalid url: '$request->{'url'}'." unless $request->{'url'} =~ m!^(http|https)://([a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5}))(?::(\d+))?((?:/[\S\s]+?)/?)?$!o;
+    $ssl  = $1;
+    $host = $2;
+    $port = $ssl ? $3 || 443 : $3 || 80 if $ssl;
+    $path = $4;
     $path = "/$path" unless $path =~ m{^/}; # lead the path with a / if it isn't already
     
     my $opened = try {
@@ -130,7 +132,6 @@ sub request {
         if (defined $ssl) {
             require IO::Socket::SSL;
             #use IO::Socket::SSL qw(debug9);
-            $port = $2 || 443;
             
             $request->{'ssl'}->{'PeerAddr'} = $host;
             $request->{'ssl'}->{'PeerPort'} = $port;
@@ -139,7 +140,6 @@ sub request {
         }
         else {
             require IO::Socket;
-            $port = $2 || 80;
             
             $sock = IO::Socket::INET->new(
                     PeerAddr => $host,
