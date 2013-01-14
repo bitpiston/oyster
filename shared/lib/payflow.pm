@@ -238,7 +238,7 @@ sub _transaction {
         sleep(46) unless ($max_retries - $retries) == 0; # do not delay unless there has been a failure
         
         $success = try {
-            $response = soap::request(\%request, 1);
+            $response = soap::request(\%request);
             throw 'payflow_error' => 'SOAP request to PayPal Payflow Pro failed for transaction ' . $request_id unless $response;
         }
         catch 'payflow_error', with {
