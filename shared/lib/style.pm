@@ -379,7 +379,7 @@ sub compile {
             my $template =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
               . "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n"
-              .  _compile_style($style, _complete_path_to_stylesheet($file)) . "\n"
+              .  _compile_style($style, _complete_path_to_stylesheet($style, $file)) . "\n"
               .  "</xsl:stylesheet>\n";
             my ($module_id) = ($file =~ m!^(.+?)/!);
             file::mkdir("${style_path}modules/$module_id/");
@@ -451,7 +451,7 @@ sub _needs_compilation {
 
     # if this template hasn't been compiled at all
     return 1 unless -e "${style_path}modules/$file";
-
+    
     # if this style has a style for this particular template
     if (-e "${style_path}source/modules/$file") {
         return file::mtime("${style_path}source/modules/$file") > file::mtime("${style_path}modules/$file") ? 1 : 0 ;
@@ -459,7 +459,7 @@ sub _needs_compilation {
 
     # if the general template is being used
     else {
-        return file::mtime(_complete_path_to_stylesheet($file)) > file::mtime("${style_path}modules/$file") ? 1 : 0 ;
+        return file::mtime(_complete_path_to_stylesheet($style, $file)) > file::mtime("${style_path}modules/$file") ? 1 : 0 ;
     }
 }
 
@@ -472,11 +472,21 @@ sub _needs_compilation {
 =cut
 
 sub _complete_path_to_stylesheet {
-    my $file   = shift;
-    my $module = $file;
-       $module =~ s!^(.+?)/.+?\.xsl$!$1!;
+    my ($style, $file) = @_;
+    my $style_path = "$oyster::CONFIG{site_path}styles/$style/";
     
-    return $module::paths{$module} . $file;
+    # if this style has a style for this particular template
+    if (-e "${style_path}source/modules/$file") {
+        return $style_path . 'source/modules/' . $file;
+    }
+    
+    # if the general template is being used
+    else {
+        my $module = $file;
+           $module =~ s!^(.+?)/.+?\.xsl$!$1!;
+    
+        return $module::paths{$module} . $file;
+    }
 }
 
 =xml
@@ -551,7 +561,7 @@ sub _compile_style {
                 my $template;
                 $template .= "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
                 $template .= "<xsl:stylesheet version=\"1.0\"\n xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"$xmlns>\n\n";
-                $template .= _compile_style($style, style::_complete_path_to_stylesheet($include_file), $is_server_side) . "\n";
+                $template .= _compile_style($style, style::_complete_path_to_stylesheet($style, $include_file), $is_server_side) . "\n";
                 $template .= "</xsl:stylesheet>\n";
                 my ($module_id) = ($include_file =~ m!^(.+?)/!);
                 file::mkdir("${style_path}modules/$module_id/");
