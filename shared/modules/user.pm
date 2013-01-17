@@ -1156,7 +1156,7 @@ sub hook_request_init {
                         'name'        => $name,
                         'group'       => $group, # TODO: should be group_id ?
                         'time_offset' => $time_offset,
-                        'date_format' => $date_format,
+                        'date_format' => $date_format || $datetime::formats[0],
                         'session'     => $USER{'session'},
                         'style'       => $config{'customizable_styles'} ? $style : '' ,
                     );
