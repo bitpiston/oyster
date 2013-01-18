@@ -127,35 +127,36 @@ sub request {
     $path = "/$path" unless $path =~ m{^/}; # lead the path with a / if it isn't already
     
     my $opened = try {
-        
+            
         # open a connection
         if (defined $ssl) {
             require IO::Socket::SSL;
             #use IO::Socket::SSL qw(debug9);
-            
+                
             $request->{'ssl'}->{'PeerAddr'} = $host;
             $request->{'ssl'}->{'PeerPort'} = $port;
             $request->{'ssl'}->{'Proto'}    = 'tcp';
-            $sock = IO::Socket::SSL->new(%{ $request->{'ssl'} }) or throw 'soap_error' => "Error connecting to host '$host'.";
+            $request->{'ssl'}->{'Timeout'}  = $options{'timeout'};
+            $sock = IO::Socket::SSL->new(%{ $request->{'ssl'} }) or throw 'soap_error' => "Error connecting to host '$host': $@";
         }
         else {
             require IO::Socket;
-            
+                
             $sock = IO::Socket::INET->new(
                     PeerAddr => $host,
                     PeerPort => $port,
                     Proto    => 'tcp',
-                    Timeout  => $options{'timeout'},
-                ) or throw 'soap_error' => "Error connecting to host '$host'.";
+                    Timeout  => $options{'timeout'},    # only for connect/accept
+                ) or throw 'soap_error' => "Error connecting to host '$host': $@";
         }
     }
     catch 'soap_error', with {
         my $error = shift;
-        
-        log::debug("SOAP Error: " . $error);
+            
+        log::error("SOAP Error: " . $error);
         abort(1);
     };
-    
+        
     if ($opened) {
         
         $sock->autoflush(); # disable output buffering on this connection
@@ -175,7 +176,7 @@ sub request {
             $headers,
             '', # end header
         ) . $request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'};  
-        
+            
         # process, parse and return the response
         $response = _process_response($sock, $request->{'url'}, \%options);
     }
@@ -195,64 +196,85 @@ sub _process_response {
     my ($sock, $url, $options, $max_bytes) = @_;
     my $max_bytes = $options->{'max_kb'} * 1024;
     
+    
     # read the returned response
     my $buffer     = ''; # total file buffer
     my $buf        = ''; # file chunk buffer
     my $read_bytes = 0;  # total number of bytes read
     my $n;               # number of bytes read for the current chunk
-    while ($n = sysread($sock, $buf, 8 * 1024)) {
+    
+    # Make sure the socket doesn't cause a timeout as it is blocking and timeout param only works for connect/accept, not sysread/syswrite
+    try {
+        local $SIG{'ALRM'} = sub { throw 'soap_error' => "Timeout waiting on host."; };
+        alarm $options{'timeout'};
         
-        # if this is the first chunk, check for http headers (TODO: BUG: http headers must be under 8 kb!)
-        unless ($read_bytes) {
-            throw 'validation_error' => "'$url' returned no HTTP headers." unless $buf =~ m!^HTTP/\d+\.\d+\s+(\d+)[^\012]*\012!o;
+        while ($n = sysread($sock, $buf, 8 * 1024)) {
             
-            # check for a redirect
-            my $status_code = $1;
-            if ($status_code =~ /^30[1237]/o and $buf =~ /\012Location:\s*(\S+)/io) {
-                my $redirect = $1;
-                return http::get($redirect, $options);
+            # if this is the first chunk, check for http headers (TODO: BUG: http headers must be under 8 kb!)
+            unless ($read_bytes) {
+                throw 'soap_error' => "'$url' returned no HTTP headers." unless $buf =~ m!^HTTP/\d+\.\d+\s+(\d+)[^\012]*\012!o;
+                
+                # check for a redirect
+                my $status_code = $1;
+                if ($status_code =~ /^30[1237]/o and $buf =~ /\012Location:\s*(\S+)/io) {
+                    my $redirect = $1;
+                    return http::get($redirect, $options);
+                }
+                
+                # check for non-success status codes
+                throw 'soap_error' => "'$url' contained a malformed header." unless $status_code =~ /^2/o; # TODO: check for more status codes
+                # remove header from buffer
+                throw 'soap_error' => "'$url' contained a malformed header." unless $buf =~ s/^[\s\S]+?\015?\012\015?\012//o;
             }
             
-            # check for non-success status codes
-            throw 'validation_error' => "'$url' contained a malformed header." unless $status_code =~ /^2/o; # TODO: check for more status codes
-            # remove header from buffer
-            throw 'validation_error' => "'$url' contained a malformed header." unless $buf =~ s/^[\s\S]+?\015?\012\015?\012//o;
+            # incremeent total read bytes
+            $read_bytes += $n;
+            
+            # check max file size
+            throw 'soap_error' => "'$url' exceeded the maximum file size, $options->{max_kb}kb." if $read_bytes > $max_bytes;
+            
+            # save it to a buffer to be returned
+            $buffer .= $buf;
         }
+        throw 'soap_error' => "'$url' is an empty file." unless $read_bytes;
         
-        # incremeent total read bytes
-        $read_bytes += $n;
-        
-        # check max file size
-        throw 'validation_error' => "'$url' exceeded the maximum file size, $options->{max_kb}kb." if $read_bytes > $max_bytes;
-        
-        # save it to a buffer to be returned
-        $buffer .= $buf;
+        alarm 0;
     }
-    throw 'validation_error' => "'$url' is an empty file." unless $read_bytes;
+    catch 'soap_error', with {
+        my $error = shift;
+            
+        log::error("SOAP Error: " . $error);
+        abort(1);
+    };
     
-    # parse the response in our buffer and return a hash of the xml
-    # elements are the keys 
-    my $data;
-    my %structure;
-    my @structure_stack = (\%structure);
-    $parser = new xml::parser;
-    $parser->{'data_pointer'} = \$data;
-    $parser->set_handler('node_start', sub {
-        my($parser, $namespace, $node_name, %attributes) = @_;
-        $structure_stack[$#structure_stack]->{$node_name} = {};
-        push(@structure_stack, $structure_stack[$#structure_stack]->{$node_name});
-    });
-    $parser->set_handler('node_end', sub {
-        my($parser, $namespace, $node_name) = @_;
-        pop(@structure_stack);
-        if(length $data) {
-            $structure_stack[$#structure_stack]->{$node_name} = $data;
-            $data = '';
-        }
-    });
-    $parser->parse_string($buffer);
+    alarm 0;    # race condition protection
     
-    return \%structure;
+    if ($buffer) {
+        
+        # parse the response in our buffer and return a hash of the xml
+        # elements are the keys 
+        my $data;
+        my %structure;
+        my @structure_stack = (\%structure);
+        $parser = new xml::parser;
+        $parser->{'data_pointer'} = \$data;
+        $parser->set_handler('node_start', sub {
+            my($parser, $namespace, $node_name, %attributes) = @_;
+            $structure_stack[$#structure_stack]->{$node_name} = {};
+            push(@structure_stack, $structure_stack[$#structure_stack]->{$node_name});
+        });
+        $parser->set_handler('node_end', sub {
+            my($parser, $namespace, $node_name) = @_;
+            pop(@structure_stack);
+            if(length $data) {
+                $structure_stack[$#structure_stack]->{$node_name} = $data;
+                $data = '';
+            }
+        });
+        $parser->parse_string($buffer);
+        
+        return \%structure;
+    }
 }
 
 =xml

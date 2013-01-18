@@ -235,7 +235,7 @@ sub _transaction {
     do {
         log::debug("Payflow: Attempting transaction, retries remaining: " . $retries);
         
-        sleep(46) unless ($max_retries - $retries) == 0; # do not delay unless there has been a failure
+        #sleep(46) unless ($max_retries - $retries) == 0; # do not delay unless there has been a failure
         
         $success = try {
             $response = soap::request(\%request);
