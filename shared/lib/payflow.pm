@@ -19,15 +19,14 @@ use exceptions;
 =xml
     <section title="Public Functions">
         <note>
-            All functions take two hashrefs. One for your API configuration details and another with the transaction data to pass to the API. See the PayPal PayFlow Pro XMLPay API documentation for the details:
+            All functions take two hashrefs. One for your API configuration details and another with the 
+            transaction data to pass to the API. See the PayPal PayFlow Pro XMLPay API documentation for the details: 
             https://cms.paypal.com/cms_content/US/en_US/files/developer/PP_PayflowPro_XMLPay_Guide.pdf
         </note>
         <note>
             All functions return hashrefs containing the XMLPay TransactionResult from the response.
         </note>
-=cut
-
-=xml
+        
         <function name="sale_credit">
             <synopsis>
                 Sends a credit card sale request to PayPal and returns the response.
@@ -180,9 +179,9 @@ sub void_credit {
             <prototype>
                  _transaction(hashref config, string name, hashref content)
             </prototype>
-            <todo>
-                Connection error handling - this needs to account for SSL or HTTP failures and retry several times with a delay. Look at Payflowpro.pm on CPAN for an example of what they do.
-            </todo>
+            <warning>
+                Connection error handling - this needs to account for SSL or HTTP failures and retry several times with a delay. Not well tested!
+            </warning>
         </function>
 =cut
 
@@ -235,7 +234,7 @@ sub _transaction {
     do {
         log::debug("Payflow: Attempting transaction, retries remaining: " . $retries);
         
-        #sleep(46) unless ($max_retries - $retries) == 0; # do not delay unless there has been a failure
+        sleep(46) unless ($max_retries - $retries) == 0; # do not delay unless there has been a failure
         
         $success = try {
             $response = soap::request(\%request);
