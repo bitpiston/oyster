@@ -120,16 +120,16 @@ sub request {
     
     # get host, port, and path from url
     throw 'validation_error' => "Invalid url: '$request->{'url'}'." unless $request->{'url'} =~ m!^(http|https)://([a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5}))(?::(\d+))?((?:/[\S\s]+?)/?)?$!o;
-    $ssl  = $1;
+    $ssl  = $1 eq 'https' ? 1 : 0;
     $host = $2;
-    $port = $ssl ? $3 || 443 : $3 || 80 if $ssl;
+    $port = $ssl ? $3 || 443 : $3 || 80;
     $path = $4;
     $path = "/$path" unless $path =~ m{^/}; # lead the path with a / if it isn't already
     
     my $opened = try {
             
         # open a connection
-        if (defined $ssl) {
+        if ($ssl) {
             require IO::Socket::SSL;
             #use IO::Socket::SSL qw(debug9);
                 
@@ -175,8 +175,8 @@ sub request {
             'Content-Type: text/xml; charset=utf-8',
             $headers,
             '', # end header
-        ) . $request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'};  
-            
+        ) . $request->{'xml_header'} . $request->{'xml_body'} . $request->{'xml_footer'};
+        
         # process, parse and return the response
         $response = _process_response($sock, $request->{'url'}, \%options);
     }
@@ -195,7 +195,6 @@ sub request {
 sub _process_response {
     my ($sock, $url, $options, $max_bytes) = @_;
     my $max_bytes = $options->{'max_kb'} * 1024;
-    
     
     # read the returned response
     my $buffer     = ''; # total file buffer
