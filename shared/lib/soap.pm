@@ -32,82 +32,8 @@ our $crlf    = "\015\012"; # header line endings
             Returns a hash of the xml response keyed by elements.
         </note>
         <prototype>
-            soap::request(['url' => 'string url', 'xmlns' => ' string xmlns'], string action, string name ['param' => [ 0, 'string value']][, 'param' => [ 1, 'string value']]...)
+            soap::request(['url' => 'string url', 'xml_header' => 'string xml', 'xml_body' => ' string xml', 'xml_footer' => 'string xml', 'headers' => 'array', 'ssl' => 'hash'])
         </prototype>
-    </function>
-=cut
-
-sub request_legacy {
-    require IO::Socket;
-
-    # parse arguments
-    my ($conf, $action, $name, $request) = @_;
-    $name = $name . $conf->{'xmlns'};
-    $options{'timeout'} = $timeout unless exists $options{'timeout'};
-    $options{'max_kb'}  = $max_kb  unless exists $options{'max_kb'};  # should use $cgi::max_post_size, but this module may be used without cgi
-    my $content;
-
-    # get host, port, and path from url
-    throw 'validation_error' => "Invalid url: '$conf->{url}'." unless $conf->{'url'} =~ m!^(?:http|https)://([a-zA-Z](?:[a-zA-Z\-]+\.)+(?:[a-zA-Z]{2,5}))(?::(\d+))?((?:/[\S\s]+?)/?)?$!o;
-    my $host = $1;
-    my $port = $2 || 80;
-    my $path = $3;
-    $path = "/$path" unless $path =~ m{^/}; # lead the path with a / if it isn't already
-    
-    # Contruct the XML from the content hash
-    $content .= '<?xml version="1.0" encoding="utf-8"?>' . "\n" . 
-                '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' . "\n" .  
-                "\t<soap:Body>\n";
-    $content .= print_vars($name, $request, 2);
-    $content .= "\t</soap:Body>\n" . 
-                '</soap:Envelope>' . "\n";
-
-    # open a connection
-    my $sock = IO::Socket::INET->new(
-        PeerAddr => $host,
-        PeerPort => $port,
-        Proto    => 'tcp',
-        Timeout  => $options{'timeout'},
-    ) or throw 'validation_error' => "Error connecting to host '$host'.";
-    $sock->autoflush(); # disable output buffering on this connection
-
-    # post the request
-    print $sock join($crlf,
-        "POST $path HTTP/1.1",
-        "Host: $host" . ( $port != 80 ? ":$port" : '' ),
-        'Content-Type: text/xml; charset=utf-8',
-        'Content-Length: ' . length($content),
-        'Connection: close',
-        "SOAPAction: \"$action\"",
-        '', '', # end header
-    ) . $content;
-            
-    # process, parse and return the response
-    my $response = _process_response($sock, $conf->{'url'}, \%options);
-    
-    return $response;
-}
-
-=xml
-    <function name="request_ssl">
-        <synopsis>
-            Constructs a secure SOAP request and parses the response.
-        </synopsis>
-        <note>
-            Expects a complex hash to maintain the order since most SOAP servers care about the order.
-        </note>
-        <note>
-            Returns a hash of the xml response keyed by elements.
-        </note>
-        <note>
-            Credentials must be base64 encoded.
-        </note>
-        <prototype>
-            soap::request(['url' => 'string url', 'xmlns' => ' string xmlns', 'auth' => 'string base64 user:password', 'ssl_key' => 'string path, 'ssl_cert' => 'string path'], string action, string name, ['param' => [ 0, 'string value']][, 'param' => [ 1, 'string value']]...)
-        </prototype>
-        <todo>
-            Move SSL key/cert paths to module configuration.
-        </todo>
     </function>
 =cut
 
@@ -127,12 +53,12 @@ sub request {
     $path = "/$path" unless $path =~ m{^/}; # lead the path with a / if it isn't already
     
     my $opened = try {
-            
+        
         # open a connection
         if ($ssl) {
             require IO::Socket::SSL;
             #use IO::Socket::SSL qw(debug9);
-                
+            
             $request->{'ssl'}->{'PeerAddr'} = $host;
             $request->{'ssl'}->{'PeerPort'} = $port;
             $request->{'ssl'}->{'Proto'}    = 'tcp';
@@ -141,7 +67,7 @@ sub request {
         }
         else {
             require IO::Socket;
-                
+            
             $sock = IO::Socket::INET->new(
                     PeerAddr => $host,
                     PeerPort => $port,
@@ -152,11 +78,11 @@ sub request {
     }
     catch 'soap_error', with {
         my $error = shift;
-            
+        
         log::error("SOAP Error: " . $error);
         abort(1);
     };
-        
+    
     if ($opened) {
         
         $sock->autoflush(); # disable output buffering on this connection
