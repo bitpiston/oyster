@@ -657,7 +657,8 @@ sub _load_exception_handlers {
     catch 'request_404', with {
         buffer::end_clean();
         event::execute('request_init');
-        #http::header("HTTP/1.1 404 Not Found"); # sending this makes the web server use its own 404 page -- TODO: make that an option?
+        http::clear_headers();
+        http::header("HTTP/1.1 404 Not Found");
         style::print_header();
         event::execute('request_start');
         my $url = $ENV{'REQUEST_URI'};
