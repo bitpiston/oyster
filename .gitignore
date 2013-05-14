@@ -21,3 +21,14 @@
 /site/styles/bitpiston/base.xsl
 /site/styles/bitpiston/server_base.xsl
 /site/styles/bitpiston/dynamic
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
