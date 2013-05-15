@@ -8,52 +8,57 @@ package oyster::revisions;
 $revision[1]{'up'}{'shared'} = sub {
 
     # Global config
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `config` (
-        `name` tinytext NOT NULL,
-        `value` tinytext NOT NULL
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
+    $DB->query(qq~CREATE TABLE `config` (
+          `name` tinytext NOT NULL,
+          `value` tinytext NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
 
     # Date formats
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `date_formats` (`format` tinytext NOT NULL) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
+    $DB->query(qq~CREATE TABLE `date_formats` (
+          `format` tinytext NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8~);
     $DB->query(qq~INSERT INTO `date_formats` (`format`) VALUES
         ('%Y.%m.%d %H:%M:%S'),
         ('%e %B %Y %H:%M'),
         ('%B %e, %Y %i:%M %p')~);
 
     # IPC
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS  `ipc` (
-        `id` int(11) NOT NULL auto_increment,
-        `module` tinytext NOT NULL,
-        `function` tinytext NOT NULL,
-        `args` text NOT NULL,
-        `daemon` char(32) NOT NULL,
-        `site` tinytext NOT NULL,
-        UNIQUE KEY `id` (`id`)
-        ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
+    $DB->query(qq~CREATE TABLE `ipc` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `module` tinytext NOT NULL,
+          `function` tinytext NOT NULL,
+          `args` text NOT NULL,
+          `daemon` char(32) NOT NULL DEFAULT '',
+          `site` tinytext NOT NULL,
+          UNIQUE KEY `id` (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
     
     # IPC Periodic
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `ipc_periodic` (
-      `id` int(11) NOT NULL auto_increment,
-      `module` tinytext NOT NULL,
-      `function` tinytext NOT NULL,
-      `args` text NOT NULL,
-      `site` tinytext NOT NULL,
-      `interval` int(11) NOT NULL,
-      `last_exec_time` int(11) NOT NULL,
-      UNIQUE KEY `id` (`id`)
-    ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
+    $DB->query(qq~CREATE TABLE `ipc_periodic` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `module` tinytext NOT NULL,
+          `function` tinytext NOT NULL,
+          `args` text NOT NULL,
+          `daemon` char(32) NOT NULL DEFAULT '',
+          `site` tinytext NOT NULL,
+          `interval` int(11) NOT NULL,
+          `last_exec_time` int(11) DEFAULT NULL,
+          UNIQUE KEY `id` (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;~);
 
     # Modules
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `modules` (
-        `id` tinytext NOT NULL,
-        `revision` smallint(6) NOT NULL default '0'
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
+    $DB->query(qq~CREATE TABLE `modules` (
+          `id` tinytext NOT NULL,
+          `revision` smallint(6) NOT NULL DEFAULT '0'
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
 
     # Register the module
     module::register('oyster');
 
     # Sites
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `sites` (`id` tinytext NOT NULL) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
+    $DB->query(qq~CREATE TABLE `sites` (
+          `id` tinytext NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
 };
 
 $revision[1]{'up'}{'site'} = sub {
@@ -65,54 +70,66 @@ $revision[1]{'up'}{'site'} = sub {
     module::enable('oyster');
 
     # Site config
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `${DB_PREFIX}config` (
-        `name` tinytext NOT NULL,
-        `value` text NOT NULL
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
-    $DB->query(qq~INSERT INTO `${DB_PREFIX}config` (`name`, `value`) VALUES
-        ('error_message', 'You may have just broken the internet.  '),
-        ('default_url', 'login'),
-        ('time_offset', '-6'),
-        ('default_style', 'bitpiston'),
-        ('site_name', 'My Website'),
-        ('navigation_depth', '1')~);
+    $DB->query(qq~CREATE TABLE `site_config` (
+          `name` tinytext NOT NULL,
+          `value` text NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
+    $DB->query(qq~INSERT INTO `${DB_PREFIX}config` (`name`, `value`)
+        VALUES
+        	('error_message','You may have just broken the internet.  '),
+        	('default_url','home'),
+        	('time_offset','0'),
+        	('default_style','bitpiston'),
+        	('site_name','BitPiston'),
+        	('navigation_depth','1'),
+        	('log_404s','0'),
+        	('force_ssxslt','0');~);
 
     # Email Templates
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `${DB_PREFIX}email_templates` (
-        `name` tinytext NOT NULL,
-        `subject` tinytext NOT NULL,
-        `body` text NOT NULL
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
+    $DB->query(qq~CREATE TABLE `${DB_PREFIX}email_templates` (
+          `name` tinytext NOT NULL,
+          `type` tinytext,
+          `from_address` tinytext,
+          `subject` tinytext NOT NULL,
+          `body` text NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
 
     # Logs
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `${DB_PREFIX}logs` (`id` bigint(20) unsigned NOT NULL auto_increment, `type` tinytext NOT NULL, `time` datetime NOT NULL default '0000-00-00 00:00:00', `message` text NOT NULL, `trace` text NOT NULL, UNIQUE KEY `id` (`id`)) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
+    $DB->query(qq~CREATE TABLE `${DB_PREFIX}logs` (
+          `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+          `type` tinytext NOT NULL,
+          `time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+          `message` text NOT NULL,
+          `trace` text NOT NULL,
+          UNIQUE KEY `id` (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;~);
 
     # URLs
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `${DB_PREFIX}urls` (
-        `id` int(11) NOT NULL auto_increment,
-        `parent_id` int(11) NOT NULL default '0',
-        `url` tinytext NOT NULL,
-        `url_hash` INT(10) UNSIGNED NOT NULL default '',
-        `title` tinytext character set utf8 NOT NULL,
-        `module` tinytext NOT NULL,
-        `function` tinytext NOT NULL,
-        `params` tinytext NOT NULL,
-        `show_nav_link` tinyint(1) NOT NULL default '0',
-        `nav_priority` smallint(6) NOT NULL default '0',
-        `regex` tinyint(1) NOT NULL default '0',
-        UNIQUE KEY `id` (`id`),
-        KEY `url_hash` (`url_hash`),
-        KEY `parent_id` (`parent_id`),
-        KEY `regex` (`regex`)
-        ) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1~);
+    $DB->query(qq~CREATE TABLE `${DB_PREFIX}urls` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `parent_id` int(11) NOT NULL DEFAULT '0',
+          `url` tinytext NOT NULL,
+          `url_hash` varchar(10) NOT NULL DEFAULT '',
+          `title` tinytext NOT NULL,
+          `module` tinytext NOT NULL,
+          `function` tinytext NOT NULL,
+          `params` tinytext NOT NULL,
+          `show_nav_link` tinyint(1) NOT NULL DEFAULT '0',
+          `nav_priority` smallint(6) NOT NULL DEFAULT '0',
+          `regex` tinyint(1) NOT NULL DEFAULT '0',
+          UNIQUE KEY `id` (`id`),
+          KEY `url_hash` (`url_hash`),
+          KEY `parent_id` (`parent_id`),
+          KEY `regex` (`regex`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;~);
 
     # Styles
-    $DB->query(qq~CREATE TABLE IF NOT EXISTS `${DB_PREFIX}styles` (
-        `id` tinytext NOT NULL,
-        `name` tinytext NOT NULL,
-        `status` tinyint(1) NOT NULL default '1',
-        `output` tinytext NOT NULL default 'xhtml'
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1~);
+    $DB->query(qq~CREATE TABLE `${DB_PREFIX}styles` (
+          `id` tinytext NOT NULL,
+          `name` tinytext NOT NULL,
+          `status` tinyint(1) NOT NULL DEFAULT '1',
+          `output` tinytext NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;~);
     style::register('bitpiston', 'BitPiston');
     style::enable('bitpiston');
 
