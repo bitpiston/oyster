@@ -6,7 +6,7 @@ Setting Up an Oyster Development Environment
     Type `perl -v` to see your Perl version (or to check if you have Perl
     installed).
 
-    Perl 5.8 or higher is required.
+    Perl 5.10.1 or higher is required.
 
     On Windows, visit activestate.com and download their latest version
     of perl.
