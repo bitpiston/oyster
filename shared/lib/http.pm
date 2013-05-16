@@ -173,9 +173,9 @@ sub get {
         <example>
             http::header("Content-Type: text/plain");
         </example>
-        <todo>
-            
-        </todo>
+        <note>
+            This must be used before anything is outputted to the browser
+        </note>
     </function>
 =cut
 
@@ -190,6 +190,9 @@ sub header {
         <todo>
             Documentation
         </todo>
+        <note>
+            This must be used before anything is outputted to the browser
+        </note>
     </function>
 =cut
 
@@ -205,6 +208,9 @@ sub clear_headers {
         <todo>
             Documentation
         </todo>
+        <note>
+            This must be used before anything is outputted to the browser
+        </note>
     </function>
 =cut
 
@@ -213,7 +219,57 @@ sub print_headers {
     clear_headers();
 }
 
-# Copyright BitPiston 2008
+=xml
+    <function name="redirect">
+        <synopsis>
+            Prints an http location or refresh header for a redirect.
+        </synopsis>
+        <prototype>
+            http::header(string uri[, string method, int status])
+        </prototype>
+        <example>
+            http::redirect('http://example.org/new/url/', 'location', 303);
+        </example>
+        <note>
+            This must be used before anything is outputted to the browser
+        </note>
+        <note>
+            Methods are location or refresh. Defaults to location.
+        <note>
+            Only the location method accepts a status code. Defaults to HTTP 302 Found.
+        </note>
+    </function>
+=cut
+
+sub redirect {
+    my ($uri, $method, $status) = @_;    
+    $uri    = $uri =~ m!^http://! ? $uri : $oyster::CONFIG{'full_url'} . $uri ;
+    $method = $method eq 'refresh' ? 'refresh' : 'location';  
+    
+    http::clear_headers();
+    
+    if ($method eq 'location') {    # webkit/blink with mimetype application/xml doesn't respect the HTTP Location header?
+        my %status_codes = (
+            301 => '301 Moved Permanently',
+            302 => '302 Found',
+            303 => '303 See Other',
+            307 => '307 Temporary Redirect',
+            308 => '308 Permanent Redirect'
+        );
+        $status = $status ~~ %status_codes ? $status_codes{$status} : $status_codes{'302'};  
+        
+        http::header('HTTP/1.1 ' . $status);
+        http::header('Location: ' . $uri);
+    }
+    else {  
+        http::header('HTTP/1.1 200 OK');
+        http::header('Refresh: 3; url=' . $uri);
+    }
+
+    http::print_headers();
+}
+
+# Copyright BitPiston 2008–2013
 1;
 =xml
 </document>
