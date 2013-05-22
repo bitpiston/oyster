@@ -144,7 +144,6 @@ sub server_prepare {
     my $driver = $DB->{'Driver'}->{'Name'};
     
     # Log a notice that this function is deprecated
-    require log;
     log::warning('Deprecated subroutine: $DB->server_prepare()! Use $DB->prepare() or $DB->prepare_cached() instead. Query: ' . $sql);
 
     # MySQL
