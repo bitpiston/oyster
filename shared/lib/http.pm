@@ -246,9 +246,9 @@ sub redirect {
     $uri    = $uri =~ m!^http://! ? $uri : $oyster::CONFIG{'full_url'} . $uri ;
     $method = $method eq 'refresh' ? 'refresh' : 'location';  
     
-    http::clear_headers();
+    clear_headers();
     
-    if ($method eq 'location') {    # webkit/blink with mimetype application/xml doesn't respect the HTTP Location header?
+    if ($method eq 'location') {
         my %status_codes = (
             301 => '301 Moved Permanently',
             302 => '302 Found',
@@ -258,15 +258,15 @@ sub redirect {
         );
         $status = $status ~~ %status_codes ? $status_codes{$status} : $status_codes{'302'};  
         
-        http::header('HTTP/1.1 ' . $status);
-        http::header('Location: ' . $uri);
+        header('HTTP/1.1 ' . $status);
+        header('Location: ' . $uri);
     }
     else {  
-        http::header('HTTP/1.1 200 OK');
-        http::header('Refresh: 3; url=' . $uri);
+        header('HTTP/1.1 200 OK');
+        header('Refresh: 3; url=' . $uri);
     }
 
-    http::print_headers();
+    print_headers();
 }
 
 # Copyright BitPiston 2008–2013
