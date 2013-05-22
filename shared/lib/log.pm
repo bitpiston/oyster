@@ -54,6 +54,28 @@ sub error {
 }
 
 =xml
+    <function name="warning">
+        <synopsis>
+            Saves a message to the warning log
+        </synopsis>
+        <note>
+            If a database connection is available, this message is written to the
+            log table, otherwise it is written to logs/warning.log
+        </note>
+        <prototype>
+            log::warning(string message)
+        </prototype>
+        <example>
+            log::warning("We're all gonna die! ...Maybe!");
+        </example>
+    </function>
+=cut
+
+sub warning {
+    _message('warning', shift());
+}
+
+=xml
     <function name="debug">
         <synopsis>
             Saves a message to the debug log if debug is enabled in config.pl
@@ -66,7 +88,7 @@ sub error {
             log::debug(string message)
         </prototype>
         <example>
-            log::debug('Something happened);
+            log::debug('Something happened');
         </example>
     </function>
 =cut

@@ -133,12 +133,19 @@ sub insert_id {
             <prototype>
                 object statement_handle = $DB->server_prepare(string statement)
             </prototype>
+            <warning>
+                Deprecated as we no longer need to worry about pg_server_prepare. Use $DB->prepare() or $DB->prepare_cached() instead.
+            </warning>
         </function>
 =cut
 
 sub server_prepare {
     my ($DB, $sql) = @_;
     my $driver = $DB->{'Driver'}->{'Name'};
+    
+    # Log a notice that this function is deprecated
+    require log;
+    log::warning('Deprecated subroutine: $DB->server_prepare()! Use $DB->prepare() or $DB->prepare_cached() instead. Query: ' . $sql);
 
     # MySQL
     #return $DBH->prepare($sql, { 'mysql_server_prepare' => 1 }) if $driver eq 'mysql';
