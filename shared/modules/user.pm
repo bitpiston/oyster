@@ -32,16 +32,16 @@ event::register_hook('load', 'hook_load', 90);
 sub hook_load {
 
     # cache queries
-    our $select_group_by_id             = $DB->server_prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1"); 
-    #our $select_user_by_session         = $DB->server_prepare("SELECT ${module_db_prefix}sessions.user_id, ${module_db_prefix}sessions.ip, ${module_db_prefix}sessions.restrict_ip, users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM ${module_db_prefix}sessions, users, ${module_db_prefix}permissions WHERE ${module_db_prefix}sessions.session_id = ? and users.id = ${module_db_prefix}sessions.user_id and ${module_db_prefix}permissions.user_id = ${module_db_prefix}sessions.user_id LIMIT 1");
-    our $select_user_by_id              = $DB->server_prepare("SELECT users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM users, ${module_db_prefix}permissions WHERE users.id = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
-    our $select_user_id_by_session      = $DB->server_prepare("SELECT user_id, ip, restrict_ip, geoip_country, geoip_region, geoip_city FROM ${module_db_prefix}sessions WHERE session_id = ? LIMIT 1");
-    our $select_user_id_by_credentials  = $DB->server_prepare("SELECT id FROM users WHERE name_hash = ? and password = ? LIMIT 1");
-    #our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET session_id = ?, ip = ?, restrict_ip = ?, access_ctime = ? WHERE user_id = ? LIMIT 1");
-    our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET ip = ?, restrict_ip = ?, access_ctime = ? WHERE session_id = ? LIMIT 1");
-    #our $update_user_session            = $DB->server_prepare("UPDATE ${module_db_prefix}sessions SET access_ctime = ? WHERE session_id = ? LIMIT 1");
-    our $insert_user_session            = $DB->server_prepare("INSERT INTO ${module_db_prefix}sessions (user_id, session_id, ip, restrict_ip, access_ctime, geoip_country, geoip_region, geoip_city) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    our $select_permissions_count       = $DB->server_prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions WHERE ${module_db_prefix}permissions.user_id = ? LIMIT 1");
+    our $select_group_by_id             = $DB->prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1"); 
+    #our $select_user_by_session         = $DB->prepare("SELECT ${module_db_prefix}sessions.user_id, ${module_db_prefix}sessions.ip, ${module_db_prefix}sessions.restrict_ip, users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM ${module_db_prefix}sessions, users, ${module_db_prefix}permissions WHERE ${module_db_prefix}sessions.session_id = ? and users.id = ${module_db_prefix}sessions.user_id and ${module_db_prefix}permissions.user_id = ${module_db_prefix}sessions.user_id LIMIT 1");
+    our $select_user_by_id              = $DB->prepare("SELECT users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM users, ${module_db_prefix}permissions WHERE users.id = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
+    our $select_user_id_by_session      = $DB->prepare("SELECT user_id, ip, restrict_ip, geoip_country, geoip_region, geoip_city FROM ${module_db_prefix}sessions WHERE session_id = ? LIMIT 1");
+    our $select_user_id_by_credentials  = $DB->prepare("SELECT id FROM users WHERE name_hash = ? and password = ? LIMIT 1");
+    #our $update_user_session            = $DB->prepare("UPDATE ${module_db_prefix}sessions SET session_id = ?, ip = ?, restrict_ip = ?, access_ctime = ? WHERE user_id = ? LIMIT 1");
+    our $update_user_session            = $DB->prepare("UPDATE ${module_db_prefix}sessions SET ip = ?, restrict_ip = ?, access_ctime = ? WHERE session_id = ? LIMIT 1");
+    #our $update_user_session            = $DB->prepare("UPDATE ${module_db_prefix}sessions SET access_ctime = ? WHERE session_id = ? LIMIT 1");
+    our $insert_user_session            = $DB->prepare("INSERT INTO ${module_db_prefix}sessions (user_id, session_id, ip, restrict_ip, access_ctime, geoip_country, geoip_region, geoip_city) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    our $select_permissions_count       = $DB->prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions WHERE ${module_db_prefix}permissions.user_id = ? LIMIT 1");
 
     # load user groups
     _load_groups();
