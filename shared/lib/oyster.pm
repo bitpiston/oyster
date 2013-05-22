@@ -283,14 +283,14 @@ sub _db_connect {
     if ($dbconfig->{'driver'} eq 'mysql') {
         $DB->do('set names "utf8"');       # return unicode strings
         $DB->{'AutoCommit'}           = 1; # enable autocommit (required for auto_reconnect)
-        $DB->{'mysql_server_prepare'} = 0; # disable server side prepared statements
+        $DB->{'mysql_server_prepare'} = 1; # enable server side prepared statements
         $DB->{'mysql_auto_reconnect'} = 1; # automatically reconnect
         #$DB->{'mysql_use_result'}     = 1; # faster/less memory consuming, can block other processes -- disabled: causes problem with multiple fastcgi processes
     }
 
     # Pg-specific stuff
     elsif ($dbconfig->{'driver'} eq 'Pg') {
-        $DB->{'pg_server_prepare'}    = 0; # disable server side prepared statements
+        $DB->{'pg_server_prepare'}    = 1; # enable server side prepared statements
     }
 }
 
