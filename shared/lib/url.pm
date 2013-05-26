@@ -12,16 +12,18 @@ use exceptions;
 use event;
 use hash;
 
-our (%regex_urls, $fetch_by_hash, $fetch_nav_urls_by_parent_id);
 event::register_hook('load_lib', '_load');
 sub _load {
 
     # prepare queries
-    $fetch_by_hash               = $oyster::DB->prepare("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? and regex = 0 LIMIT 1");
-    $fetch_nav_urls_by_parent_id = $oyster::DB->prepare("SELECT id, url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority ASC");
+    our $fetch_by_hash               = $oyster::DB->prepare("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE url_hash = ? and regex = 0 LIMIT 1");
+    our $fetch_nav_urls_by_parent_id = $oyster::DB->prepare("SELECT id, url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ? and show_nav_link = 1 ORDER BY nav_priority ASC");
+    our $fetch_by_id                 = $oyster::DB->prepare("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1");
+    our $fetch_url_by_id             = $oyster::DB->prepare("SELECT url FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1");
+    our $fetch_subpage_by_parent_id  = $oyster::DB->prepare("SELECT url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ?");
 
     # load regex urls
-    %regex_urls = %{$oyster::DB->selectall_hashref("SELECT id, parent_id, url, title, module, function, regex FROM $oyster::CONFIG{db_prefix}urls WHERE regex = 1", 'url')};
+    our %regex_urls = %{$oyster::DB->selectall_hashref("SELECT id, parent_id, url, title, module, function, regex FROM $oyster::CONFIG{db_prefix}urls WHERE regex = 1", 'url')};
 
     # load navigation
     load_navigation();
@@ -213,15 +215,15 @@ sub register {
         # the url contains /'s
         else {
             my $parent_url       = substr($update{'url'}, 0, $last_slash_pos);
-            my $query            = $oyster::DB->query("SELECT id FROM $url_table WHERE url_hash = ? LIMIT 1", hash::fast($parent_url));
-            $update{'parent_id'} = $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : -1 ; # -1 = not top level but no parent id
+            my $parent_id        = $oyster::DB->selectrow_arrayref("SELECT id FROM $url_table WHERE url_hash = ? LIMIT 1", {}, hash::fast($parent_url));
+            $update{'parent_id'} = exists $parent_id->[0] ? $parent_id : -1 ; # -1 = not top level but no parent id
         }
     }
 
     # perform the insert
     my $columns = join(', ', keys %update);
     my $values  = join(', ', map('?', values %update));
-    my $query   = $oyster::DB->query("INSERT INTO $url_table ($columns) VALUES ($values)", values %update);
+    my $query   = $oyster::DB->do("INSERT INTO $url_table ($columns) VALUES ($values)", values %update);
 
     # reload navigation if necessary
     if ($update{'show_nav_link'}) {
@@ -481,7 +483,7 @@ sub get {
 
 sub get_by_id {
     my $url_id = shift;
-    my $query = $oyster::DB->query("SELECT * FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $url_id);
+    $fetch_by_id->execute($url_id);
     return $query->rows() ? $query->fetchrow_hashref() : undef ;
 }
 
@@ -501,7 +503,7 @@ sub get_by_id {
 
 sub get_url_by_id {
     my $url_id = shift;
-    my $query = $oyster::DB->query("SELECT url FROM $oyster::CONFIG{db_prefix}urls WHERE id = ? LIMIT 1", $url_id);
+    $fetch_url_by_id->execute($url_id);
     return $query->rows() ? $query->fetchrow_arrayref()->[0] : undef ;
 }
 
@@ -593,10 +595,10 @@ sub has_children_by_id {
 sub print_subpage_xml {
     my $url_id = shift;
 
-    my $query = $oyster::DB->query("SELECT url, title FROM $oyster::CONFIG{db_prefix}urls WHERE parent_id = ?", $url_id);
-    return unless $query->rows();
+    $fetch_subpage_by_parent_id->execute($url_id);
+    return unless $fetch_subpage_by_parent_id->rows();
     print qq~\t<menu id="subpages">\n~;
-    while (my $url = $query->fetchrow_arrayref()) {
+    while (my $url = $fetch_subpage_by_parent_id->fetchrow_arrayref()) {
         my ($url, $title) = @{$url};
         print qq~\t\t<item url="$oyster::CONFIG{url}$url/" label="$title" />\n~;
     }

@@ -356,9 +356,9 @@ sub get_revision {
     my $module_id = shift;
     my $rev       = 0;
     try {
-        my $query = $oyster::DB->query("SELECT revision FROM modules WHERE id = ? LIMIT 1", $module_id);
-        abort(1) unless $query->rows() == 1;
-        $rev = $query->fetchrow_arrayref()->[0];
+        my $query = $oyster::DB->selectrow_arrayref("SELECT revision FROM modules WHERE id = ? LIMIT 1", {}, $module_id);
+        abort(1) unless exists $query->[0];
+        $rev = $query->[0];
     }
     catch 'db_error', with {
         abort(1);

@@ -13,18 +13,21 @@ package ipc;
 
 use exceptions;
 
-our ($last_fetch_id, $insert_ipc, $fetch_ipc, $exists_ipc_periodic, $insert_ipc_periodic, $fetch_ipc_periodic, $update_ipc_periodic, $last_sync_time);
+our ($last_sync_time, $last_fetch_id);
 
 event::register_hook('load_lib', '_ipc_load');
 sub _ipc_load {
-    my $query = $oyster::DB->query("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
-    $last_fetch_id          = $query->rows() == 1 ? $query->fetchrow_arrayref()->[0] : 0 ;
-    $insert_ipc             = $oyster::DB->prepare("INSERT INTO ipc (module, function, args, daemon, site) VALUES (?, ?, ?, '$oyster::CONFIG{daemon_id}', ?)");
-    $fetch_ipc              = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::CONFIG{daemon_id}'");
-    $exists_ipc_periodic    = $oyster::DB->prepare("SELECT id FROM ipc_periodic WHERE module = ? and function = ? and args = ? and site = ? and `interval` = ? LIMIT 1");
-    $insert_ipc_periodic    = $oyster::DB->prepare("INSERT INTO ipc_periodic (module, function, args, site, `interval`, last_exec_time) VALUES (?, ?, ?, ?, ?, ?)");
-    $fetch_ipc_periodic     = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc_periodic WHERE (site = '' or site = '$oyster::CONFIG{site_id}') and `interval` <= ? - last_exec_time");
-    $update_ipc_periodic    = $oyster::DB->prepare("UPDATE ipc_periodic SET last_exec_time = ? WHERE id = ? LIMIT 1");
+    our $fetch_last_id       = $oyster::DB->prepare("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
+    our $insert_ipc          = $oyster::DB->prepare("INSERT INTO ipc (module, function, args, daemon, site) VALUES (?, ?, ?, '$oyster::CONFIG{daemon_id}', ?)");
+    our $fetch_ipc           = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc WHERE id > ? and (site = '' or site = '$oyster::CONFIG{site_id}') and daemon != '$oyster::CONFIG{daemon_id}'");
+    our $exists_ipc_periodic = $oyster::DB->prepare("SELECT id FROM ipc_periodic WHERE module = ? and function = ? and args = ? and site = ? and `interval` = ? LIMIT 1");
+    our $insert_ipc_periodic = $oyster::DB->prepare("INSERT INTO ipc_periodic (module, function, args, site, `interval`, last_exec_time) VALUES (?, ?, ?, ?, ?, ?)");
+    our $fetch_ipc_periodic  = $oyster::DB->prepare("SELECT id, module, function, args FROM ipc_periodic WHERE (site = '' or site = '$oyster::CONFIG{site_id}') and `interval` <= ? - last_exec_time");
+    our $update_ipc_periodic = $oyster::DB->prepare("UPDATE ipc_periodic SET last_exec_time = ? WHERE id = ? LIMIT 1");
+    
+    # Set the last fetch id
+    $last_fetch_id = $oyster::DB->selectrow_arrayref("SELECT id FROM ipc ORDER BY id DESC LIMIT 1");
+    $last_fetch_id = exists $last_fetch_id->[0] ? $last_fetch_id->[0] : 0;
     
     # remove old ipc jobs
     #ipc::do_periodic(86400, 'ipc', '_clean_ipc');
