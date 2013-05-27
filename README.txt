@@ -43,8 +43,7 @@ Setting Up an Oyster Development Environment
     install using your distribution's package management tools.
 
     NOTE: PostgreSQL support is considered alpha.  Most, if not all, of Oyster 
-    should be PostgreSQL compatible but this is not tested regularly.  MariaDB 
-    is untested but should work as a drop-in replacement for MySQL.
+    should be PostgreSQL compatible but this is not tested regularly.
 
   - Perl Modules
 
