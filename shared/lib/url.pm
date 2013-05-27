@@ -223,7 +223,7 @@ sub register {
     # perform the insert
     my $columns = join(', ', keys %update);
     my $values  = join(', ', map('?', values %update));
-    my $query   = $oyster::DB->do("INSERT INTO $url_table ($columns) VALUES ($values)", values %update);
+    my $query   = $oyster::DB->do("INSERT INTO $url_table ($columns) VALUES ($values)", {}, values %update);
 
     # reload navigation if necessary
     if ($update{'show_nav_link'}) {
