@@ -227,11 +227,18 @@ sub ajax_deurlify {
         <note>
             The default length is 32
         </note>
+        <note>
+            include_punctuation allows the following characters but specifically excludes single quotes 
+            and blackslash to make life easier: ~`!@$%^&*()-_+={}[]|:;.<>?/#,
+        </note>
         <prototype>
-            string = string::random([int length])
+            string = string::random([int length, string include_punctuation])
         </prototype>
         <example>
             print string::random(100);
+        </example>
+        <example>
+            print string::random(100, 'include_punctuation');
         </example>
         <todo>
             Possible to do this via chr and just using a random int &lt; 62
@@ -240,8 +247,13 @@ sub ajax_deurlify {
 =cut
 
 sub random {
-    my @chars = (a..z, A..Z, 0..9);
-    return join( '', map { $chars[ rand @chars ] } ( 1 .. ( $_[0] ? $_[0] : 32 ) ) );
+    my $length  = is_numeric($_[0]) ? shift : 32;
+    my %options = map {($_ => undef)} @_;
+    my @chars   = ('a'..'z', 'A'..'Z', '0'..'9' );
+    
+    push @chars, map { chr($_); } (32..38, 40..47, 58..64, 91, 93..96, 123..126) if exists $options{'include_punctuation'};
+    
+    return join( '', map { $chars[ rand @chars ] } ( 1 .. $length ) );
 }
 
 =xml
