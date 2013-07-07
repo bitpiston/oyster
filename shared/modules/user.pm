@@ -32,14 +32,23 @@ event::register_hook('load', 'hook_load', 90);
 sub hook_load {
 
     # cache queries
-    our $select_group_by_id             = $DB->prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1"); 
+    our $select_group_by_id             = $DB->prepare("SELECT * FROM ${module_db_prefix}groups WHERE id = ? LIMIT 1");
+     
     #our $select_user_by_session         = $DB->prepare("SELECT ${module_db_prefix}sessions.user_id, ${module_db_prefix}sessions.ip, ${module_db_prefix}sessions.restrict_ip, users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM ${module_db_prefix}sessions, users, ${module_db_prefix}permissions WHERE ${module_db_prefix}sessions.session_id = ? and users.id = ${module_db_prefix}sessions.user_id and ${module_db_prefix}permissions.user_id = ${module_db_prefix}sessions.user_id LIMIT 1");
+    
     our $select_user_by_id              = $DB->prepare("SELECT users.name, users.time_offset, users.date_format, users.style, ${module_db_prefix}permissions.group_id FROM users, ${module_db_prefix}permissions WHERE users.id = ? and ${module_db_prefix}permissions.user_id = users.id LIMIT 1");
+
     our $select_user_id_by_session      = $DB->prepare("SELECT user_id, ip, restrict_ip, geoip_country, geoip_region, geoip_city FROM ${module_db_prefix}sessions WHERE session_id = ? LIMIT 1");
-    our $select_user_id_by_credentials  = $DB->prepare("SELECT id FROM users WHERE name_hash = ? and password = ? LIMIT 1");
+    our $select_user_id_by_credentials  = $DB->prepare("SELECT id FROM users WHERE email_hash = ? and password = ? LIMIT 1");
+
+    our $select_user_salt_by_email      = $DB->prepare("SELECT salt FROM users WHERE email_hash = ? LIMIT 1");
+    
     #our $update_user_session            = $DB->prepare("UPDATE ${module_db_prefix}sessions SET session_id = ?, ip = ?, restrict_ip = ?, access_ctime = ? WHERE user_id = ? LIMIT 1");
+    
     our $update_user_session            = $DB->prepare("UPDATE ${module_db_prefix}sessions SET ip = ?, restrict_ip = ?, access_ctime = ? WHERE session_id = ? LIMIT 1");
+    
     #our $update_user_session            = $DB->prepare("UPDATE ${module_db_prefix}sessions SET access_ctime = ? WHERE session_id = ? LIMIT 1");
+    
     our $insert_user_session            = $DB->prepare("INSERT INTO ${module_db_prefix}sessions (user_id, session_id, ip, restrict_ip, access_ctime, geoip_country, geoip_region, geoip_city) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     our $select_permissions_count       = $DB->prepare("SELECT COUNT(*) FROM ${module_db_prefix}permissions WHERE ${module_db_prefix}permissions.user_id = ? LIMIT 1");
 
@@ -1304,6 +1313,51 @@ sub hook_admin_center_modules_menu {
 
     <section title="Helper Functions">
 =cut
+
+# Get the user id by their credentials
+sub _get_user_id_by_credentials {
+    my ($email, $password) = @_;
+    my ($salt_user, $salt_calculated, $password_hash);
+    my $user_id    = 0;
+    my $email_hash = hash::fast( lc($email) );
+    
+    $select_user_salt_by_email->execute($email_hash);
+    
+    if ( $select_user_salt_by_email->rows() ) {
+        $salt_user       = $select_user_salt_by_email->fetchrow_arrayref()->[0];
+        $salt_calculated = _calculate_salt($email);
+                
+        $password_hash   = _hash_password($password, $salt_user, $salt_calculated);
+        
+        $select_user_id_by_credentials->execute($email_hash, $password_hash);
+        $user_id = $select_user_id_by_credentials->fetchrow_arrayref()->[0] if $select_user_id_by_credentials->rows();
+    }
+    
+    return $user_id;
+}
+
+# Calculated salt for user's password
+sub _calculate_salt {
+    my $email = lc(shift);
+    my $salt  = substr($email, 0, length($email) / 2) . hash::rot13($email) . substr($email, length($email) / 2);
+    
+    foreach ( 1 .. length($email) ) {
+        $salt = hash::secure($salt);
+    }
+    
+    return $salt;
+}
+
+# Use salts and multiple iterations to generate the password's hash
+sub _hash_password {
+    my ($password, $salt_user, $salt_calculated) = @_;
+
+    foreach (1 .. 5000) {
+        $string = hash::secure($salt_user . $password . $salt_calculated . $CONFIG{'user_secure_salt'});
+    }
+
+    return $string;
+}
 
 # insert the a new session into the database
 sub _create_session {
