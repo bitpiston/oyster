@@ -51,13 +51,13 @@ eval { require Digest::JHash };
 if ($@) {
     eval q~
         sub fast {
-            return substr(Digest::SHA::sha1_hex($_[0]), 0, 10);
+            return substr(Digest::SHA::sha1_hex(shift), 0, 10);
         }
     ~;
 } else {
     eval q~
         sub fast {
-            return Digest::JHash::jhash($_[0]);
+            return Digest::JHash::jhash(shift);
         }
     ~;
 }
@@ -68,7 +68,7 @@ if ($@) {
             Returns a hashed value of a string, and is hopefully pretty hard to crack
         </synopsis>
         <note>
-            Hashes are curently 64 characters long with this algorithm.
+            Hashes are curently 128 characters long with this algorithm (SHA512).
         </note>
         <note>
             If the Digest::SHA module is not installed, a pure-perl version will be
@@ -89,8 +89,7 @@ eval { require Digest::SHA };
 require Digest::SHA::PurePerl if $@;
 
 sub secure {
-    return Digest::SHA::sha256_hex($_[0]);
-    #return Digest::SHA::sha512_hex($_[0]);
+    return Digest::SHA::sha512_hex(shift);
 }
 
 =xml
@@ -99,7 +98,7 @@ sub secure {
             Returns a hashed md5 value of a string
         </synopsis>
         <note>
-            Hashes are 16 bytes long and hexidecimal.
+            Hashes are 32 characters long.
         </note>
         <note>
             MD5 hashing is optional and will only be loaded if MD5 is installed.
@@ -113,7 +112,7 @@ sub secure {
 eval { require Digest::MD5 };
 unless ($@) {
    sub md5 {
-       return Digest::MD5::md5_hex($_[0]);
+       return Digest::MD5::md5_hex(shift);
    }
 }
 
@@ -135,8 +134,10 @@ unless ($@) {
 =cut
 
 sub rot13 {
-  $_[0] =~ tr/A-Za-z/N-ZA-Mn-za-m/;
-  return $_[0];
+    my $string = shift;
+       $string =~ tr/A-Za-z/N-ZA-Mn-za-m/;
+    
+    return $string;
 }
 
 # Copyright BitPiston 2008
