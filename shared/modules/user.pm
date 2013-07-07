@@ -550,8 +550,8 @@ sub register {
 
         # add user to database
         my $query = $DB->query(
-            'INSERT INTO user_new (name, password, email, email_hash, ip, confirmation_hash, ctime) VALUES (?, ?, ?, ?, ?, ?, UTC_TIMESTAMP())',
-            $INPUT{'username'}, hash::secure($INPUT{'password'}), $INPUT{'email'}, hash::fast($INPUT{'email'}), $ENV{'REMOTE_ADDR'}, $confirmation_hash
+            'INSERT INTO user_new (name, password, email, ip, confirmation_hash, ctime) VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP())',
+            $INPUT{'username'}, hash::secure($INPUT{'password'}), $INPUT{'email'}, $ENV{'REMOTE_ADDR'}, $confirmation_hash
         );
 
         # send activation email
