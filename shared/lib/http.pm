@@ -243,8 +243,8 @@ sub print_headers {
 
 sub redirect {
     my ($uri, $method, $status) = @_;    
-    $uri    = $uri =~ m!^http://! ? $uri : $oyster::CONFIG{'full_url'} . $uri ;
-    $method = $method eq 'refresh' ? 'refresh' : 'location';  
+    $uri    = $oyster::CONFIG{'full_url'} . $uri unless $uri =~ m!^http://!;
+    $method = 'location' unless $method eq 'refresh';
     
     clear_headers();
     
@@ -256,7 +256,7 @@ sub redirect {
             307 => '307 Temporary Redirect',
             308 => '308 Permanent Redirect'
         );
-        $status = $status ~~ %status_codes ? $status_codes{$status} : $status_codes{'302'};  
+        $status = $status_codes{ $status } // $status_codes{302};
         
         header('HTTP/1.1 ' . $status);
         header('Location: ' . $uri);
